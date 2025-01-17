@@ -1,0 +1,17 @@
+<div class="panel-wrapper">
+  <div class="panel-actions-container">
+    <app-button
+      [matTooltip]="panelVisibility() ? 'Hide panel' : 'Show panel'"
+      matTooltipClass="tooltip"
+      class="toggle-button"
+      [class.reverted] = "!panelVisibility()"
+      (click)="panelVisibilityIconClick.emit()"
+    >
+      <mat-icon icon>keyboard_arrow_left</mat-icon>
+    </app-button>
+
+    <ng-content select="[panel-actions]"/>
+  </div>
+
+  <ng-content select="[panel-content]"/>
+</div>

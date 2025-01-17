@@ -1,0 +1,61 @@
+@use '/utils/colors';
+
+$buttons-space-from-border: 10px;
+
+.panel-wrapper {
+  background-color: colors.$secondary-color;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.panel-actions-container {
+  position: relative;
+  padding: $buttons-space-from-border;
+  border-bottom: 3px solid colors.$primary-color;
+
+  .app-button {
+    height: fit-content !important;
+    width: fit-content;
+    padding-inline: 0.313rem !important;
+    padding: 0.313rem;
+
+    .mat-icon {
+      font-size: 1.375rem;
+      width: 1.375rem;
+      height: 1.375rem;
+    }
+  }
+}
+
+.toggle-button {
+  position: absolute;
+  right: 1px;
+  top: $buttons-space-from-border;
+  z-index: 10;
+
+  .app-button {
+    height: fit-content;
+    width: fit-content;
+    padding-inline: 0.313rem !important;
+    padding: 0.313rem;
+    border-radius: 0.813rem 0 0 0.813rem !important;
+    border-right: none;
+
+    .mat-icon {
+      font-size: 1.375rem;
+      width: 1.375rem;
+      height: 1.375rem;
+    }
+  }
+}
+
+.reverted {
+  right: -2px;
+  .app-button {
+    transform: rotate(180deg);
+    transform-origin: right center;
+  }
+}
+

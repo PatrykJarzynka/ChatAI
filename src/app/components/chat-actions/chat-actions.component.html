@@ -1,0 +1,7 @@
+<div class="chat-actions">
+  <query-input [(query)]="message" (enterPressed)="onUserQuerySend(message())"/>
+  <app-button
+    [label]="'Send message'"
+    (click)="onUserQuerySend(message())"
+  />
+</div>
