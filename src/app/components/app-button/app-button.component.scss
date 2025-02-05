@@ -1,0 +1,24 @@
+@use 'utils/colors';
+
+:host {
+  display: block;
+  width: fit-content;
+}
+
+.app-button {
+  height: 100%;
+  border-radius: 0.813rem;
+  background-color: colors.$accent-color;
+  color: colors.$primary-color;
+  font-weight: 600;
+  transition: background-color 0.5s;
+  padding-inline: 0.625rem;
+  display: flex;
+  align-items: center;
+  column-gap: 0.313rem;
+}
+
+.app-button:hover {
+  cursor: pointer;
+  background-color: colors.$accent-color--dark;
+}
