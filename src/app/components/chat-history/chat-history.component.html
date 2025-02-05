@@ -1,7 +1,0 @@
-@for ( chatHistory of chatHistories(); track chatHistory.id) {
-  <div class="chat-history-container" (click) = "updateCurrentChat(chatHistory.id)">
-    @if (chatHistory.chatItems[0]) {
-      <p class="chat-history-item--title">{{chatHistory.chatItems[0].userMessageData.text}}</p>
-    }
-  </div>
-}
