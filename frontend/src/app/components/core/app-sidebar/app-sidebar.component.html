@@ -1,0 +1,16 @@
+<div class="sidebar-wrapper">
+  <div class="sidebar-actions-container">
+    <app-button
+      (click)="panelVisibilityIconClick.emit()"
+      [iconMode]="true"
+      [tooltip]="'Hide sidebar'"
+      class="app-sidebar-toggle-button"
+    >
+      <mat-icon icon>flip_to_back</mat-icon>
+    </app-button>
+
+    <ng-content select="[panel-actions]"/>
+  </div>
+
+  <ng-content select="[panel-content]"/>
+</div>

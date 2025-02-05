@@ -1,0 +1,11 @@
+@if (!Array.from(chatHistories()).length) {
+  <p class="no-data-label">{{ 'No data available' }}</p>
+} @else {
+  @for (chatHistory of chatHistories(); track chatHistory.id) {
+    <div class="chat-history-container" (click)="updateCurrentChat(chatHistory.id)">
+      <p class="chat-history-item--title">{{ chatHistory.title }}</p>
+    </div>
+  }
+}
+
+

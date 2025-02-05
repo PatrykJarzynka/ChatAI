@@ -1,0 +1,9 @@
+<button
+  [class.icon-button]="iconMode()"
+  [matTooltip]="tooltip()"
+  class="app-button"
+  matTooltipClass="tooltip"
+>
+  <p class="button-label">{{ label() }}</p>
+  <ng-content select="[icon]"></ng-content>
+</button>

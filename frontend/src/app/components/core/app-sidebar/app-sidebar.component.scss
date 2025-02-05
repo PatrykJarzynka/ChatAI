@@ -1,0 +1,18 @@
+@use '../../../../utils/colors';
+
+$buttons-space-from-border: 10px;
+
+.sidebar-wrapper {
+  background-color: colors.$secondary-color;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-actions-container {
+  display: flex;
+  column-gap: 10px;
+  padding: $buttons-space-from-border;
+  border-bottom: 3px solid colors.$primary-color;
+}
+

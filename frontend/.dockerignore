@@ -1,0 +1,17 @@
+.env*
+**/*.env
+
+src/test/
+**/*.spec.ts
+environment/
+
+node_modules/
+dist/
+.vscode/
+.angular/
+
+.git-ignore
+.editorconfig
+.ws-context
+.git/
+.idea/

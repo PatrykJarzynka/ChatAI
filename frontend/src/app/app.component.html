@@ -1,0 +1,73 @@
+<main>
+  <mat-drawer-container style="height: 100%">
+    <mat-drawer
+      #sidebar
+      [(opened)]="panelVisibility"
+      mode="side"
+      style="width: 15%"
+    >
+      <app-sidebar
+        (panelVisibilityIconClick)="sidebar.toggle()"
+      >
+        <div
+          class="panel-actions"
+          panel-actions
+        >
+          <app-button
+            (click)="startNewChat()"
+            [iconMode]="true"
+            class="new-chat-button"
+            tooltip="New chat"
+          >
+            <mat-icon icon>chat</mat-icon>
+          </app-button>
+
+          <mat-checkbox
+            [(ngModel)]="shouldFail"
+            [matTooltip]="!shouldFail() ? 'Enable bot fail' : 'Disable bot fail'"
+            matTooltipClass="tooltip"
+          />
+        </div>
+
+        <div
+          class="right-panel--main"
+          panel-content
+        >
+          <p class="right-panel--main-label">Your last conversations: </p>
+          <chat-history/>
+        </div>
+      </app-sidebar>
+    </mat-drawer>
+    <mat-drawer-content>
+      <div class="main-wrapper">
+
+        <div class="main-section">
+          <app-button
+            (click)="sidebar.toggle()"
+            [iconMode]="true"
+            [ngStyle]="{display: panelVisibility() ? 'none' : 'initial'}"
+            class="show-chat-button"
+            tooltip="Show sidebar"
+          >
+            <mat-icon icon>flip_to_front</mat-icon>
+          </app-button>
+
+          <div class="title-wrapper">
+            <div style="height: auto">
+              <h1 class="app-title">CHAT AI</h1>
+              <div class="app-title--underline"></div>
+            </div>
+          </div>
+
+          <div class="chat-section">
+            <chat-window (refreshButtonClick)="refetchBotMessage($event)"/>
+            <chat-actions
+              (querySend)="onUserQuerySend($event)"
+            />
+          </div>
+        </div>
+      </div>
+    </mat-drawer-content>
+  </mat-drawer-container>
+
+</main>

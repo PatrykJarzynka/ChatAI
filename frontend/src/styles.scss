@@ -1,0 +1,21 @@
+@use 'utils/colors';
+/* You can add global styles to this file, and also import other style files */
+body {
+  height: 100vh;
+  margin: 0;
+}
+
+app-root {
+  height: 100%;
+  display: block;
+}
+
+main {
+  height: 100%;
+}
+
+.tooltip {
+  background-color: colors.$primary-color--light;
+  color: colors.$default-color;
+  border-radius: 0.625rem;
+}

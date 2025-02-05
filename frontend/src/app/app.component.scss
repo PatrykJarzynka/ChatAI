@@ -1,0 +1,122 @@
+@use '../utils/colors';
+
+.main-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  row-gap: 2.5rem;
+  box-sizing: border-box;
+  background-color: colors.$primary-color;
+
+  .title-wrapper {
+    position: relative;
+    text-align: center;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .app-title {
+    opacity: 0;
+    animation: show-text 1s 0.5s forwards;
+    margin: 0;
+    color: colors.$default-color;
+    font-size: 2.813rem;
+
+    &--underline {
+      position: absolute;
+      height: 0.25rem;
+      background-color: colors.$default-color;
+      width: 0;
+      left: 50%;
+      transform: translateX(-50%) translateY(-50%);
+      animation: expand-line 1s forwards;
+    }
+  }
+}
+
+.main-section {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex: 1;
+  height: 100%;
+  padding: 1.25rem;
+  box-sizing: border-box;
+}
+
+.hidden {
+  width: 0 !important;
+}
+
+.right-panel {
+  height: 100%;
+  background-color: colors.$secondary-color;
+  transition: width 1s;
+  display: flex;
+  flex-direction: column;
+
+
+  &--main {
+    padding: 1.25rem;
+    overflow: auto;
+    flex: 1;
+  }
+
+  &--main-label {
+    font-weight: 600;
+    color: colors.$primary-color;
+    margin: 0;
+    padding-bottom: 0.625rem;
+  }
+}
+
+.chat-section {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding: 2.5rem;
+  row-gap: 1.875rem;
+  overflow: hidden;
+}
+
+.panel-actions {
+  display: flex;
+}
+
+.show-chat-button {
+  position: absolute;
+  top: 15px;
+  z-index: 1;
+}
+
+
+@keyframes expand-line {
+  0% {
+    width: 0;
+  }
+  100% {
+    width: 100%;
+  }
+}
+
+@keyframes show-text {
+  0% {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+
+  45% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+
