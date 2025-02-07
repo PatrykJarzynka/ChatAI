@@ -1,16 +1,25 @@
 <div class="sidebar-wrapper">
-  <div class="sidebar-actions-container">
-    <app-button
-      (click)="panelVisibilityIconClick.emit()"
-      [iconMode]="true"
-      [tooltip]="'Hide sidebar'"
-      class="app-sidebar-toggle-button"
-    >
-      <mat-icon icon>flip_to_back</mat-icon>
-    </app-button>
+  <div class="title-and-actions">
+    <p class="title">{{ title() }}</p>
 
-    <ng-content select="[panel-actions]"/>
+    <div class="main-actions">
+      <button
+        mat-mini-fab
+        class="sidebar-toggle-button"
+        [matTooltip]="'Hide sidebar'"
+        (click)="panelVisibilityIconClick.emit()"
+      >
+        <mat-icon fontSet="material-icons-outlined">view_sidebar</mat-icon>
+      </button>
+
+      <ng-content select="[panel-actions]"/>
+    </div>
   </div>
 
-  <ng-content select="[panel-content]"/>
+  <mat-divider/>
+
+  <div class="sidebar-content-wrapper">
+    <ng-content select="[panel-content]"/>
+  </div>
+
 </div>

@@ -13,11 +13,12 @@ import useChatActions from '../composables/useChatActions';
 import { StatusType } from '../enums/StatusType';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { NgStyle } from '@angular/common';
+import { MatButton } from '@angular/material/button';
 
 
 @Component({
   selector: 'app-root',
-  imports: [ChatWindow, ChatActions, ChatHistory, AppButton, MatIcon, MatTooltip, MatCheckbox, FormsModule, MatSidenavModule, AppSidebar, NgStyle],
+  imports: [ChatWindow, ChatActions, AppButton, MatIcon, MatTooltip, MatCheckbox, FormsModule, MatSidenavModule, AppSidebar, NgStyle, MatButton, ChatHistory],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
   standalone: true,

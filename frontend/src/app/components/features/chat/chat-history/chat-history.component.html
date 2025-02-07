@@ -1,11 +1,40 @@
-@if (!Array.from(chatHistories()).length) {
-  <p class="no-data-label">{{ 'No data available' }}</p>
-} @else {
-  @for (chatHistory of chatHistories(); track chatHistory.id) {
-    <div class="chat-history-container" (click)="updateCurrentChat(chatHistory.id)">
-      <p class="chat-history-item--title">{{ chatHistory.title }}</p>
-    </div>
-  }
-}
+<app-titlebar [title]="'Your conversations'">
+  <button disabled mat-button style="font-size: 16px">Clear all</button>
+</app-titlebar>
+
+<mat-divider/>
+
+<div class="list-wrapper">
+  <mat-list class="chat-history-container">
+    @if (!Array.from(chatHistories()).length) {
+      <mat-list-item>
+        <div class="chat-history-item">
+          <mat-icon fontSet="material-icons-outlined">comments_disabled</mat-icon>
+          <p>No messages.</p>
+        </div>
+      </mat-list-item>
+    } @else {
+      @for (chatHistory of chatHistories(); track chatHistory.id) {
+        <mat-list-item
+          class="list-item"
+          (click)="updateCurrentChat(chatHistory.id)"
+        >
+          <div
+            [class.selected]="chatHistory.id === selectedChatId()"
+            class="chat-history-item">
+            <mat-icon
+              matListItemIcon
+              fontSet="material-icons-outlined"
+              class="chat-history-item--icon"
+            >
+              sms
+            </mat-icon>
+            <p>{{ chatHistory.title }}</p>
+          </div>
+        </mat-list-item>
+      }
+    }
+  </mat-list>
+</div>
 
 

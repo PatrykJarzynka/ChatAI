@@ -1,0 +1,26 @@
+@use '@angular/material' as mat;
+
+html {
+  font-family: Outfit, sans-serif;
+
+  @include mat.theme((
+    color: mat.$violet-palette,
+    typography: Outfit,
+    density: 0
+  ));
+}
+
+:root {
+  @include mat.theme-overrides((
+    primary: #5661f6
+  ));
+
+  @include mat.divider-overrides((
+    color: #ebebeb,
+  ));
+
+  @include mat.fab-overrides((
+    small-foreground-color: #fff,
+    small-container-color: black
+  ));
+}

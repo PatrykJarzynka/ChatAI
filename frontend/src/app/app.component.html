@@ -1,26 +1,27 @@
-<main>
+<main class="main-container">
   <mat-drawer-container style="height: 100%">
     <mat-drawer
       #sidebar
       [(opened)]="panelVisibility"
       mode="side"
-      style="width: 15%"
+      style="width: 17.5%"
     >
       <app-sidebar
         (panelVisibilityIconClick)="sidebar.toggle()"
+        [title]="'CHAT A.I+'"
       >
         <div
-          class="panel-actions"
+          class="sidebar--actions"
           panel-actions
         >
-          <app-button
-            (click)="startNewChat()"
-            [iconMode]="true"
+          <button
             class="new-chat-button"
-            tooltip="New chat"
+            mat-flat-button
+            (click)="startNewChat()"
           >
-            <mat-icon icon>chat</mat-icon>
-          </app-button>
+            <mat-icon>add</mat-icon>
+            New chat
+          </button>
 
           <mat-checkbox
             [(ngModel)]="shouldFail"
@@ -30,10 +31,9 @@
         </div>
 
         <div
-          class="right-panel--main"
+          style="height: 100%;"
           panel-content
         >
-          <p class="right-panel--main-label">Your last conversations: </p>
           <chat-history/>
         </div>
       </app-sidebar>

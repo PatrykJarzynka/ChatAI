@@ -1,11 +1,13 @@
-import { Component, output } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
-import { AppButton } from '../app-button/app-button.component';
+import { MatDivider } from '@angular/material/divider';
+import { MatMiniFabButton } from '@angular/material/button';
+import { MatTooltip } from '@angular/material/tooltip';
 
 
 @Component({
   selector: 'app-sidebar',
-  imports: [MatIconModule, AppButton],
+  imports: [MatIconModule, MatDivider, MatMiniFabButton, MatTooltip],
   templateUrl: './app-sidebar.component.html',
   styleUrl: './app-sidebar.component.scss',
   standalone: true,
@@ -13,6 +15,7 @@ import { AppButton } from '../app-button/app-button.component';
 export class AppSidebar {
 
   panelVisibilityIconClick = output<void>();
+  title = input<string>();
 
   constructor() {
   }

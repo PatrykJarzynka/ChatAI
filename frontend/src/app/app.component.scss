@@ -1,5 +1,16 @@
 @use '../utils/colors';
 
+.main-container {
+  height: 100%;
+  padding: 15px;
+  background-color: colors.$secondary-color;
+  box-sizing: border-box;
+}
+
+.new-chat-button {
+  flex: 1;
+}
+
 .main-wrapper {
   display: flex;
   justify-content: center;
@@ -52,25 +63,17 @@
   width: 0 !important;
 }
 
-.right-panel {
-  height: 100%;
-  background-color: colors.$secondary-color;
-  transition: width 1s;
-  display: flex;
-  flex-direction: column;
-
-
-  &--main {
-    padding: 1.25rem;
-    overflow: auto;
-    flex: 1;
+.sidebar {
+  &--actions {
+    display: flex;
+    width: 100%;
+    column-gap: 10px;
+    margin-bottom: 5px;
   }
 
-  &--main-label {
-    font-weight: 600;
-    color: colors.$primary-color;
-    margin: 0;
-    padding-bottom: 0.625rem;
+  &--content {
+    overflow: auto;
+    flex: 1;
   }
 }
 
@@ -81,10 +84,6 @@
   padding: 2.5rem;
   row-gap: 1.875rem;
   overflow: hidden;
-}
-
-.panel-actions {
-  display: flex;
 }
 
 .show-chat-button {

@@ -11,6 +11,9 @@ import { MatTooltip } from '@angular/material/tooltip';
   standalone: true,
 })
 export class AppButton {
+  type = input<'mini-icon' | 'icon' | 'icon-labeled' | 'text'>();
+  icon = input<string>();
+
   label = input<string>();
   iconMode = input<boolean>();
   tooltip = input<string>();
