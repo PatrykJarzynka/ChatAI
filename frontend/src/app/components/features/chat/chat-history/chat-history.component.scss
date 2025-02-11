@@ -74,3 +74,15 @@
     color: var(--mat-sys-primary);
   }
 }
+
+.default-item {
+  @extend .chat-history-item;
+}
+
+.default-item:hover {
+  cursor: initial;
+
+  p {
+    color: initial;
+  }
+}

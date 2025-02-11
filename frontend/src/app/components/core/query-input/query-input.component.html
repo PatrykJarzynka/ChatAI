@@ -1,7 +1,18 @@
-<input
-  (keydown.enter)="onEnter()"
-  [(ngModel)]="query"
-  class="query-input"
-  placeholder="Ask me a question"
-  type="text"
-/>
+<mat-form-field>
+  <mat-label>{{ "What's in your mind?..." }}</mat-label>
+
+  <input
+    (keydown.enter)="onEnter()"
+    [(ngModel)]="query"
+    matInput
+    [type]="'text'"
+  />
+
+  <ng-container matPrefix>
+    <ng-content select="[prefix]"/>
+  </ng-container>
+
+  <ng-container matSuffix>
+    <ng-content select="[suffix]"/>
+  </ng-container>
+</mat-form-field>

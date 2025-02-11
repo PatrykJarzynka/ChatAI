@@ -20,3 +20,11 @@ main {
   color: colors.$default-color;
   border-radius: 0.625rem;
 }
+
+.mat-mdc-form-field .mat-mdc-text-field-wrapper {
+  border-radius: 28px;
+}
+
+.mat-mdc-form-field-icon-suffix {
+  padding: 0 4px 0 4px !important;
+}

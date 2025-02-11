@@ -3,12 +3,13 @@ import { ChatService } from '../../../../../services/ChatService';
 import { MatIconModule } from '@angular/material/icon';
 import { StatusType } from '../../../../../enums/StatusType';
 import { AppLoader } from '../../../core/app-loader/app-loader.component';
-import { AppButton } from '../../../core/app-button/app-button.component';
+import { MatDivider } from '@angular/material/divider';
+import { MatButton } from '@angular/material/button';
 
 
 @Component({
   selector: 'chat-window',
-  imports: [MatIconModule, AppLoader, AppButton, AppButton],
+  imports: [MatIconModule, AppLoader, MatDivider, MatButton],
   templateUrl: './chat-window.component.html',
   styleUrl: './chat-window.component.scss',
   standalone: true,

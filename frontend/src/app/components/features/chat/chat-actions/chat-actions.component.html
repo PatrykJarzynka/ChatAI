@@ -1,7 +1,20 @@
 <div class="chat-actions">
-  <query-input (enterPressed)="onUserQuerySend(message())" [(query)]="message"/>
-  <app-button
-    (click)="onUserQuerySend(message())"
-    [label]="'Send message'"
-  />
+  <query-input (enterPressed)="onUserQuerySend(message())" [(query)]="message">
+    <mat-icon
+      prefix
+      fontSet="material-symbols-outlined"
+      class="brain-icon"
+    >
+      neurology
+    </mat-icon>
+
+    <button
+      suffix
+      class="send-button"
+      mat-icon-button
+      (click)="onUserQuerySend(message())"
+    >
+      <mat-icon fontSet="material-symbols-outlined">send</mat-icon>
+    </button>
+  </query-input>
 </div>

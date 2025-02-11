@@ -3,7 +3,6 @@ import { ChatWindow } from './components/features/chat/chat-window/chat-window.c
 import { ChatActions } from './components/features/chat/chat-actions/chat-actions.component';
 import { ChatHistory } from './components/features/chat/chat-history/chat-history.component';
 import { AppSidebar } from '../app/components/core/app-sidebar/app-sidebar.component';
-import { AppButton } from './components/core/app-button/app-button.component';
 import { MatIcon } from '@angular/material/icon';
 import { MatTooltip } from '@angular/material/tooltip';
 import { ChatService } from '../services/ChatService';
@@ -13,12 +12,12 @@ import useChatActions from '../composables/useChatActions';
 import { StatusType } from '../enums/StatusType';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { NgStyle } from '@angular/common';
-import { MatButton } from '@angular/material/button';
+import { MatButton, MatIconButton, MatMiniFabButton } from '@angular/material/button';
 
 
 @Component({
   selector: 'app-root',
-  imports: [ChatWindow, ChatActions, AppButton, MatIcon, MatTooltip, MatCheckbox, FormsModule, MatSidenavModule, AppSidebar, NgStyle, MatButton, ChatHistory],
+  imports: [ChatWindow, ChatActions, MatIcon, MatTooltip, MatCheckbox, FormsModule, MatSidenavModule, AppSidebar, NgStyle, MatButton, ChatHistory, MatMiniFabButton],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
   standalone: true,

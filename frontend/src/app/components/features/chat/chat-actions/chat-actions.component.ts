@@ -1,13 +1,15 @@
-import { Component, input, output, signal } from '@angular/core';
-import { AppButton } from '../../../core/app-button/app-button.component';
+import { Component, output, signal } from '@angular/core';
 import { QueryInput } from '../../../core/query-input/query-input.component';
+import { MatIcon } from '@angular/material/icon';
+import { MatIconButton } from '@angular/material/button';
 
 
 @Component({
   selector: 'chat-actions',
   imports: [
-    AppButton,
-    QueryInput
+    QueryInput,
+    MatIcon,
+    MatIconButton,
   ],
   templateUrl: './chat-actions.component.html',
   styleUrl: './chat-actions.component.scss',

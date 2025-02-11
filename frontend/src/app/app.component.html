@@ -38,29 +38,24 @@
         </div>
       </app-sidebar>
     </mat-drawer>
+
     <mat-drawer-content>
       <div class="main-wrapper">
 
         <div class="main-section">
-          <app-button
-            (click)="sidebar.toggle()"
-            [iconMode]="true"
+          <button
+            mat-mini-fab
+            class="show-sidebar-button"
             [ngStyle]="{display: panelVisibility() ? 'none' : 'initial'}"
-            class="show-chat-button"
-            tooltip="Show sidebar"
+            [matTooltip]="'Show sidebar'"
+            (click)="sidebar.toggle()"
           >
-            <mat-icon icon>flip_to_front</mat-icon>
-          </app-button>
-
-          <div class="title-wrapper">
-            <div style="height: auto">
-              <h1 class="app-title">CHAT AI</h1>
-              <div class="app-title--underline"></div>
-            </div>
-          </div>
+            <mat-icon fontSet="material-icons-outlined">view_sidebar</mat-icon>
+          </button>
 
           <div class="chat-section">
             <chat-window (refreshButtonClick)="refetchBotMessage($event)"/>
+
             <chat-actions
               (querySend)="onUserQuerySend($event)"
             />

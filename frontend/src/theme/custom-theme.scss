@@ -11,8 +11,14 @@ html {
 }
 
 :root {
+  --accent-color: deeppink;
+  --tertiary-light: #919090;
+  --error-color: red;
+
   @include mat.theme-overrides((
-    primary: #5661f6
+    primary: #5661f6,
+    secondary: #fff,
+    tertiary: #000,
   ));
 
   @include mat.divider-overrides((
@@ -20,7 +26,11 @@ html {
   ));
 
   @include mat.fab-overrides((
-    small-foreground-color: #fff,
-    small-container-color: black
+    small-foreground-color: var(--mat-sys-secondary),
+    small-container-color: var(--mat-sys-tertiary)
+  ));
+
+  @include mat.form-field-overrides((
+    filled-container-color: var(--mat-sys-secondary)
   ));
 }

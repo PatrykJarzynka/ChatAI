@@ -1,5 +1,7 @@
 @use '../../../../../utils/colors';
 
+$titleSize: 13px;
+
 :host {
   display: flex;
   flex-direction: column;
@@ -8,20 +10,39 @@
 }
 
 .chat-window {
-  padding: 2.5rem;
   display: flex;
   flex-direction: column;
-  row-gap: 1.25rem;
-  box-shadow: 0 0 0.75rem 0 rgba(66, 68, 90, 1);
   flex: 1;
   border-radius: 1.25rem;
-  background-color: colors.$secondary-color;
   overflow: auto;
+  row-gap: 20px;
 }
 
-.chat-message-wrapper {
+.chat-grid-item {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto auto;
+  align-items: center;
+  column-gap: 5px;
+  row-gap: 7px;
+}
+
+.bot-title {
+  font-size: $titleSize;
+  color: var(--mat-sys-primary);
+  font-style: italic;
+  margin-top: 0;
+  margin-bottom: 3px;
+
+  &--error {
+    color: var(--error-color);
+  }
+}
+
+.failed-message-wrapper {
   display: flex;
-  column-gap: 1.25rem;
+  align-items: center;
+  column-gap: 10px;
 }
 
 .error-message-wrapper {
@@ -31,22 +52,24 @@
 .chat-message {
   word-break: break-word;
   margin: 0;
-  border-radius: 0.625rem;
-  padding: 0.813rem;
-  background-color: colors.$accent-color;
-  color: colors.$primary-color;
-  box-shadow: 0.313rem 0.313rem 0.625rem -0.375rem rgb(66, 68, 90);
+  color: var(--tertiary-light);
+  font-size: $titleSize;
 }
 
 .chat-message--response {
   @extend .chat-message;
-  background-color: colors.$secondary-color--dark;
+  font-size: 16px;
+  font-weight: 500;
   color: colors.$primary-color;
+}
+
+.error-button {
+  background-color: var(--mat-sys-tertiary);
 }
 
 .message-icon {
   overflow: initial;
-  font-size: 2.188rem;
+  font-size: 1.8rem;
   width: auto;
   height: auto;
   color: colors.$primary-color;
@@ -55,10 +78,6 @@
 .message-icon--error {
   @extend .message-icon;
   color: colors.$error-color;
-}
-
-.reversed {
-  flex-direction: row-reverse;
 }
 
 .initial-message-wrapper {

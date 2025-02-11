@@ -1,4 +1,12 @@
 .chat-actions {
-  display: flex;
-  column-gap: 1.25rem;
+  margin-inline: 10%;
+}
+
+.brain-icon {
+  color: var(--accent-color);
+}
+
+.send-button {
+  background-color: var(--mat-sys-primary);
+  color: var(--mat-sys-secondary);
 }
