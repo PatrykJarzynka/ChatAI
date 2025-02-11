@@ -4,7 +4,10 @@ from dotenv import load_dotenv
 from sqlmodel import create_engine, Session, SQLModel
 
 env_file = ".env.production" if os.getenv("DOCKER_ENV") == "production" else ".env.development"
-env_path = os.path.join(os.path.dirname(__file__), env_file)
+
+base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+env_path = os.path.join(base_dir, env_file)
 
 load_dotenv(env_path)
 
