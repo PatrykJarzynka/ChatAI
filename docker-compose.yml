@@ -1,6 +1,7 @@
 
 services:
   frontend:
+    build: ./frontend
     image: affciak/frontend:latest
     ports:
       - "80:80"
@@ -8,6 +9,7 @@ services:
       - backend
 
   backend:
+    build: ./backend
     image: affciak/backend:latest
     ports:
       - "8000:8000"
