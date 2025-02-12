@@ -1,5 +1,3 @@
-@use '../../../../../utils/colors';
-
 $titleSize: 13px;
 
 :host {
@@ -60,7 +58,7 @@ $titleSize: 13px;
   @extend .chat-message;
   font-size: 16px;
   font-weight: 500;
-  color: colors.$primary-color;
+  color: var(--mat-sys-tertiary);
 }
 
 .error-button {
@@ -72,12 +70,7 @@ $titleSize: 13px;
   font-size: 1.8rem;
   width: auto;
   height: auto;
-  color: colors.$primary-color;
-}
-
-.message-icon--error {
-  @extend .message-icon;
-  color: colors.$error-color;
+  color: var(--mat-sys-tertiary);
 }
 
 .initial-message-wrapper {

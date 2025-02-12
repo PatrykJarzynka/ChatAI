@@ -12,7 +12,7 @@ import useChatActions from '../composables/useChatActions';
 import { StatusType } from '../enums/StatusType';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { NgStyle } from '@angular/common';
-import { MatButton, MatIconButton, MatMiniFabButton } from '@angular/material/button';
+import { MatButton, MatMiniFabButton } from '@angular/material/button';
 
 
 @Component({

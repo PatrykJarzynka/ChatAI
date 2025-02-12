@@ -11,9 +11,12 @@ html {
 }
 
 :root {
-  --accent-color: deeppink;
-  --tertiary-light: #919090;
+  --background-color: #f3f6fb;
+  --background-light: #f6f6ff;
+  --primary-dark: #333a96;
+  --tertiary-light: #696969;
   --error-color: red;
+  --accent-color: deeppink;
 
   @include mat.theme-overrides((
     primary: #5661f6,
@@ -32,5 +35,10 @@ html {
 
   @include mat.form-field-overrides((
     filled-container-color: var(--mat-sys-secondary)
+  ));
+
+  @include mat.tooltip-overrides((
+    container-color: var(--primary-dark),
+    supporting-text-color: var(--mat-sys-secondary),
   ));
 }

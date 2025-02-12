@@ -1,5 +1,5 @@
 @use 'theme/custom-theme';
-@use 'utils/colors';
+
 /* You can add global styles to this file, and also import other style files */
 body {
   height: 100vh;
@@ -15,16 +15,15 @@ main {
   height: 100%;
 }
 
-.tooltip {
-  background-color: colors.$primary-color--light;
-  color: colors.$default-color;
-  border-radius: 0.625rem;
-}
-
 .mat-mdc-form-field .mat-mdc-text-field-wrapper {
   border-radius: 28px;
+  box-shadow: 0 0 25px -14px rgb(66, 68, 90);
 }
 
 .mat-mdc-form-field-icon-suffix {
   padding: 0 4px 0 4px !important;
+}
+
+.mdc-line-ripple::before {
+  display: none;
 }

@@ -1,9 +1,7 @@
-@use '../utils/colors';
-
 .main-container {
   height: 100%;
   padding: 15px;
-  background-color: colors.$secondary-color;
+  background-color: var(--background-color);
   box-sizing: border-box;
 
   .mat-drawer-container {
