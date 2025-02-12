@@ -5,7 +5,7 @@ import { HttpMethod } from '../enums/HttpMethod';
 import useParser from '../composables/useParser';
 
 
-const { convertObjectsKeysCase } = useParser();
+const { convertObjectsKeysCase } = useParser;
 
 @Injectable({
   providedIn: 'root'

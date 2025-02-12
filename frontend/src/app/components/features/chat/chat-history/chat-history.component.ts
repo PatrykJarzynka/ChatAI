@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { ChatHistoryService } from '../../../../../services/ChatHistoryService';
 import { ChatService } from '../../../../../services/ChatService';
 import useParser from '../../../../../composables/useParser';
+
 import { MatButton } from '@angular/material/button';
 import { MatDivider } from '@angular/material/divider';
 import { AppTitlebar } from '../../../core/app-titlebar/app-titlebar.component';
@@ -10,7 +11,7 @@ import { ChatHistory as ChatHistoryType } from '../../../../../types/ChatHistory
 import { MatList, MatListItem, MatListItemIcon } from '@angular/material/list';
 
 
-const { parseChatResponseToChat } = useParser();
+const { parseChatResponseToChat } = useParser;
 
 @Component({
   selector: 'chat-history',
@@ -73,6 +74,7 @@ export class ChatHistory {
     }
 
     const chatResponse = await this.chatService.fetchChatByChatId(chatId);
+
     const chat = parseChatResponseToChat(chatResponse);
 
     if (chat) {

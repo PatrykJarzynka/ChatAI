@@ -3,7 +3,6 @@ import { AppComponent } from './app.component';
 import { ChatService } from '../services/ChatService';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MOCK_CHAT_HISTORY, MOCK_CHAT_WITH_ITEMS, MOCK_QUERY, MOCKED_INITIAL_CHAT } from '../utils/mockedData';
-import { AppButton } from '../app/components/core/app-button/app-button.component';
 import { ChatActions } from '../app/components/features/chat/chat-actions/chat-actions.component';
 import { By } from '@angular/platform-browser';
 import { ChatHistoryService } from '../services/ChatHistoryService';
@@ -28,7 +27,7 @@ describe('appComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [AppComponent, AppSidebar, AppButton, ChatActions],
+      imports: [AppComponent, AppSidebar, ChatActions],
       providers: [ChatService],
     });
 

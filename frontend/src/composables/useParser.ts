@@ -54,4 +54,4 @@ function useParser() {
   };
 }
 
-export default useParser;
+export default useParser();

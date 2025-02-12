@@ -6,7 +6,7 @@ import { CHAT_ENDPOINT } from '../constants';
 import useParser from '../composables/useParser';
 
 
-const { parseArrayOfObjectsIntoMap } = useParser();
+const { parseArrayOfObjectsIntoMap } = useParser;
 
 @Injectable({
   providedIn: 'root'

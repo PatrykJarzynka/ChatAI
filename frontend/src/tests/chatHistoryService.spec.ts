@@ -8,7 +8,7 @@ import { ChatHistory } from '../types/ChatHistory';
 
 
 jest.mock('../services/ApiService');
-const { parseArrayOfObjectsIntoMap } = useParser();
+const { parseArrayOfObjectsIntoMap } = useParser;
 
 describe('chatHistoryService', () => {
   let apiServiceMock: jest.Mocked<ApiService>;

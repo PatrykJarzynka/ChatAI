@@ -90,7 +90,7 @@ export class ChatService {
     if (shouldFail) {
       return new Promise((resolve, reject) => {
         reject('Unknown error');
-      })
+      });
     }
 
     return await this.botMessageService.fetchBotResponse(chatId, userQuery);
