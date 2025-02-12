@@ -1,4 +1,4 @@
-import { Component, model, output } from '@angular/core';
+import { Component, input, model, output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -15,7 +15,8 @@ import { MatIconModule } from '@angular/material/icon';
 })
 
 export class QueryInput {
-  query = model<string>('');
+  query = model<string | null>(null);
+  placeholder = input<string>('');
 
   enterPressed = output<void>();
 

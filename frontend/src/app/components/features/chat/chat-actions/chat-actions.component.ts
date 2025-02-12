@@ -16,18 +16,18 @@ import { MatIconButton } from '@angular/material/button';
   standalone: true,
 })
 export class ChatActions {
-  message = signal<string>('');
+  message = signal<string | null>(null);
   querySend = output<string>();
 
   constructor() {
   }
 
-  async onUserQuerySend(userQuery: string) {
-    if (userQuery.trim() === '') {
+  async onUserQuerySend(userQuery: string | null) {
+    if (userQuery === null) {
       return;
     }
 
-    this.message.set('');
+    this.message.set(null);
 
     this.querySend.emit(userQuery);
   }

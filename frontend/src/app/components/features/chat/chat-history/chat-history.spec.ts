@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, jest, test } from '@jest/globals';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ChatHistory } from '../chat-history/chat-history.component';
+import { ChatHistory } from './chat-history.component';
 import { ChatHistory as ChatHistoryType } from '../../../../../types/ChatHistory';
 import { ChatHistoryService } from '../../../../../services/ChatHistoryService';
 import { MOCK_CHAT_HISTORY } from '../../../../../utils/mockedData';

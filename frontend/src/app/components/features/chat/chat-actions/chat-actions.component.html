@@ -1,5 +1,9 @@
 <div class="chat-actions">
-  <query-input (enterPressed)="onUserQuerySend(message())" [(query)]="message">
+  <query-input
+    [(query)]="message"
+    placeholder="What's in your mind?..."
+    (enterPressed)="onUserQuerySend(message())"
+  >
     <mat-icon
       prefix
       fontSet="material-symbols-outlined"

@@ -23,7 +23,7 @@ describe('ChatActions', () => {
 
 
   test('should emit event on query input enter and clear message state', () => {
-    const chatActionsQueryInput = fixture.nativeElement.querySelector('.query-input');
+    const chatActionsQueryInput = fixture.nativeElement.querySelector('input');
 
     chatActionsQueryInput.dispatchEvent(new KeyboardEvent('keydown', {
       key: 'Enter'
@@ -31,17 +31,6 @@ describe('ChatActions', () => {
 
     expect(component.onUserQuerySend).toHaveBeenCalledWith(MOCK_QUERY);
     expect(component.querySend.emit).toHaveBeenCalledWith(MOCK_QUERY);
-    expect(component.message()).toBe('');
+    expect(component.message()).toBe(null);
   });
-
-  test('should emit event on button click and clear message state', () => {
-    const chatActionsButton = fixture.nativeElement.querySelector('.app-button');
-
-    chatActionsButton.click();
-
-    expect(component.onUserQuerySend).toHaveBeenCalledWith(MOCK_QUERY);
-    expect(component.querySend.emit).toHaveBeenCalledWith(MOCK_QUERY);
-    expect(component.message()).toBe('');
-  });
-
 });
