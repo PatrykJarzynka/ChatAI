@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, jest, test } from '@jest/globals';
+import { beforeEach, describe, expect, jest, test, afterEach } from '@jest/globals';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ChatHistory } from './chat-history.component';
 import { ChatHistory as ChatHistoryType } from '../../../../../types/ChatHistory';
@@ -29,7 +29,7 @@ describe('ChatHistory', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [ChatHistory],
-      providers: [ChatHistoryService, ChatService],
+      providers: [ChatHistoryService],
     });
 
     chatService = TestBed.inject(ChatService);
@@ -40,6 +40,10 @@ describe('ChatHistory', () => {
     component = fixture.componentInstance;
 
     fixture.detectChanges();
+  });
+
+  afterEach(() => {
+    jest.spyOn(useParser, 'parseChatResponseToChat').mockClear();
   });
 
   function checkRenderedList(chatHistoriesArray: ChatHistoryType[]) {
@@ -97,8 +101,37 @@ describe('ChatHistory', () => {
   });
 
   test('should update current chat after click on chat history item', async () => {
+    jest.spyOn(useParser, 'parseChatResponseToChat').mockReturnValue(MOCKED_INITIAL_CHAT);
     jest.spyOn(component, 'updateCurrentChat');
     jest.spyOn(chatService, 'fetchChatByChatId').mockResolvedValue(MOCKED_CHAT_RESPONSE);
+    jest.spyOn(chatService, 'setCurrentChat');
+
+    const chatHistoriesArray = [MOCK_CHAT_HISTORY];
+
+    chatHistoryService.setChatHistories(chatHistoriesArray);
+
+    fixture.detectChanges();
+
+    const listItem: HTMLDivElement = fixture.nativeElement.querySelectorAll('.list-item')[0];
+
+    listItem.click();
+
+    await fixture.whenStable();
+
+    fixture.detectChanges();
+
+    const chatHistoryItem = listItem.querySelector('.chat-history-item');
+
+    expect(component.updateCurrentChat).toHaveBeenCalledWith(MOCK_CHAT_HISTORY.id);
+    expect(chatService.fetchChatByChatId).toHaveBeenCalledWith(MOCK_CHAT_HISTORY.id);
+    expect(useParser.parseChatResponseToChat).toHaveBeenCalledWith(MOCKED_CHAT_RESPONSE);
+    expect(chatService.setCurrentChat).toHaveBeenCalledWith(MOCKED_INITIAL_CHAT);
+    expect(chatHistoryItem?.classList.contains('selected')).toBe(true);
+  });
+
+  test('should not update current chat when backend returns error', async () => {
+    jest.spyOn(component, 'updateCurrentChat');
+    jest.spyOn(chatService, 'fetchChatByChatId').mockRejectedValue('Error');
     jest.spyOn(chatService, 'setCurrentChat');
 
     const chatHistoriesArray = [MOCK_CHAT_HISTORY];
@@ -114,14 +147,9 @@ describe('ChatHistory', () => {
     await fixture.whenStable();
 
     expect(component.updateCurrentChat).toHaveBeenCalledWith(MOCK_CHAT_HISTORY.id);
-    expect(chatService.fetchChatByChatId).toHaveBeenCalledWith(MOCK_CHAT_HISTORY.id);
-    expect(useParser.parseChatResponseToChat).toHaveBeenCalledWith(MOCKED_CHAT_RESPONSE);
-    expect(chatService.setCurrentChat).toHaveBeenCalledWith(MOCKED_INITIAL_CHAT);
-  });
+    await expect(chatService.fetchChatByChatId).rejects.toEqual('Error');
 
-  test('should set chat history as selected after click', () => {
-    jest.spyOn(chatHistoryService, 'fetchChatHistories');
-
-    expect(chatHistoryService.fetchChatHistories).toBeCalled();
+    expect(useParser.parseChatResponseToChat).not.toHaveBeenCalled();
+    expect(chatService.setCurrentChat).not.toHaveBeenCalled();
   });
 });
