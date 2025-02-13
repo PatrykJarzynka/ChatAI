@@ -1,14 +1,18 @@
+import os
 from datetime import timedelta, datetime, timezone
 
 import jwt
+from dotenv import load_dotenv
 from fastapi import HTTPException, status
 from jwt import InvalidTokenError
 
 from app.app_types.token import Token
 
+load_dotenv()
+
 
 class JWTService:
-    SECRET_KEY = '289f3f1a609ae21ab96fa79538363c33c9f7e2a3c959634eecefac2d31aab296'
+    SECRET_KEY = os.getenv("SECRET_KEY")
     ALGORITHM = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
