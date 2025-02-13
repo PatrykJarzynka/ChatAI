@@ -2,6 +2,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, HTTPException
 from fastapi import Depends
+from fastapi.security import OAuth2PasswordBearer
 from sqlmodel import Session
 
 from app.app_types.chat_dto import ChatDto
@@ -33,6 +34,7 @@ def get_chat_history_service(session: session_dependency):
 bot_service_dependency = Annotated[BotService, Depends(get_bot_service)]
 chat_service_dependency = Annotated[ChatService, Depends(get_chat_service)]
 chat_history_service_dependency = Annotated[ChatHistoryService, Depends(get_chat_history_service)]
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 
 @router.get('/chat', response_model=ChatDto)
