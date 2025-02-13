@@ -35,7 +35,12 @@ export class ChatService {
   }
 
   async fetchChatByChatId(chatId: number) {
-    return await this.apiService.get<ChatResponse>(`${ CHAT_ENDPOINT }/${ chatId }`);
+    try {
+      return await this.apiService.get<ChatResponse>(`${ CHAT_ENDPOINT }/${ chatId }`);
+    } catch (e) {
+      console.error(e);
+      return;
+    }
   }
 
   createChatItemTemplate(userQuery: string): ChatItem {

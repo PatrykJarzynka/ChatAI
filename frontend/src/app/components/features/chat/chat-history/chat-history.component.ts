@@ -74,7 +74,7 @@ export class ChatHistory {
     }
 
     const chatResponse = await this.chatService.fetchChatByChatId(chatId);
-    console.log(chatResponse);
+
     if (chatResponse) {
       const chat = parseChatResponseToChat(chatResponse);
 

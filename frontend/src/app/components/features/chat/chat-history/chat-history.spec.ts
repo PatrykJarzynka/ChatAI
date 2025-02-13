@@ -6,6 +6,7 @@ import { ChatHistoryService } from '../../../../../services/ChatHistoryService';
 import { MOCK_CHAT_HISTORY, MOCKED_CHAT_RESPONSE, MOCKED_INITIAL_CHAT } from '../../../../../utils/mockedData';
 import { ChatService } from '../../../../../services/ChatService';
 import useParser from '../../../../../composables/useParser';
+import { ApiService } from '../../../../../services/ApiService';
 
 
 jest.mock('../../../../../composables/useParser', () => {
@@ -24,6 +25,7 @@ describe('ChatHistory', () => {
   let fixture: ComponentFixture<ChatHistory>;
   let chatHistoryService: ChatHistoryService;
   let chatService: ChatService;
+  let apiService: ApiService;
 
 
   beforeEach(() => {
@@ -32,6 +34,7 @@ describe('ChatHistory', () => {
       providers: [ChatHistoryService],
     });
 
+    apiService = TestBed.inject(ApiService);
     chatService = TestBed.inject(ChatService);
     chatHistoryService = TestBed.inject(ChatHistoryService);
     jest.spyOn(chatHistoryService, 'fetchChatHistories').mockResolvedValue([]);
@@ -101,7 +104,6 @@ describe('ChatHistory', () => {
   });
 
   test('should update current chat after click on chat history item', async () => {
-    jest.spyOn(useParser, 'parseChatResponseToChat').mockReturnValue(MOCKED_INITIAL_CHAT);
     jest.spyOn(component, 'updateCurrentChat');
     jest.spyOn(chatService, 'fetchChatByChatId').mockResolvedValue(MOCKED_CHAT_RESPONSE);
     jest.spyOn(chatService, 'setCurrentChat');
@@ -130,9 +132,10 @@ describe('ChatHistory', () => {
   });
 
   test('should not update current chat when backend returns error', async () => {
+    jest.spyOn(useParser, 'parseChatResponseToChat').mockReturnValue(MOCKED_INITIAL_CHAT);
     jest.spyOn(component, 'updateCurrentChat');
-    jest.spyOn(chatService, 'fetchChatByChatId').mockRejectedValue('Error');
     jest.spyOn(chatService, 'setCurrentChat');
+    jest.spyOn(apiService, 'get').mockRejectedValue(new Error('Error'));
 
     const chatHistoriesArray = [MOCK_CHAT_HISTORY];
 
@@ -144,10 +147,8 @@ describe('ChatHistory', () => {
 
     chatHistoryItem.click();
 
-    await fixture.whenStable();
-
     expect(component.updateCurrentChat).toHaveBeenCalledWith(MOCK_CHAT_HISTORY.id);
-    await expect(chatService.fetchChatByChatId).rejects.toEqual('Error');
+    await expect(apiService.get).rejects.toThrowError('Error');
 
     expect(useParser.parseChatResponseToChat).not.toHaveBeenCalled();
     expect(chatService.setCurrentChat).not.toHaveBeenCalled();

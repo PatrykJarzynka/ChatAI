@@ -1,8 +1,8 @@
 import { describe, expect, test } from '@jest/globals';
-import { useParser } from '../composables/useParser';
+import useParser from '../composables/useParser';
 
 
-const { convertObjectsKeysCase } = useParser();
+const { convertObjectsKeysCase } = useParser;
 
 const MOCK_DATA = {
   testOne: 1,

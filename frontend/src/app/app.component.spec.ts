@@ -10,6 +10,7 @@ import useChatActions from '../composables/useChatActions';
 import { Chat } from '../types/Chat';
 import { StatusType } from '../enums/StatusType';
 import { AppSidebar } from '../app/components/core/app-sidebar/app-sidebar.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 
 jest.mock('../composables/useChatActions', () => (
@@ -27,7 +28,7 @@ describe('appComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [AppComponent, AppSidebar, ChatActions],
+      imports: [AppComponent, AppSidebar, ChatActions, BrowserAnimationsModule],
       providers: [ChatService],
     });
 
@@ -47,7 +48,7 @@ describe('appComponent', () => {
 
   describe('togglePanelVisibility', () => {
     test('should toggle panel visibility when panel emits toggle event', async () => {
-      const panelButton = fixture.nativeElement.querySelector('.app-sidebar-toggle-button');
+      const panelButton = fixture.nativeElement.querySelector('.sidebar-toggle-button');
       panelButton.click();
 
       fixture.detectChanges();
@@ -55,6 +56,17 @@ describe('appComponent', () => {
       await fixture.whenStable();
 
       expect(appComponent.panelVisibility()).toEqual(false);
+    });
+  });
+
+  describe('toggleBotFail', () => {
+    test('should update bot fail state', () => {
+      const panel = fixture.nativeElement.querySelector('.sidebar-wrapper');
+      const panelCheckbox = panel.querySelector('.mdc-checkbox__native-control');
+
+      panelCheckbox.click();
+
+      expect(appComponent.shouldFail()).toEqual(true);
     });
   });
 
@@ -74,9 +86,7 @@ describe('appComponent', () => {
       jest.spyOn(chatService, 'fetchNewChat').mockResolvedValue(MOCK_CHAT_WITH_ITEMS);
       chatService.setCurrentChat(MOCK_CHAT_WITH_ITEMS);
 
-      if (panelNewChatButton) {
-        panelNewChatButton.click();
-      }
+      panelNewChatButton?.click();
 
       expect(appComponent.startNewChat).toHaveBeenCalled();
       expect(chatService.startNewChat).toHaveBeenCalled();
@@ -105,11 +115,11 @@ describe('appComponent', () => {
 
     test('should create new chat, create chat item and update bot message on chat action button click', async () => {
       const chatActions = fixture.debugElement.query(By.css('.chat-actions'));
-      const chatActionsButton = chatActions.nativeElement.querySelector('.app-button');
+      const sendButton = chatActions.nativeElement.querySelector('.send-button');
 
       chatActions.componentInstance.message.set(MOCK_QUERY);
 
-      chatActionsButton.click();
+      sendButton.click();
 
       await fixture.whenStable();
       expect(appComponent.onUserQuerySend).toHaveBeenCalledWith(MOCK_QUERY);
@@ -121,11 +131,11 @@ describe('appComponent', () => {
 
     test('should create new chat, create chat item and update bot message on chat action enter key press', async () => {
       const chatActions = fixture.debugElement.query(By.css('.chat-actions'));
-      const chatActionsQueryInput = chatActions.nativeElement.querySelector('.query-input');
+      const input = chatActions.nativeElement.querySelector('input');
 
       chatActions.componentInstance.message.set(MOCK_QUERY);
 
-      chatActionsQueryInput.dispatchEvent(new KeyboardEvent('keydown', {
+      input.dispatchEvent(new KeyboardEvent('keydown', {
         key: 'Enter'
       }));
 
@@ -139,9 +149,9 @@ describe('appComponent', () => {
 
     test('should not react on enter key press', () => {
       const chatActions = fixture.debugElement.query(By.css('.chat-actions'));
-      const chatActionsQueryInput = chatActions.nativeElement.querySelector('.query-input');
+      const input = chatActions.nativeElement.querySelector('input');
 
-      chatActionsQueryInput.dispatchEvent(new KeyboardEvent('keydown', {
+      input.dispatchEvent(new KeyboardEvent('keydown', {
         key: 'Enter'
       }));
 
@@ -150,9 +160,9 @@ describe('appComponent', () => {
 
     test('should not react on button click', () => {
       const chatActions = fixture.debugElement.query(By.css('.chat-actions'));
-      const chatActionsButton = chatActions.nativeElement.querySelector('.app-button');
+      const sendButton = chatActions.nativeElement.querySelector('.send-button');
 
-      chatActionsButton.click();
+      sendButton.click();
 
       expect(appComponent.onUserQuerySend).not.toHaveBeenCalled();
     });
@@ -179,9 +189,9 @@ describe('appComponent', () => {
       chatService.setCurrentChat(MOCK_CHAT_WITH_FAILED_BOT_MESSAGE);
       const chatWindow = fixture.nativeElement.querySelector('.chat-window');
       fixture.detectChanges();
-      const chatItemRefreshButton = chatWindow.querySelector('.app-button');
+      const refetchButton = chatWindow.querySelector('.error-button');
 
-      chatItemRefreshButton.click();
+      refetchButton.click();
 
       expect(appComponent.refetchBotMessage).toHaveBeenCalledWith(MOCK_QUERY);
       expect(chatService.updateLatestBotMessageDataProperty).toHaveBeenCalledWith('status', StatusType.Pending);
