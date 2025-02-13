@@ -35,10 +35,11 @@ describe('ChatWindow', () => {
 
     fixture.detectChanges();
 
-    const chatMessage = fixture.nativeElement.querySelector('.chat-message');
-    const responseLoader = fixture.nativeElement.querySelector('.loader-wrapper');
+    const chatItem = fixture.nativeElement.querySelector('.chat-grid-item');
+    const userMessage = chatItem.querySelector('.chat-message');
+    const responseLoader = chatItem.querySelector('.loader-wrapper');
 
-    expect(chatMessage.textContent).toEqual(MOCK_CHAT_WITH_ITEMS.chatItems[0].userMessage);
+    expect(userMessage.textContent).toEqual(MOCK_CHAT_WITH_ITEMS.chatItems[0].userMessage);
     expect(responseLoader).toBeTruthy();
   });
 
@@ -66,13 +67,13 @@ describe('ChatWindow', () => {
     fixture.detectChanges();
 
     const messageResponse = fixture.nativeElement.querySelector('.chat-message--response');
-    const refetchButton = fixture.nativeElement.querySelector('.app-button');
-    const refetchButtonLabel = refetchButton.querySelector('.button-label');
-    const refetchButtonIcon = refetchButton.querySelector('.mat-icon');
+    const errorButton = fixture.nativeElement.querySelector('.error-button');
+    const errorButtonLabel = errorButton.querySelector('.button-label');
+    const errorButtonIcon = errorButton.querySelector('.mat-icon');
 
     expect(messageResponse.textContent).toEqual('Something went wrong while fetching chat response...');
-    expect(refetchButtonLabel.textContent).toEqual('Try again');
-    expect(refetchButtonIcon.textContent).toEqual('rotate_right');
+    expect(errorButtonLabel.textContent).toEqual('Try again');
+    expect(errorButtonIcon.textContent).toEqual('rotate_right');
   });
 
   test('should emit refetch event after refetch button click', () => {
@@ -84,7 +85,7 @@ describe('ChatWindow', () => {
 
     fixture.detectChanges();
 
-    const refetchButton = fixture.nativeElement.querySelector('.app-button');
+    const refetchButton = fixture.nativeElement.querySelector('.error-button');
     refetchButton.click();
 
     expect(component.refreshButtonClick.emit).toHaveBeenCalledWith(MOCK_CHAT_WITH_ITEMS.chatItems[0].userMessage);
