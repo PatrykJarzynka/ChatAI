@@ -38,7 +38,7 @@ async def login_for_access_token(
             headers={"WWW-Authenticate": "Bearer"}
         )
 
-    return jwt_service.create_access_token(data={"sub": user.full_name})
+    return jwt_service.create_access_token({"sub": user.full_name})
 
 
 @router.post('/auth/register')
