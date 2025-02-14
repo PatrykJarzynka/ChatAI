@@ -31,3 +31,11 @@ main {
 .mdc-line-ripple::before {
   display: none;
 }
+
+.auth-view-tab-groups .mat-mdc-tab-body-content {
+  padding-inline: 16px;
+}
+
+.auth-view-tab-groups .mat-mdc-tab-header {
+  display: none;
+}

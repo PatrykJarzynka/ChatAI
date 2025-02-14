@@ -1,0 +1,32 @@
+.auth-view-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+.auth-card-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--mat-sys-secondary);
+  height: 90%;
+  width: 40%;
+}
+
+.brand-icon-container {
+  display: flex;
+  align-items: center;
+  column-gap: 10px;
+  position: absolute;
+  top: 20px;
+  font-size: 30px;
+
+  .brand-icon {
+    font-size: 50px;
+    width: fit-content;
+    height: fit-content;
+  }
+}
+

@@ -1,0 +1,36 @@
+<div class="login-form-container">
+  <mat-card-header>
+    <div class="header">
+      <mat-card-title class="card-title">Welcome back!</mat-card-title>
+      <mat-card-subtitle class="card-subtitle">Welcome back, please enter your details.</mat-card-subtitle>
+    </div>
+  </mat-card-header>
+
+  <mat-card-content>
+    <div class="login-inputs">
+      <query-input [placeholder]="'Email adress'"/>
+      <query-input [placeholder]="'Password'"/>
+    </div>
+  </mat-card-content>
+
+  <mat-card-actions>
+    <div class="actions">
+      <button
+        mat-flat-button
+        (click)="onSignInClick()"
+      >
+        Sign in
+      </button>
+
+      <div class="no-account-container">
+        <p class="no-account-question">Don't have a Chat A.I+ account?</p>
+        <button
+          mat-button
+          (click)="onNewAccountClick()"
+        >
+          Create new account
+        </button>
+      </div>
+    </div>
+  </mat-card-actions>
+</div>
