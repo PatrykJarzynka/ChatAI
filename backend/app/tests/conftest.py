@@ -10,6 +10,7 @@ from app.main import app
 from app.services.auth.jwt_service import JWTService
 
 MOCKED_TOKEN = Token(access_token="fake_token", token_type="bearer")
+MOCKED_HASH = 'someHashedPassword'
 
 
 @pytest.fixture(name='session')
