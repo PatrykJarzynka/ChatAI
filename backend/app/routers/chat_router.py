@@ -2,6 +2,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, HTTPException
 from fastapi import Depends
+from fastapi.security import OAuth2PasswordBearer
 from sqlmodel import Session
 
 from app.app_types.chat_dto import ChatDto
@@ -14,6 +15,7 @@ from app.services.chat_history_service import ChatHistoryService
 from app.services.chat_service import ChatService
 
 router = APIRouter()
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
 session_dependency = Annotated[Session, Depends(get_session)]
 
@@ -36,25 +38,27 @@ chat_history_service_dependency = Annotated[ChatHistoryService, Depends(get_chat
 
 
 @router.get('/chat', response_model=ChatDto)
-def get_new_chat(chat_service: chat_service_dependency) -> Chat:
+def get_new_chat(chat_service: chat_service_dependency, token: Annotated[str, Depends(oauth2_scheme)]) -> Chat:
     new_chat = chat_service.create_new_chat()
     chat_service.save_chat(new_chat)
     return new_chat
 
 
 @router.get('/chat/history')
-async def get_all_chats_history(chat_history_service: chat_history_service_dependency) -> list[ChatHistory]:
+async def get_all_chats_history(chat_history_service: chat_history_service_dependency,
+                                token: Annotated[str, Depends(oauth2_scheme)]) -> list[ChatHistory]:
     return chat_history_service.get_all_chats_history_data()
 
 
 @router.get('/chat/{chat_id}', response_model=ChatDto)
-def get_chat_by_id(chat_id: int, chat_service: chat_service_dependency) -> Chat:
+def get_chat_by_id(chat_id: int, chat_service: chat_service_dependency,
+                   token: Annotated[str, Depends(oauth2_scheme)]) -> Chat:
     return chat_service.get_chat_by_id(chat_id)
 
 
 @router.post('/chat')
 def on_user_query_send(user_chat_data: UserChatData, chat_service: chat_service_dependency,
-                       bot_service: bot_service_dependency) -> str:
+                       bot_service: bot_service_dependency, token: Annotated[str, Depends(oauth2_scheme)]) -> str:
     try:
         new_chat_item = chat_service.create_chat_item(user_chat_data)
         current_chat_items = chat_service.get_chat_items(user_chat_data.chat_id)

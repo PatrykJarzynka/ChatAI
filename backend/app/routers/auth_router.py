@@ -1,7 +1,7 @@
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi.security import OAuth2PasswordRequestForm
 from sqlmodel import Session
 
 from app.app_types.token import Token
@@ -20,7 +20,6 @@ def get_user_service(session: session_dependency, hash_service: hash_service_dep
 
 
 user_service_dependency = Annotated[UserService, Depends(get_user_service)]
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
 
 @router.post('/auth/login')
