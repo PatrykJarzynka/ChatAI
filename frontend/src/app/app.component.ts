@@ -13,11 +13,12 @@ import { StatusType } from '../enums/StatusType';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { NgStyle } from '@angular/common';
 import { MatButton, MatMiniFabButton } from '@angular/material/button';
+import { RouterOutlet } from '@angular/router';
 
 
 @Component({
   selector: 'app-root',
-  imports: [ChatWindow, ChatActions, MatIcon, MatTooltip, MatCheckbox, FormsModule, MatSidenavModule, AppSidebar, NgStyle, MatButton, ChatHistory, MatMiniFabButton],
+  imports: [ChatWindow, ChatActions, MatIcon, MatTooltip, MatCheckbox, FormsModule, MatSidenavModule, AppSidebar, NgStyle, MatButton, ChatHistory, MatMiniFabButton, RouterOutlet],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
   standalone: true,

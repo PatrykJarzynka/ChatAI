@@ -20,6 +20,10 @@ main {
   box-shadow: 0 0 25px -14px rgb(66, 68, 90);
 }
 
+.mat-mdc-form-field-infix {
+  padding-inline: 10px;
+}
+
 .mat-mdc-form-field-icon-suffix {
   padding: 0 4px 0 4px !important;
 }
