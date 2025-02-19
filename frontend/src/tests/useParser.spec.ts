@@ -1,8 +1,9 @@
 import { describe, expect, test } from '@jest/globals';
 import useParser from '../composables/useParser';
+import { ValidationErrors } from '@angular/forms';
 
 
-const { convertObjectsKeysCase } = useParser;
+const { convertObjectsKeysCase, parseValidationErrorToString } = useParser;
 
 const MOCK_DATA = {
   testOne: 1,
@@ -142,4 +143,48 @@ describe('useParser', () => {
     });
   });
 
+  describe('parseValidationErrorToString', () => {
+    test('should parse ValidationErrors to string', () => {
+
+      interface TestCase {
+        error: ValidationErrors | null,
+        expected: string | null,
+      }
+
+      const testCases: TestCase[] = [
+        {
+          error: { required: true },
+          expected: 'This field is required'
+        },
+        {
+          error: { email: true },
+          expected: 'Incorrect email address'
+        },
+        {
+          error: { comparePassword: true },
+          expected: 'Passwords do not match'
+        },
+        {
+          error: { emailExists: true },
+          expected: 'This email already exists'
+        },
+        {
+          error: { credentials: true },
+          expected: 'Incorrect email or password'
+        },
+        {
+          error: { someKey: true },
+          expected: 'Incorrect field'
+        },
+        {
+          error: null,
+          expected: null
+        }
+      ];
+
+      testCases.forEach(testCase => {
+        expect(parseValidationErrorToString(testCase.error)).toEqual(testCase.expected);
+      });
+    });
+  });
 });

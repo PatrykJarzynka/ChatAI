@@ -30,3 +30,19 @@
   }
 }
 
+.tabs-section {
+  position: relative;
+  height: 60%;
+
+  .back-button {
+    position: absolute;
+    top: -50px;
+    margin-left: auto;
+    margin-right: auto;
+    left: 0;
+    right: 0;
+  }
+}
+
+
+

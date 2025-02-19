@@ -1,24 +1,44 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { beforeEach, describe, expect, jest, test } from '@jest/globals';
+import { AuthView } from './auth-view.component';
+import { By } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
-import { LoginComponent } from 'src/app/components/views/auth-view/auth-view.component';
 
-
-describe('LoginComponent', () => {
-  let component: LoginComponent;
-  let fixture: ComponentFixture<LoginComponent>;
+describe('AuthView', () => {
+  let component: AuthView;
+  let fixture: ComponentFixture<AuthView>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [LoginComponent]
+      imports: [AuthView, BrowserAnimationsModule]
     })
       .compileComponents();
 
-    fixture = TestBed.createComponent(LoginComponent);
+    fixture = TestBed.createComponent(AuthView);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
+  test('should change tab to register form', () => {
+    const loginForm = fixture.debugElement.query(By.css('.login-form-container'));
+    loginForm.componentInstance.newAccountClick.emit(loginForm);
+
+    expect(component.selectedTabIndex()).toBe(1);
+  });
+
+  test('should change tab to login form', () => {
+    jest.spyOn(component, 'onIconBackClick');
+    component.selectedTabIndex.set(1);
+
+    fixture.detectChanges();
+
+    const goBackButton = fixture.nativeElement.querySelector('.back-button');
+
+    goBackButton.click();
+    fixture.detectChanges();
+
+    expect(component.onIconBackClick).toHaveBeenCalled();
+    expect(component.selectedTabIndex()).toBe(0);
   });
 });

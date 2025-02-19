@@ -1,4 +1,8 @@
-<div class="login-form-container">
+<form
+  [formGroup]="form"
+  (ngSubmit)="onSubmit()"
+  class="login-form-container"
+>
   <mat-card-header>
     <div class="header">
       <mat-card-title class="card-title">Welcome back!</mat-card-title>
@@ -7,9 +11,28 @@
   </mat-card-header>
 
   <mat-card-content>
-    <div class="login-inputs">
-      <query-input [placeholder]="'Email adress'"/>
-      <query-input [placeholder]="'Password'"/>
+    <div
+      class="login-inputs"
+    >
+      <mat-form-field>
+        <input
+          matInput
+          placeholder="Email adress"
+          formControlName="email"
+          type="text"
+        />
+        <mat-error>{{ parseErrors(form.controls['email'].errors) }}</mat-error>
+      </mat-form-field>
+
+      <mat-form-field>
+        <input
+          matInput
+          placeholder="Password"
+          formControlName="password"
+          type="password"
+        />
+        <mat-error> {{ parseErrors(form.controls['password'].errors) }}</mat-error>
+      </mat-form-field>
     </div>
   </mat-card-content>
 
@@ -17,7 +40,7 @@
     <div class="actions">
       <button
         mat-flat-button
-        (click)="onSignInClick()"
+        type="submit"
       >
         Sign in
       </button>
@@ -25,6 +48,7 @@
       <div class="no-account-container">
         <p class="no-account-question">Don't have a Chat A.I+ account?</p>
         <button
+          type="button"
           mat-button
           (click)="onNewAccountClick()"
         >
@@ -33,4 +57,4 @@
       </div>
     </div>
   </mat-card-actions>
-</div>
+</form>

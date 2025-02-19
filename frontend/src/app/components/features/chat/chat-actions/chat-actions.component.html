@@ -1,11 +1,16 @@
 <div class="chat-actions">
-  <query-input
-    [(query)]="message"
-    placeholder="What's in your mind?..."
-    (enterPressed)="onUserQuerySend(message())"
-  >
+  <mat-form-field class="input-field">
+    <mat-label>What's in your mind?...</mat-label>
+
+    <input
+      matInput
+      [(ngModel)]="message"
+      [type]="'text'"
+      (keydown.enter)="onUserQuerySend(message())"
+    />
+
     <mat-icon
-      prefix
+      matPrefix
       fontSet="material-symbols-outlined"
       class="brain-icon"
     >
@@ -13,12 +18,12 @@
     </mat-icon>
 
     <button
-      suffix
+      matSuffix
       class="send-button"
       mat-icon-button
       (click)="onUserQuerySend(message())"
     >
       <mat-icon fontSet="material-symbols-outlined">send</mat-icon>
     </button>
-  </query-input>
+  </mat-form-field>
 </div>

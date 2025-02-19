@@ -1,34 +1,41 @@
-import { Component, output, signal } from '@angular/core';
-import { QueryInput } from '../../../core/query-input/query-input.component';
+import { Component, model, output } from '@angular/core';
 import { MatIcon } from '@angular/material/icon';
 import { MatIconButton } from '@angular/material/button';
+import { FormsModule } from '@angular/forms';
+import { MatFormField, MatLabel, MatPrefix, MatSuffix } from '@angular/material/form-field';
+import { MatInput } from '@angular/material/input';
 
 
 @Component({
   selector: 'chat-actions',
   imports: [
-    QueryInput,
     MatIcon,
     MatIconButton,
+    FormsModule,
+    MatFormField,
+    MatInput,
+    MatLabel,
+    MatPrefix,
+    MatSuffix,
   ],
   templateUrl: './chat-actions.component.html',
   styleUrl: './chat-actions.component.scss',
   standalone: true,
 })
 export class ChatActions {
-  message = signal<string | null>(null);
+  message = model<string>('');
   querySend = output<string>();
 
   constructor() {
   }
 
-  async onUserQuerySend(userQuery: string | null) {
-    if (userQuery === null) {
+  async onUserQuerySend(userQuery: string) {
+    if (userQuery.trim() === '') {
       return;
     }
 
-    this.message.set(null);
-
     this.querySend.emit(userQuery);
+
+    this.message.set('');
   }
 }

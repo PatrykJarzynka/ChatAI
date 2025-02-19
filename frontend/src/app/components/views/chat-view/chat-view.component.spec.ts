@@ -13,7 +13,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ChatView } from './chat-view.component';
 
 
-jest.mock('../composables/useChatActions', () => (
+jest.mock('../../../../composables/useChatActions', () => (
   jest.fn(() => ( {
     handleFetchingBotMessage: jest.fn(),
   } ))
@@ -113,31 +113,9 @@ describe('appComponent', () => {
       jest.spyOn(chatService, 'fetchNewChat').mockResolvedValue(MOCKED_INITIAL_CHAT);
     });
 
-    test('should create new chat, create chat item and update bot message on chat action button click', async () => {
+    test('should create new chat, create chat item and update bot message on chat action event', async () => {
       const chatActions = fixture.debugElement.query(By.css('.chat-actions'));
-      const sendButton = chatActions.nativeElement.querySelector('.send-button');
-
-      chatActions.componentInstance.message.set(MOCK_QUERY);
-
-      sendButton.click();
-
-      await fixture.whenStable();
-      expect(component.onUserQuerySend).toHaveBeenCalledWith(MOCK_QUERY);
-      expect(chatService.startNewChat).toHaveBeenCalled();
-      await fixture.whenStable();
-      expect(chatService.createAndAddChatItemTemplate).toHaveBeenCalledWith(MOCK_QUERY);
-      expect(mockHandleFetchingBotMessage).toHaveBeenCalledWith(MOCK_QUERY, component.shouldFail());
-    });
-
-    test('should create new chat, create chat item and update bot message on chat action enter key press', async () => {
-      const chatActions = fixture.debugElement.query(By.css('.chat-actions'));
-      const input = chatActions.nativeElement.querySelector('input');
-
-      chatActions.componentInstance.message.set(MOCK_QUERY);
-
-      input.dispatchEvent(new KeyboardEvent('keydown', {
-        key: 'Enter'
-      }));
+      chatActions.componentInstance.querySend.emit(MOCK_QUERY);
 
       await fixture.whenStable();
       expect(component.onUserQuerySend).toHaveBeenCalledWith(MOCK_QUERY);

@@ -5,18 +5,29 @@
       <p class="app-title">CHAT A.I+</p>
     </div>
 
-    <mat-tab-group
-      class="auth-view-tab-groups"
-      [selectedIndex]="selectedTabIndex()"
-    >
-      <mat-tab>
-        <login-form (newAccountClick)="selectedTabIndex.set(1)"/>
-      </mat-tab>
-      <mat-tab>
-        <register-form (iconBackClick)="selectedTabIndex.set(0)"/>
-      </mat-tab>
-    </mat-tab-group>
+    <div class="tabs-section">
+      @if (selectedTabIndex() === 1) {
+        <button
+          mat-icon-button
+          class="back-button"
+          (click)="onIconBackClick()"
+        >
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+      }
 
-
+      <mat-tab-group
+        dynamicHeight
+        class="auth-view-tab-groups"
+        [selectedIndex]="selectedTabIndex()"
+      >
+        <mat-tab>
+          <login-form (newAccountClick)="selectedTabIndex.set(1)"/>
+        </mat-tab>
+        <mat-tab style="overflow: hidden">
+          <register-form/>
+        </mat-tab>
+      </mat-tab-group>
+    </div>
   </mat-card>
 </div>

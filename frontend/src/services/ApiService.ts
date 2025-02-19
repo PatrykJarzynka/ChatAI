@@ -36,10 +36,12 @@ export class ApiService {
     });
   }
 
-  public async post<T, P>(url: string, payload: P, hasAttachment = false): Promise<T> {
+  public async post<T, P>(url: string, payload: P, hasAttachment = false, isUrlEncoded = false): Promise<T> {
     return this.request<T>(HttpMethod.POST, url, {
-      data: convertObjectsKeysCase(payload, 'snake'),
-      headers: this.setupHeaders(hasAttachment),
+      data: isUrlEncoded
+        ? payload
+        : convertObjectsKeysCase(payload, 'snake'),
+      headers: this.setupHeaders(hasAttachment, isUrlEncoded),
     });
   }
 
@@ -56,7 +58,11 @@ export class ApiService {
     });
   }
 
-  private setupHeaders(hasAttachment = false) {
+  private setupHeaders(hasAttachment = false, isUrlEncoded = false) {
+    if (isUrlEncoded) {
+      return { 'Content-Type': 'application/x-www-form-urlencoded', ...this.getAuthorization };
+    }
+
     return hasAttachment
       ? { 'Content-Type': 'multipart/form-data', ...this.getAuthorization }
       : { 'Content-Type': 'application/json', ...this.getAuthorization };

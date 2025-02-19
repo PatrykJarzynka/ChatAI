@@ -1,8 +1,70 @@
 <div class="register-form-container">
-  <button
-    mat-icon-button
-    (click)="onIconBackClick()"
-  >
-    <mat-icon>arrow_back</mat-icon>
-  </button>
+  <div class="register-form">
+    <mat-card-header>
+      <div class="form-title">
+        <mat-card-title class="card-title">Create new account</mat-card-title>
+        <mat-card-subtitle class="card-subtitle">Sign up to access all features</mat-card-subtitle>
+      </div>
+    </mat-card-header>
+
+    <form
+      (ngSubmit)="onSubmit()"
+      [formGroup]="form"
+      class="register-form-content"
+    >
+      <mat-form-field>
+        <mat-label>Full name</mat-label>
+
+        <input
+          matInput
+          type="text"
+          formControlName="fullName"
+        />
+
+        <mat-error>{{ parseErrors(form.controls['fullName'].errors) }}</mat-error>
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Email</mat-label>
+
+        <input
+          matInput
+          type="email"
+          formControlName="email"
+        />
+
+        <mat-error>{{ parseErrors(form.controls['email'].errors) }}</mat-error>
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Password</mat-label>
+
+        <input
+          matInput
+          type="password"
+          formControlName="password"
+        />
+
+        <mat-error>{{ parseErrors(form.controls['password'].errors) }}</mat-error>
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Confirm password</mat-label>
+
+        <input
+          matInput
+          type="password"
+          formControlName="confirmPassword"
+        />
+
+        <mat-error>{{ parseErrors(form.controls['confirmPassword'].errors) }}</mat-error>
+      </mat-form-field>
+      <button
+        mat-flat-button
+        type="submit"
+      >
+        Sign up!
+      </button>
+    </form>
+  </div>
 </div>

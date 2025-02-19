@@ -2,6 +2,7 @@ import { ChatResponse } from '../models/ChatResponse';
 import { Chat } from '../types/Chat';
 import { StatusType } from '../enums/StatusType';
 import { camelCase, isObject, snakeCase } from 'lodash';
+import { ValidationErrors } from '@angular/forms';
 
 
 type CaseType = 'camel' | 'snake'
@@ -47,10 +48,33 @@ function useParser() {
     return input;
   }
 
+  function parseValidationErrorToString(errors: ValidationErrors | null): string | null {
+    if (errors) {
+      const firstErrorKey = Object.keys(errors)[0];
+      switch (firstErrorKey) {
+        case 'required':
+          return 'This field is required';
+        case 'email':
+          return 'Incorrect email address';
+        case 'comparePassword':
+          return 'Passwords do not match';
+        case 'emailExists':
+          return 'This email already exists';
+        case 'credentials':
+          return 'Incorrect email or password';
+        default:
+          return 'Incorrect field';
+      }
+    }
+
+    return null;
+  }
+
   return {
     parseChatResponseToChat,
     parseArrayOfObjectsIntoMap,
-    convertObjectsKeysCase
+    convertObjectsKeysCase,
+    parseValidationErrorToString
   };
 }
 
