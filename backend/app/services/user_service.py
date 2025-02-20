@@ -37,3 +37,10 @@ class UserService:
         if not self.hash_service.verify_password(password, existing_user.password):
             return False
         return existing_user
+
+    def get_user_by_id(self, id: int):
+        statement = select(User).where(User.id == id)
+        existing_user = self.session.exec(statement).first()
+        if not existing_user:
+            raise HTTPException(status_code=404, detail="User not found")
+        return existing_user

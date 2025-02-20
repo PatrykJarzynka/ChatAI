@@ -37,7 +37,7 @@ async def login_for_access_token(
             headers={"WWW-Authenticate": "Bearer"}
         )
 
-    return jwt_service.create_access_token({"sub": user.email})
+    return jwt_service.create_access_token({"sub": str(user.id)})
 
 
 @router.post('/auth/register')
@@ -45,5 +45,5 @@ def register(user: UserCreateDTO, user_service: user_service_dependency, jwt_ser
     new_user = user_service.create_user(user)
     user_service.save_user(new_user)
 
-    access_token = jwt_service.create_access_token({"sub": new_user.email})
+    access_token = jwt_service.create_access_token({"sub": str(new_user.id)})
     return access_token
