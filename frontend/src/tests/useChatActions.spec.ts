@@ -5,7 +5,7 @@ import { ChatHistoryService } from '../services/ChatHistoryService';
 import { BotMessageService } from '../services/BotMessageService';
 import { ChatService } from '../services/ChatService';
 import useChatActions from '../composables/useChatActions';
-import { MOCK_CHAT_WITH_ITEMS, MOCK_QUERY } from '../utils/mockedData';
+import { MOCK_CHAT_WITH_ITEMS, MOCK_QUERY, MOCK_USER } from '../utils/mockedData';
 import { StatusType } from '../enums/StatusType';
 
 
@@ -19,7 +19,7 @@ describe('useChatActions', () => {
 
   beforeEach(() => {
     apiServiceMock = new ApiService() as jest.Mocked<ApiService>;
-    userService = new UserService();
+    userService = new UserService(apiServiceMock);
     chatHistoryService = new ChatHistoryService(apiServiceMock);
     botMessageService = new BotMessageService(apiServiceMock, userService);
 
@@ -38,18 +38,29 @@ describe('useChatActions', () => {
       jest.spyOn(chatService, 'updateLatestBotMessageDataProperty');
       chatService.setCurrentChat(MOCK_CHAT_WITH_ITEMS);
 
-      await handleFetchingBotMessageFn(MOCK_QUERY,false);
+      await handleFetchingBotMessageFn(MOCK_QUERY, false);
 
       expect(chatService.updateLatestBotMessageDataProperty).toBeCalledWith('status', StatusType.Failed);
       expect(chatService.updateLatestBotMessageDataProperty).toBeCalledTimes(1);
     });
 
     test('should update bot message status to failed when bot fail state is enabled', async () => {
-      jest.spyOn(chatService, 'fetchBotResponse')
+      jest.spyOn(chatService, 'fetchBotResponse');
       jest.spyOn(chatService, 'updateLatestBotMessageDataProperty');
       chatService.setCurrentChat(MOCK_CHAT_WITH_ITEMS);
 
-      await handleFetchingBotMessageFn(MOCK_QUERY,true);
+      await handleFetchingBotMessageFn(MOCK_QUERY, true);
+
+      expect(chatService.updateLatestBotMessageDataProperty).toBeCalledWith('status', StatusType.Failed);
+      expect(chatService.updateLatestBotMessageDataProperty).toBeCalledTimes(1);
+    });
+
+    test('should update bot message status to failed when user is not initialized', async () => {
+      jest.spyOn(chatService, 'fetchBotResponse');
+      jest.spyOn(chatService, 'updateLatestBotMessageDataProperty');
+      chatService.setCurrentChat(MOCK_CHAT_WITH_ITEMS);
+
+      await handleFetchingBotMessageFn(MOCK_QUERY, false);
 
       expect(chatService.updateLatestBotMessageDataProperty).toBeCalledWith('status', StatusType.Failed);
       expect(chatService.updateLatestBotMessageDataProperty).toBeCalledTimes(1);
@@ -57,9 +68,10 @@ describe('useChatActions', () => {
 
     test('should update bot message to success and update chat history', async () => {
       const botResponse = 'Hello World!';
-      const shouldFail = false
+      const shouldFail = false;
       jest.spyOn(chatService, 'fetchBotResponse').mockResolvedValue(botResponse);
       jest.spyOn(chatService, 'updateLatestBotMessageDataProperty');
+      userService.setCurrentUser(MOCK_USER);
       chatService.setCurrentChat(MOCK_CHAT_WITH_ITEMS);
 
       await handleFetchingBotMessageFn(MOCK_QUERY, shouldFail);

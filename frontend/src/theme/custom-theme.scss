@@ -17,6 +17,7 @@ html {
   --tertiary-light: #696969;
   --error-color: red;
   --accent-color: deeppink;
+  --divide-color: #ebebeb;
 
   @include mat.theme-overrides((
     primary: #5661f6,
@@ -25,7 +26,7 @@ html {
   ));
 
   @include mat.divider-overrides((
-    color: #ebebeb,
+    color: var(--divide-color)
   ));
 
   @include mat.fab-overrides((

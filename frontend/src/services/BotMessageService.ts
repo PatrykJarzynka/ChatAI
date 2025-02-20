@@ -30,16 +30,21 @@ export class BotMessageService {
   }
 
   createUserChatData(chatId: number, userQuery: string): UserChatData {
-    return {
-      userId: this.userService.getUserId(),
-      chatId,
-      message: userQuery,
-    };
+    const user = this.userService.getCurrentUser();
+
+    if (!user()) {
+      throw new Error('User chat data cannot be created, because user is not initialized!');
+    } else {
+      return {
+        userId: user()!.id,
+        chatId,
+        message: userQuery,
+      };
+    }
   }
 
   async fetchBotResponse(chatId: number, userQuery: string): Promise<string> {
     const userChatData = this.createUserChatData(chatId, userQuery);
-
     return await this.apiService.post<string, UserChatData>(CHAT_ENDPOINT, userChatData);
   }
 }

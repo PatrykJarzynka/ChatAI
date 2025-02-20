@@ -1,5 +1,5 @@
 export interface UserChatData {
   message: string;
-  userId: string;
+  userId: number;
   chatId: number;
 }

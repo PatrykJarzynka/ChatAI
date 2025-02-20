@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, jest, test } from '@jest/globals';
 import { BotMessageData, BotMessageService } from '../services/BotMessageService';
 import { CHAT_ENDPOINT } from '../constants';
-import { MOCK_USER_CHAT_DATA } from '../utils/mockedData';
+import { MOCK_USER, MOCK_USER_CHAT_DATA } from '../utils/mockedData';
 import { ApiService } from '../services/ApiService';
 import { UserService } from '../services/UserService';
 import { StatusType } from '../enums/StatusType';
@@ -17,7 +17,7 @@ describe('botMessageService', () => {
 
   beforeEach(() => {
     apiServiceMock = new ApiService() as jest.Mocked<ApiService>;
-    userService = new UserService();
+    userService = new UserService(apiServiceMock);
     botService = new BotMessageService(apiServiceMock, userService);
   });
 
@@ -48,15 +48,21 @@ describe('botMessageService', () => {
 
   describe('createUserChatData', () => {
     test('should create user chat data with current user id', async () => {
+
+      userService.setCurrentUser(MOCK_USER);
       const result = botService.createUserChatData(MOCK_USER_CHAT_DATA.chatId, MOCK_USER_CHAT_DATA.message);
 
       const expected: UserChatData = {
-        userId: userService.getUserId(),
+        userId: MOCK_USER.id,
         chatId: MOCK_USER_CHAT_DATA.chatId,
         message: MOCK_USER_CHAT_DATA.message
       };
 
       expect(result).toEqual(expected);
+    });
+
+    test('should throw error when user is not initialized', () => {
+      expect(() => botService.createUserChatData(MOCK_USER_CHAT_DATA.chatId, MOCK_USER_CHAT_DATA.message)).toThrowError('User chat data cannot be created, because user is not initialized!');
     });
   });
 });

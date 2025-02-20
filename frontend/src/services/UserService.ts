@@ -1,17 +1,28 @@
-import { Injectable } from '@angular/core';
-import { USER_ID } from '../constants';
+import { Injectable, signal } from '@angular/core';
+import { ApiService } from '../services/ApiService';
+import { UserModel } from '../models/UserModel';
 
+
+const ENDPOINT = 'user';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserService {
-  private id = USER_ID;
+  private user = signal<UserModel | null>(null);
 
-  constructor() {
+  constructor(private apiService: ApiService) {
   }
 
-  getUserId() {
-    return this.id;
+  getCurrentUser() {
+    return this.user;
+  }
+
+  setCurrentUser(user: UserModel) {
+    this.user.set(user);
+  }
+
+  async fetchUser(): Promise<UserModel> {
+    return await this.apiService.get<UserModel>(`${ ENDPOINT }/me`);
   }
 }

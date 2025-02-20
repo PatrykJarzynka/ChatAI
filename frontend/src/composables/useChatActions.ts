@@ -12,7 +12,6 @@ function useChatActions(chatService: ChatService) {
     } else {
       try {
         const response = await chatService.fetchBotResponse(userQuery, currentChat.id, shouldFail);
-
         chatService.updateLatestBotMessageDataProperty('text', response);
         chatService.updateLatestBotMessageDataProperty('status', StatusType.Success);
         chatService.updateChatHistory();

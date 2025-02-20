@@ -58,5 +58,39 @@
   margin-top: 15px;
 }
 
+.profile-button {
+  width: 100%;
+  justify-content: flex-start;
+  border-color: var(--divide-color) !important;
+  padding-inline: 10px;
+
+  .profile-button-content {
+    display: flex;
+    column-gap: 10px;
+    align-items: center;
+
+    .username {
+      margin: 0;
+      color: var(--mat-sys-tertiary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .user-icon-wrapper {
+      color: black;
+      display: flex;
+
+      .mat-icon {
+        font-size: xx-large;
+        height: max-content;
+        width: max-content;
+      }
+    }
+  }
+}
+
+
+
 
 

@@ -30,7 +30,7 @@ describe('chatService', () => {
 
   beforeEach(() => {
     apiServiceMock = new ApiService() as jest.Mocked<ApiService>;
-    userService = new UserService();
+    userService = new UserService(apiServiceMock);
     chatHistoryService = new ChatHistoryService(apiServiceMock);
     botMessageService = new BotMessageService(apiServiceMock, userService);
 

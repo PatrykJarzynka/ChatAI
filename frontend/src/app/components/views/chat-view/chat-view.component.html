@@ -9,6 +9,7 @@
       (panelVisibilityIconClick)="sidebar.toggle()"
       [title]="'CHAT A.I+'"
     >
+
       <div
         class="sidebar--actions"
         panel-actions
@@ -33,6 +34,35 @@
         panel-content
       >
         <chat-history/>
+      </div>
+
+      <div
+        panel-footer
+      >
+        <button
+          mat-stroked-button
+          [matMenuTriggerFor]="menu"
+          class="profile-button"
+        >
+          <div class="profile-button-content">
+            <div class="user-icon-wrapper">
+              <mat-icon>account_circle</mat-icon>
+            </div>
+
+            <p class="username">{{ currentUser()?.fullName }}</p>
+          </div>
+        </button>
+
+        <mat-menu #menu="matMenu">
+          <button
+            mat-menu-item
+            (click)="onLogoutButtonClick()"
+          >
+            <mat-icon>logout</mat-icon>
+            Logout
+          </button>
+        </mat-menu>
+
       </div>
     </app-sidebar>
   </mat-drawer>

@@ -24,7 +24,7 @@ export class ApiService {
   }
 
   private get getAuthorization() {
-    const accessToken = '';
+    const accessToken = localStorage.getItem('token');
     return accessToken
       ? { Authorization: `Bearer ${ accessToken }` }
       : {};

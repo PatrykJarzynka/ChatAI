@@ -91,10 +91,10 @@ export class ChatService {
     this.addChatItem(chatItemTemplate);
   }
 
-  async fetchBotResponse(userQuery: string, chatId: number, shouldFail: boolean): Promise<string | null> {
+  async fetchBotResponse(userQuery: string, chatId: number, shouldFail: boolean): Promise<string> {
     if (shouldFail) {
       return new Promise((resolve, reject) => {
-        reject('Unknown error');
+        reject(new Error('Unknown error'));
       });
     }
 

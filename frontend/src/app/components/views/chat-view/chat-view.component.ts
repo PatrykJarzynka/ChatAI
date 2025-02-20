@@ -1,4 +1,4 @@
-import { Component, model } from '@angular/core';
+import { Component, computed, model } from '@angular/core';
 import { ChatWindow } from '../../features/chat/chat-window/chat-window.component';
 import { ChatActions } from '../../features/chat/chat-actions/chat-actions.component';
 import { MatIcon } from '@angular/material/icon';
@@ -13,11 +13,14 @@ import { ChatHistory } from '../../features/chat/chat-history/chat-history.compo
 import { ChatService } from '../../../../services/ChatService';
 import useChatActions from '../../../../composables/useChatActions';
 import { StatusType } from '../../../../enums/StatusType';
+import { UserService } from '../../../../services/UserService';
+import { Router } from '@angular/router';
+import { MatMenu, MatMenuItem, MatMenuTrigger } from '@angular/material/menu';
 
 
 @Component({
   selector: 'chat-view',
-  imports: [ChatWindow, ChatActions, MatIcon, MatTooltip, MatCheckbox, FormsModule, MatSidenavModule, AppSidebar, NgStyle, MatButton, ChatHistory, MatMiniFabButton,],
+  imports: [ChatWindow, ChatActions, MatIcon, MatTooltip, MatCheckbox, FormsModule, MatSidenavModule, AppSidebar, NgStyle, MatButton, ChatHistory, MatMiniFabButton, MatMenuTrigger, MatMenu, MatMenuItem,],
   templateUrl: './chat-view.component.html',
   styleUrl: './chat-view.component.scss'
 })
@@ -27,10 +30,26 @@ export class ChatView {
   shouldFail = model<boolean>(false);
 
   private readonly handleFetchingBotMessage: (userQuery: string, shouldFail: boolean) => Promise<void>;
+  currentUser = computed(() => this.userService.getCurrentUser()());
 
-  constructor(private chatService: ChatService) {
+  constructor(
+    private chatService: ChatService,
+    private userService: UserService,
+    private router: Router,
+  ) {
     const { handleFetchingBotMessage } = useChatActions(this.chatService);
     this.handleFetchingBotMessage = handleFetchingBotMessage;
+  }
+
+  async ngOnInit() {
+    const token = localStorage.getItem('token');
+
+    if (token) {
+      const user = await this.userService.fetchUser();
+      this.userService.setCurrentUser(user);
+    } else {
+      await this.router.navigate(['/']);
+    }
   }
 
   async startNewChat() {
@@ -38,6 +57,11 @@ export class ChatView {
     if (currentChat?.chatItems.length) {
       await this.chatService.startNewChat();
     }
+  }
+
+  async onLogoutButtonClick() {
+    localStorage.removeItem('token');
+    await this.router.navigate(['/']);
   }
 
   async onUserQuerySend(userQuery: string) {

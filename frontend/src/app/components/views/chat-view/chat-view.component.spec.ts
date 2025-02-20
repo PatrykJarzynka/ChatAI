@@ -11,6 +11,7 @@ import { StatusType } from '../../../../enums/StatusType';
 import { AppSidebar } from '../../core/app-sidebar/app-sidebar.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ChatView } from './chat-view.component';
+import { Router } from '@angular/router';
 
 
 jest.mock('../../../../composables/useChatActions', () => (
@@ -20,6 +21,7 @@ jest.mock('../../../../composables/useChatActions', () => (
 ));
 
 describe('appComponent', () => {
+  let router: Router;
   let component: ChatView;
   let fixture: ComponentFixture<ChatView>;
   let chatService: ChatService;
@@ -34,6 +36,8 @@ describe('appComponent', () => {
 
     chatService = TestBed.inject(ChatService);
     chatHistoryService = TestBed.inject(ChatHistoryService);
+    router = TestBed.inject(Router);
+
     jest.spyOn(chatHistoryService, 'fetchChatHistories').mockResolvedValue([MOCK_CHAT_HISTORY]);
     mockHandleFetchingBotMessage = jest.fn();
     ( useChatActions as jest.Mock ).mockReturnValue({
@@ -178,5 +182,18 @@ describe('appComponent', () => {
     });
   });
 
+  describe('init', () => {
 
+    test('should redirect to auth page when access token is not saved in local storage', () => {
+      jest.spyOn(router, 'navigate');
+
+      component.ngOnInit();
+
+      expect(router.navigate).toHaveBeenCalledWith(['/']);
+    });
+
+    test('should get user', () => {
+      component.ngOnInit();
+    });
+  });
 });
