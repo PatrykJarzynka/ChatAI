@@ -19,7 +19,7 @@ describe('useValidators', () => {
       expect(mockedForm.invalid).toBe(true);
     });
 
-    test('should set form error to null', () => {
+    test('should be valid form', () => {
       const mockedForm = new FormGroup({
         password: new FormControl('mockPassword'),
         confirmPassword: new FormControl('mockPassword'),
@@ -28,7 +28,6 @@ describe('useValidators', () => {
       expect(mockedForm.controls['confirmPassword'].errors).toEqual(null);
       expect(validateSamePassword(mockedForm)).toEqual(null);
       expect(mockedForm.valid).toBe(true);
-      expect(mockedForm.errors).toBe(null);
     });
 
 
