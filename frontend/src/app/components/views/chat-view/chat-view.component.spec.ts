@@ -1,7 +1,13 @@
 import { beforeEach, describe, expect, jest, test } from '@jest/globals';
 import { ChatService } from '../../../../services/ChatService';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MOCK_CHAT_HISTORY, MOCK_CHAT_WITH_ITEMS, MOCK_QUERY, MOCKED_INITIAL_CHAT } from '../../../../utils/mockedData';
+import {
+  MOCK_CHAT_HISTORY,
+  MOCK_CHAT_WITH_ITEMS,
+  MOCK_QUERY,
+  MOCK_USER,
+  MOCKED_INITIAL_CHAT
+} from '../../../../utils/mockedData';
 import { ChatActions } from '../../features/chat/chat-actions/chat-actions.component';
 import { By } from '@angular/platform-browser';
 import { ChatHistoryService } from '../../../../services/ChatHistoryService';
@@ -12,6 +18,7 @@ import { AppSidebar } from '../../core/app-sidebar/app-sidebar.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ChatView } from './chat-view.component';
 import { Router } from '@angular/router';
+import { UserService } from '../../../../services/UserService';
 
 
 jest.mock('../../../../composables/useChatActions', () => (
@@ -26,6 +33,7 @@ describe('appComponent', () => {
   let fixture: ComponentFixture<ChatView>;
   let chatService: ChatService;
   let chatHistoryService: ChatHistoryService;
+  let userService: UserService;
   let mockHandleFetchingBotMessage: jest.Mock;
 
   beforeEach(() => {
@@ -36,6 +44,7 @@ describe('appComponent', () => {
 
     chatService = TestBed.inject(ChatService);
     chatHistoryService = TestBed.inject(ChatHistoryService);
+    userService = TestBed.inject(UserService);
     router = TestBed.inject(Router);
 
     jest.spyOn(chatHistoryService, 'fetchChatHistories').mockResolvedValue([MOCK_CHAT_HISTORY]);
@@ -192,8 +201,38 @@ describe('appComponent', () => {
       expect(router.navigate).toHaveBeenCalledWith(['/']);
     });
 
-    test('should get user', () => {
-      component.ngOnInit();
+    test('should get user', async () => {
+      localStorage.setItem('token', 'mockToken');
+      jest.spyOn(userService, 'fetchUser').mockResolvedValue(MOCK_USER);
+      await component.ngOnInit();
+
+      const currentUser = userService.getCurrentUser();
+
+      expect(userService.fetchUser).toHaveBeenCalled();
+      expect(currentUser()).toEqual(MOCK_USER);
+    });
+  });
+
+  describe('logout', () => {
+    test('should logout user on button click', async () => {
+      localStorage.setItem('token', 'mockToken');
+      jest.spyOn(component, 'onLogoutButtonClick');
+      jest.spyOn(router, 'navigate');
+      const profileButton = fixture.nativeElement.querySelector('.profile-button');
+
+      await profileButton.click();
+
+      fixture.detectChanges();
+
+      const logoutButton = fixture.debugElement.query(By.css('.logout-button'));
+
+      logoutButton.nativeElement.click();
+
+      const token = localStorage.getItem('token');
+
+      expect(component.onLogoutButtonClick).toHaveBeenCalled();
+      expect(token).toBeNull();
+      expect(router.navigate).toHaveBeenCalledWith(['/']);
     });
   });
 });
