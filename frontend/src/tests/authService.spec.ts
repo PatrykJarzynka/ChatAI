@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, jest, test } from '@jest/globals';
-import { AuthService } from '../services/AuthService';
-import { ApiService } from '../services/ApiService';
+import { AuthService } from '@services/AuthService';
+import { ApiService } from '@services/ApiService';
 import { Token } from '../models/Token';
 import { UserRegisterData } from '../types/UserRegisterData';
 import { UserLoginData } from '../types/UserLoginData';

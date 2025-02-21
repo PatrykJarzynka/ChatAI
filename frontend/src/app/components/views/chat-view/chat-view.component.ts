@@ -9,13 +9,12 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { AppSidebar } from '../../core/app-sidebar/app-sidebar.component';
 import { NgStyle } from '@angular/common';
 import { MatButton, MatMiniFabButton } from '@angular/material/button';
-import { ChatHistory } from '../../features/chat/chat-history/chat-history.component';
-import { ChatService } from '../../../../services/ChatService';
-import useChatActions from '../../../../composables/useChatActions';
-import { StatusType } from '../../../../enums/StatusType';
-import { UserService } from '../../../../services/UserService';
+import { ChatService } from '@services/ChatService';
 import { Router } from '@angular/router';
 import { MatMenu, MatMenuItem, MatMenuTrigger } from '@angular/material/menu';
+import useChatActions from '@composables/useChatActions';
+import { UserService } from '@services/UserService';
+import { StatusType } from '@enums/StatusType';
 
 
 @Component({

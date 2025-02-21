@@ -3,6 +3,7 @@ import { ApiService } from '../services/ApiService';
 import { UserRegisterData } from '../types/UserRegisterData';
 import { Token } from '../models/Token';
 import { UserLoginData } from '../types/UserLoginData';
+import { jwtDecode } from 'jwt-decode';
 
 
 const ENDPOINT = 'auth';
@@ -26,5 +27,22 @@ export class AuthService {
     loginData.append('password', data.password);
 
     return await this.apiService.post<Token, URLSearchParams>(`${ ENDPOINT }/login`, loginData, false, true);
+  }
+
+  async getRefreshedAccessToken(): Promise<Token> {
+    return await this.apiService.get<Token>(`${ ENDPOINT }/refresh`);
+  }
+
+  setRefreshTokenInterval(token: string): void {
+    const decodedToken = jwtDecode(token);
+
+    if (decodedToken.exp) {
+      const timeToExpireInMs = decodedToken.exp * 1000;
+      const intervalTime = timeToExpireInMs - 20000;
+
+      const refreshTokenCallInterval = setInterval(async () => {
+        const refreshedToken = await this.getRefreshedAccessToken();
+      }, intervalTime);
+    }
   }
 }
