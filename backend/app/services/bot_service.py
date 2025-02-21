@@ -7,7 +7,7 @@ from llama_index.core.chat_engine import SimpleChatEngine
 from llama_index.core.memory import ChatMemoryBuffer
 from llama_index.llms.openai import OpenAI
 
-from app.db_models.chat_item_model import ChatItem
+from db_models.chat_item_model import ChatItem
 
 Settings.llm = OpenAI(temperature=0.2, model="gpt-4")
 

@@ -4,8 +4,8 @@ import pytest
 from llama_index.core import Settings
 from llama_index.core.base.llms.types import ChatMessage
 
-from app.db_models.chat_item_model import ChatItem
-from app.services.bot_service import BotService
+from db_models.chat_item_model import ChatItem
+from services.bot_service import BotService
 
 
 @pytest.fixture

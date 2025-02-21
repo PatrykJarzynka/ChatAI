@@ -4,11 +4,11 @@ from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlmodel import Session
 
-from app.app_types.token import Token
-from app.app_types.user_create_dto import UserCreateDTO
-from app.database import get_session
-from app.dependencies import hash_service_dependency, jwt_service_dependency
-from app.services.user_service import UserService
+from app_types.token import Token
+from app_types.user_create_dto import UserCreateDTO
+from database import get_session
+from dependencies import hash_service_dependency, jwt_service_dependency
+from services.user_service import UserService
 
 router = APIRouter()
 

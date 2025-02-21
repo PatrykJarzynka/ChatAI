@@ -2,8 +2,8 @@ from typing import Annotated
 
 from fastapi import Depends
 
-from app.services.auth.hash_service import HashService
-from app.services.auth.jwt_service import JWTService
+from services.auth.hash_service import HashService
+from services.auth.jwt_service import JWTService
 
 
 def get_jwt_service():

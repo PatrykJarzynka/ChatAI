@@ -3,11 +3,11 @@ from fastapi.testclient import TestClient
 from sqlmodel import SQLModel, create_engine, Session
 from sqlmodel.pool import StaticPool
 
-from app.app_types.token import Token
-from app.database import get_session
-from app.dependencies import get_jwt_service
-from app.main import app
-from app.services.auth.jwt_service import JWTService
+from app_types.token import Token
+from database import get_session
+from dependencies import get_jwt_service
+from main import app
+from services.auth.jwt_service import JWTService
 
 MOCKED_TOKEN = Token(access_token="fake_token", token_type="bearer")
 

@@ -5,10 +5,10 @@ from fastapi import HTTPException
 from pydantic import EmailStr
 from sqlmodel import Session
 
-from app.app_types.user_create_dto import UserCreateDTO
-from app.db_models.user_model import User
-from app.services.auth.hash_service import HashService
-from app.services.user_service import UserService
+from app_types.user_create_dto import UserCreateDTO
+from db_models.user_model import User
+from services.auth.hash_service import HashService
+from services.user_service import UserService
 
 
 @pytest.fixture

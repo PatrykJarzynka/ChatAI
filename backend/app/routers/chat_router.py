@@ -5,14 +5,14 @@ from fastapi import Depends
 from fastapi.security import OAuth2PasswordBearer
 from sqlmodel import Session
 
-from app.app_types.chat_dto import ChatDto
-from app.app_types.chat_history import ChatHistory
-from app.app_types.user_chat_data import UserChatData
-from app.database import get_session
-from app.db_models.chat_model import Chat
-from app.services.bot_service import BotService
-from app.services.chat_history_service import ChatHistoryService
-from app.services.chat_service import ChatService
+from app_types.chat_dto import ChatDto
+from app_types.chat_history import ChatHistory
+from app_types.user_chat_data import UserChatData
+from database import get_session
+from db_models.chat_model import Chat
+from services.bot_service import BotService
+from services.chat_history_service import ChatHistoryService
+from services.chat_service import ChatService
 
 router = APIRouter()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")

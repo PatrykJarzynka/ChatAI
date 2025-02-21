@@ -3,9 +3,9 @@ from unittest.mock import patch
 from sqlmodel import Session
 from starlette.testclient import TestClient
 
-from app.db_models.chat_item_model import ChatItem
-from app.db_models.chat_model import Chat
-from app.services.bot_service import BotService
+from db_models.chat_item_model import ChatItem
+from db_models.chat_model import Chat
+from services.bot_service import BotService
 
 
 def test_get_new_chat(session: Session, client: TestClient):

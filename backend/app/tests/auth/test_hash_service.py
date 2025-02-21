@@ -1,6 +1,6 @@
 import pytest
 
-from app.services.auth.hash_service import HashService
+from services.auth.hash_service import HashService
 
 
 @pytest.fixture

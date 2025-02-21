@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 from fastapi import HTTPException, status
 from jwt import InvalidTokenError
 
-from app.app_types.token import Token
+from app_types.token import Token
 
 load_dotenv()
 

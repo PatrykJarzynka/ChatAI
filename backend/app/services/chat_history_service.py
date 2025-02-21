@@ -1,7 +1,7 @@
 from sqlmodel import select, Session
 
-from app.app_types.chat_history import ChatHistory
-from app.db_models.chat_model import Chat
+from app_types.chat_history import ChatHistory
+from db_models.chat_model import Chat
 
 
 class ChatHistoryService:

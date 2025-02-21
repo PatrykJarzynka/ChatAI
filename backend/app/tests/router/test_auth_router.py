@@ -4,11 +4,11 @@ import pytest
 from sqlmodel import Session, select
 from starlette.testclient import TestClient
 
-from app.db_models.user_model import User
-from app.services.auth.hash_service import HashService
-from app.services.auth.jwt_service import JWTService
-from app.services.user_service import UserService
-from app.tests.conftest import MOCKED_TOKEN
+from db_models.user_model import User
+from services.auth.hash_service import HashService
+from services.auth.jwt_service import JWTService
+from services.user_service import UserService
+from tests.conftest import MOCKED_TOKEN
 
 
 @pytest.fixture

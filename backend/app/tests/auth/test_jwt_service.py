@@ -3,8 +3,8 @@ from datetime import timedelta, datetime, timezone
 import pytest
 from fastapi import HTTPException
 
-from app.app_types.token import Token
-from app.services.auth.jwt_service import JWTService
+from app_types.token import Token
+from services.auth.jwt_service import JWTService
 
 
 @pytest.fixture()

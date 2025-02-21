@@ -4,11 +4,11 @@ from fastapi import APIRouter, Depends
 from fastapi.security import OAuth2PasswordBearer
 from sqlmodel import Session
 
-from app.app_types.user_response_dto import UserResponseDTO
-from app.database import get_session
-from app.dependencies import hash_service_dependency
-from app.services.auth.jwt_service import JWTService
-from app.services.user_service import UserService
+from app_types.user_response_dto import UserResponseDTO
+from database import get_session
+from dependencies import hash_service_dependency
+from services.auth.jwt_service import JWTService
+from services.user_service import UserService
 
 router = APIRouter()
 session_dependency = Annotated[Session, Depends(get_session)]

@@ -1,8 +1,8 @@
 from sqlmodel import Session, select
 
-from app.app_types.user_chat_data import UserChatData
-from app.db_models.chat_item_model import ChatItem
-from app.db_models.chat_model import Chat
+from app_types.user_chat_data import UserChatData
+from db_models.chat_item_model import ChatItem
+from db_models.chat_model import Chat
 
 
 class ChatService:
