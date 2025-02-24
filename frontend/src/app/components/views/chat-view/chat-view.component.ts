@@ -16,6 +16,7 @@ import { StatusType } from '@enums/StatusType';
 import { ChatHistory } from '@components/features/chat/chat-history/chat-history.component';
 import { ChatWindow } from '@components/features/chat/chat-window/chat-window.component';
 import { ChatActions } from '@components/features/chat/chat-actions/chat-actions.component';
+import { AuthService } from '@services/AuthService';
 
 
 @Component({
@@ -36,6 +37,7 @@ export class ChatView {
     private chatService: ChatService,
     private userService: UserService,
     private router: Router,
+    private authService: AuthService,
   ) {
     const { handleFetchingBotMessage } = useChatActions(this.chatService);
     this.handleFetchingBotMessage = handleFetchingBotMessage;
@@ -47,6 +49,7 @@ export class ChatView {
     if (token) {
       const user = await this.userService.fetchUser();
       this.userService.setCurrentUser(user);
+      this.authService.setRefreshTokenInterval(token);
     } else {
       await this.router.navigate(['/']);
     }
@@ -61,6 +64,7 @@ export class ChatView {
 
   async onLogoutButtonClick() {
     localStorage.removeItem('token');
+    this.authService.removeRefreshTokenInterval();
     await this.router.navigate(['/']);
   }
 

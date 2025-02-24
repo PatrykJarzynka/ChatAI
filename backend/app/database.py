@@ -17,6 +17,7 @@ db_host = os.getenv("DB_HOST")
 db_port = os.getenv("DB_PORT")
 db_name = os.getenv("MYSQL_DATABASE")
 
+
 DATABASE_URL = f"mysql+pymysql://{db_root_user}:{db_root_password}@{db_host}:{db_port}/{db_name}"
 
 engine = create_engine(DATABASE_URL, echo=True)

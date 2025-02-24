@@ -37,16 +37,36 @@ export class AuthService {
   }
 
   setRefreshTokenInterval(token: string): void {
+    if (this.refreshTokenCallInterval) {
+      this.removeRefreshTokenInterval();
+    }
+
     const decodedToken = jwtDecode(token);
 
     if (decodedToken.exp) {
-      const timeToExpireInMs = decodedToken.exp * 1000;
-      const intervalTime = timeToExpireInMs - 20000;
+      const expireTimeInMs = decodedToken.exp * 1000;
+
+      const executionTime = expireTimeInMs - 20 * 1000;
+      const delay = executionTime - Date.now();
+
+      const finalDelay = Math.max(delay, 0); // finalDelay set to 0 if token is already expired
 
       this.refreshTokenCallInterval = window.setInterval(async () => {
-        const refreshedToken = await this.getRefreshedAccessToken();
-        localStorage.setItem('token', refreshedToken.accessToken);
-      }, intervalTime);
+        try {
+          const refreshedToken = await this.getRefreshedAccessToken();
+          localStorage.setItem('token', refreshedToken.accessToken);
+          this.setRefreshTokenInterval(refreshedToken.accessToken);
+        } catch (error) {
+          console.error('Failed to refresh token');
+        }
+
+      }, finalDelay);
+    }
+  }
+
+  removeRefreshTokenInterval(): void {
+    if (this.refreshTokenCallInterval) {
+      clearInterval(this.refreshTokenCallInterval);
     }
   }
 }

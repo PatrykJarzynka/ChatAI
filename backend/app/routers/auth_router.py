@@ -1,7 +1,7 @@
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException
-from fastapi.security import OAuth2PasswordRequestForm
+from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 from sqlmodel import Session
 
 from app_types.token import Token
@@ -13,6 +13,7 @@ from services.user_service import UserService
 router = APIRouter()
 
 session_dependency = Annotated[Session, Depends(get_session)]
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
 
 def get_user_service(session: session_dependency, hash_service: hash_service_dependency):
@@ -47,3 +48,10 @@ def register(user: UserCreateDTO, user_service: user_service_dependency, jwt_ser
 
     access_token = jwt_service.create_access_token({"sub": str(new_user.id)})
     return access_token
+
+@router.get('/auth/refresh')
+def register(jwt_service: jwt_service_dependency, token: Annotated[str, Depends(oauth2_scheme)]) -> Token:
+    dekodedToken = jwt_service.decode_access_token(token)
+    user_id = int(dekodedToken['sub'])
+    new_access_token = jwt_service.create_access_token({"sub": str(user_id)})
+    return new_access_token
