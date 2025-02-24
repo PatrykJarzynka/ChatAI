@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, jest, test } from '@jest/globals';
-import { ChatService } from '../../../../services/ChatService';
+import { ChatService } from '@services/ChatService';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import {
   MOCK_CHAT_HISTORY,
@@ -7,21 +7,21 @@ import {
   MOCK_QUERY,
   MOCK_USER,
   MOCKED_INITIAL_CHAT
-} from '../../../../utils/mockedData';
-import { ChatActions } from '../../features/chat/chat-actions/chat-actions.component';
+} from '@utils/mockedData';
 import { By } from '@angular/platform-browser';
-import { ChatHistoryService } from '../../../../services/ChatHistoryService';
-import useChatActions from '../../../../composables/useChatActions';
-import { Chat } from '../../../../types/Chat';
-import { StatusType } from '../../../../enums/StatusType';
-import { AppSidebar } from '../../core/app-sidebar/app-sidebar.component';
+import { ChatHistoryService } from '@services/ChatHistoryService';
+import useChatActions from '@composables/useChatActions';
+import { Chat } from 'appTypes/Chat';
+import { StatusType } from '@enums/StatusType';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ChatView } from './chat-view.component';
 import { Router } from '@angular/router';
-import { UserService } from '../../../../services/UserService';
+import { UserService } from '@services/UserService';
+import { AppSidebar } from '@components/core/app-sidebar/app-sidebar.component';
+import { ChatActions } from '@components/features/chat/chat-actions/chat-actions.component';
 
 
-jest.mock('../../../../composables/useChatActions', () => (
+jest.mock('@composables/useChatActions', () => (
   jest.fn(() => ( {
     handleFetchingBotMessage: jest.fn(),
   } ))

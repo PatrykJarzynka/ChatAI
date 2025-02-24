@@ -1,13 +1,13 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { LoginForm } from './login-form.component';
 import { expect, jest, test, describe, beforeEach } from '@jest/globals';
-import { AuthService } from '../../../../../services/AuthService';
+import { AuthService } from '@services/AuthService';
 import { Router } from '@angular/router';
 import { BrowserAnimationsModule, NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { AxiosError } from 'axios';
-import { ErrorMessage } from '../../../../../enums/ErrorMessage';
-import { UserLoginData } from '../../../../../types/UserLoginData';
-import { Token } from '../../../../../models/Token';
+import { ErrorMessage } from '@enums/ErrorMessage';
+import { UserLoginData } from 'appTypes/UserLoginData';
+import { Token } from '@models/Token';
 
 
 describe('LoginForm', () => {

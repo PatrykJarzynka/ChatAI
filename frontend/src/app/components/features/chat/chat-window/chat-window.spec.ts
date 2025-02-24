@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, jest, test } from '@jest/globals';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ChatWindow } from '../chat-window/chat-window.component';
-import { MOCK_CHAT_WITH_ITEMS } from '../../../../../utils/mockedData';
-import { ChatService } from '../../../../../services/ChatService';
-import { StatusType } from '../../../../../enums/StatusType';
+import { MOCK_CHAT_WITH_ITEMS } from '@utils/mockedData';
+import { ChatService } from '@services/ChatService';
+import { StatusType } from '@enums/StatusType';
 
 
 describe('ChatWindow', () => {

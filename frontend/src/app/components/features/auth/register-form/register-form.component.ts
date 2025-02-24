@@ -2,16 +2,16 @@ import { Component } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButton } from '@angular/material/button';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
-import useValidators from '../../../../../composables/useValidators';
+import useValidators from '@composables/useValidators';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatCardHeader, MatCardSubtitle, MatCardTitle } from '@angular/material/card';
-import { UserRegisterData } from '../../../../../types/UserRegisterData';
-import { AuthService } from '../../../../../services/AuthService';
-import { ErrorMessage } from '../../../../../enums/ErrorMessage';
+import { UserRegisterData } from 'appTypes/UserRegisterData';
+import { AuthService } from '@services/AuthService';
+import { ErrorMessage } from '@enums/ErrorMessage';
 import { AxiosError } from 'axios';
 import { Router } from '@angular/router';
-import useParser from '../../../../../composables/useParser';
+import useParser from '@composables/useParser';
 
 
 @Component({

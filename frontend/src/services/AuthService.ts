@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { ApiService } from '../services/ApiService';
-import { UserRegisterData } from '../types/UserRegisterData';
-import { Token } from '../models/Token';
-import { UserLoginData } from '../types/UserLoginData';
+import { ApiService } from '@services/ApiService';
+import { UserRegisterData } from '@appTypes/UserRegisterData';
+import { Token } from '@models/Token';
+import { UserLoginData } from '@appTypes/UserLoginData';
 import { jwtDecode } from 'jwt-decode';
 
 
@@ -12,6 +12,9 @@ const ENDPOINT = 'auth';
   providedIn: 'root',
 })
 export class AuthService {
+
+  refreshTokenCallInterval: number | null = null;
+
   constructor(
     private apiService: ApiService,
   ) {
@@ -40,8 +43,9 @@ export class AuthService {
       const timeToExpireInMs = decodedToken.exp * 1000;
       const intervalTime = timeToExpireInMs - 20000;
 
-      const refreshTokenCallInterval = setInterval(async () => {
+      this.refreshTokenCallInterval = window.setInterval(async () => {
         const refreshedToken = await this.getRefreshedAccessToken();
+        localStorage.setItem('token', refreshedToken.accessToken);
       }, intervalTime);
     }
   }

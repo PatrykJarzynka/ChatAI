@@ -1,14 +1,14 @@
 import { Component } from '@angular/core';
-import { ChatHistoryService } from '../../../../../services/ChatHistoryService';
-import { ChatService } from '../../../../../services/ChatService';
-import useParser from '../../../../../composables/useParser';
+import { ChatHistoryService } from '@services/ChatHistoryService';
+import { ChatService } from '@services/ChatService';
+import useParser from '@composables/useParser';
 
 import { MatButton } from '@angular/material/button';
 import { MatDivider } from '@angular/material/divider';
-import { AppTitlebar } from '../../../core/app-titlebar/app-titlebar.component';
 import { MatIcon } from '@angular/material/icon';
-import { ChatHistory as ChatHistoryType } from '../../../../../types/ChatHistory';
+import { ChatHistory as ChatHistoryType } from 'appTypes/ChatHistory';
 import { MatList, MatListItem, MatListItemIcon } from '@angular/material/list';
+import { AppTitlebar } from '@components/core/app-titlebar/app-titlebar.component';
 
 
 const { parseChatResponseToChat } = useParser;
@@ -18,7 +18,6 @@ const { parseChatResponseToChat } = useParser;
   imports: [
     MatButton,
     MatDivider,
-    AppTitlebar,
     AppTitlebar,
     MatIcon,
     MatList,

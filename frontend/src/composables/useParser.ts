@@ -1,6 +1,6 @@
-import { ChatResponse } from '../models/ChatResponse';
-import { Chat } from '../types/Chat';
-import { StatusType } from '../enums/StatusType';
+import { ChatResponse } from '@models/ChatResponse';
+import { Chat } from '@appTypes/Chat';
+import { StatusType } from '@enums/StatusType';
 import { camelCase, isObject, snakeCase } from 'lodash';
 import { ValidationErrors } from '@angular/forms';
 

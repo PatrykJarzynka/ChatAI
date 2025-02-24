@@ -1,10 +1,10 @@
 import { Injectable, signal } from '@angular/core';
-import { BotMessageData, BotMessageService } from '../services/BotMessageService';
-import { ChatHistoryService } from '../services/ChatHistoryService';
-import { Chat } from '../types/Chat';
-import { ChatItem } from '../types/ChatItem';
-import { ApiService } from '../services/ApiService';
-import { ChatResponse } from '../models/ChatResponse';
+import { BotMessageData, BotMessageService } from '@services/BotMessageService';
+import { ChatHistoryService } from '@services/ChatHistoryService';
+import { Chat } from '@appTypes/Chat';
+import { ChatItem } from '@appTypes/ChatItem';
+import { ApiService } from '@services/ApiService';
+import { ChatResponse } from '@models/ChatResponse';
 import { CHAT_ENDPOINT } from '../constants';
 
 

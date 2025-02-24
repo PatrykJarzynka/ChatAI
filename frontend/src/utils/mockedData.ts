@@ -1,11 +1,11 @@
-import { Chat } from '../types/Chat';
-import { BotMessageData } from '../services/BotMessageService';
-import { StatusType } from '../enums/StatusType';
-import { ChatItem } from '../types/ChatItem';
-import { ChatResponse } from '../models/ChatResponse';
-import { ChatHistory } from '../types/ChatHistory';
-import { UserChatData } from '../types/UserChatData';
-import { UserModel } from '../models/UserModel';
+import { Chat } from 'appTypes/Chat';
+import { BotMessageData } from '@services/BotMessageService';
+import { StatusType } from '@enums/StatusType';
+import { ChatItem } from 'appTypes/ChatItem';
+import { ChatResponse } from '@models/ChatResponse';
+import { ChatHistory } from 'appTypes/ChatHistory';
+import { UserChatData } from 'appTypes/UserChatData';
+import { UserModel } from '@models/UserModel';
 
 
 const MOCK_USER_ID = 1;

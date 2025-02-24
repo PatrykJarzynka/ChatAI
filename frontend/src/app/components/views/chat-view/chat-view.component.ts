@@ -1,6 +1,4 @@
 import { Component, computed, model } from '@angular/core';
-import { ChatWindow } from '../../features/chat/chat-window/chat-window.component';
-import { ChatActions } from '../../features/chat/chat-actions/chat-actions.component';
 import { MatIcon } from '@angular/material/icon';
 import { MatTooltip } from '@angular/material/tooltip';
 import { MatCheckbox } from '@angular/material/checkbox';
@@ -15,6 +13,9 @@ import { MatMenu, MatMenuItem, MatMenuTrigger } from '@angular/material/menu';
 import useChatActions from '@composables/useChatActions';
 import { UserService } from '@services/UserService';
 import { StatusType } from '@enums/StatusType';
+import { ChatHistory } from '@components/features/chat/chat-history/chat-history.component';
+import { ChatWindow } from '@components/features/chat/chat-window/chat-window.component';
+import { ChatActions } from '@components/features/chat/chat-actions/chat-actions.component';
 
 
 @Component({

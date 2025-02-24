@@ -1,8 +1,7 @@
 import { beforeEach, describe, expect, jest, test } from '@jest/globals';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ChatActions } from '../chat-actions/chat-actions.component';
-import { MOCK_QUERY } from '../../../../../utils/mockedData';
-import { By } from '@angular/platform-browser';
+import { MOCK_QUERY } from '@utils/mockedData';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 

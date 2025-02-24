@@ -1,10 +1,10 @@
 import { beforeEach, describe, expect, jest, test } from '@jest/globals';
-import { UserService } from '../services/UserService';
-import { ApiService } from '../services/ApiService';
-import { MOCK_USER } from '../utils/mockedData';
+import { UserService } from '@services/UserService';
+import { ApiService } from '@services/ApiService';
+import { MOCK_USER } from '@utils/mockedData';
 
 
-jest.mock('../services/ApiService');
+jest.mock('@services/ApiService');
 
 describe('userService', () => {
   let apiServiceMock: jest.Mocked<ApiService>;
@@ -25,6 +25,6 @@ describe('userService', () => {
   test('should set current user', async () => {
     userService.setCurrentUser(MOCK_USER);
     const currentUser = userService.getCurrentUser();
-    expect(currentUser).toEqual(MOCK_USER);
+    expect(currentUser()).toEqual(MOCK_USER);
   });
 });

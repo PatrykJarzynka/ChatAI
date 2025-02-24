@@ -1,6 +1,6 @@
 import { describe, expect, test } from '@jest/globals';
-import useValidators from '../composables/useValidators';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import useValidators from '@composables/useValidators';
+import { FormControl, FormGroup } from '@angular/forms';
 
 
 const { validateSamePassword } = useValidators;

@@ -2,11 +2,11 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { describe, test, beforeEach, expect, jest } from '@jest/globals';
 import { BrowserAnimationsModule, NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { RegisterForm } from './register-form.component';
-import { AuthService } from '../../../../../services/AuthService';
+import { AuthService } from '@services/AuthService';
 import { AxiosError } from 'axios';
-import { ErrorMessage } from '../../../../../enums/ErrorMessage';
-import { UserRegisterData } from '../../../../../types/UserRegisterData';
-import { Token } from '../../../../../models/Token';
+import { ErrorMessage } from '@enums/ErrorMessage';
+import { UserRegisterData } from 'appTypes/UserRegisterData';
+import { Token } from '@models/Token';
 import { Router } from '@angular/router';
 
 

@@ -5,11 +5,11 @@ import { Router } from '@angular/router';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { MatError, MatFormField } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
-import useParser from '../../../../../composables/useParser';
-import { AuthService } from '../../../../../services/AuthService';
-import { UserLoginData } from '../../../../../types/UserLoginData';
+import useParser from '@composables/useParser';
+import { AuthService } from '@services/AuthService';
+import { UserLoginData } from 'appTypes/UserLoginData';
 import { AxiosError } from 'axios';
-import { ErrorMessage } from '../../../../../enums/ErrorMessage';
+import { ErrorMessage } from '@enums/ErrorMessage';
 
 
 @Component({

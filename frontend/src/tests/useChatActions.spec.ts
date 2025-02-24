@@ -1,12 +1,12 @@
 import { beforeEach, describe, expect, jest, test } from '@jest/globals';
-import { ApiService } from '../services/ApiService';
-import { UserService } from '../services/UserService';
-import { ChatHistoryService } from '../services/ChatHistoryService';
-import { BotMessageService } from '../services/BotMessageService';
-import { ChatService } from '../services/ChatService';
-import useChatActions from '../composables/useChatActions';
-import { MOCK_CHAT_WITH_ITEMS, MOCK_QUERY, MOCK_USER } from '../utils/mockedData';
-import { StatusType } from '../enums/StatusType';
+import { ApiService } from '@services/ApiService';
+import { UserService } from '@services/UserService';
+import { ChatHistoryService } from '@services/ChatHistoryService';
+import { BotMessageService } from '@services/BotMessageService';
+import { ChatService } from '@services/ChatService';
+import useChatActions from '@composables/useChatActions';
+import { MOCK_CHAT_WITH_ITEMS, MOCK_QUERY, MOCK_USER } from '@utils/mockedData';
+import { StatusType } from '@enums/StatusType';
 
 
 describe('useChatActions', () => {

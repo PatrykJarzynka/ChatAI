@@ -1,6 +1,6 @@
 import { Injectable, signal } from '@angular/core';
-import { ApiService } from '../services/ApiService';
-import { UserModel } from '../models/UserModel';
+import { ApiService } from '@services/ApiService';
+import { UserModel } from '@models/UserModel';
 
 
 const ENDPOINT = 'user';

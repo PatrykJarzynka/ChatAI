@@ -1,5 +1,5 @@
-import { StatusType } from '../enums/StatusType';
-import { ChatService } from '../services/ChatService';
+import { StatusType } from '@enums/StatusType';
+import { ChatService } from '@services/ChatService';
 
 
 function useChatActions(chatService: ChatService) {

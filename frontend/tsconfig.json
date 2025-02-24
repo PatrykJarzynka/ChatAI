@@ -11,6 +11,21 @@
       ],
       "@enums/*": [
         "enums/*"
+      ],
+      "@appTypes/*": [
+        "appTypes/*"
+      ],
+      "@models/*": [
+        "models/*"
+      ],
+      "@utils/*": [
+        "utils/*"
+      ],
+      "@api/*": [
+        "api/*"
+      ],
+      "@components/*": [
+        "app/components/*"
       ]
     },
     "outDir": "./dist/out-tsc",

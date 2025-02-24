@@ -2,8 +2,8 @@ import { Component, signal } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTabsModule } from '@angular/material/tabs';
-import { LoginForm } from '../../../components/features/auth/login-form/login-form.component';
-import { RegisterForm } from '../../../components/features/auth/register-form/register-form.component';
+import { LoginForm } from '@components/features/auth/login-form/login-form.component';
+import { RegisterForm } from '@components/features/auth/register-form/register-form.component';
 import { MatIconButton } from '@angular/material/button';
 
 

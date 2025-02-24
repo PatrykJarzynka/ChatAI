@@ -1,16 +1,16 @@
 import { beforeEach, describe, expect, jest, test, afterEach } from '@jest/globals';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ChatHistory } from './chat-history.component';
-import { ChatHistory as ChatHistoryType } from '../../../../../types/ChatHistory';
-import { ChatHistoryService } from '../../../../../services/ChatHistoryService';
-import { MOCK_CHAT_HISTORY, MOCKED_CHAT_RESPONSE, MOCKED_INITIAL_CHAT } from '../../../../../utils/mockedData';
-import { ChatService } from '../../../../../services/ChatService';
-import useParser from '../../../../../composables/useParser';
-import { ApiService } from '../../../../../services/ApiService';
+import { ChatHistory as ChatHistoryType } from 'appTypes/ChatHistory';
+import { ChatHistoryService } from '@services/ChatHistoryService';
+import { MOCK_CHAT_HISTORY, MOCKED_CHAT_RESPONSE, MOCKED_INITIAL_CHAT } from '@utils/mockedData';
+import { ChatService } from '@services/ChatService';
+import useParser from '@composables/useParser';
+import { ApiService } from '@services/ApiService';
 
 
-jest.mock('../../../../../composables/useParser', () => {
-    const actualUseParser = jest.requireActual('../../../../../composables/useParser') as any;
+jest.mock('@composables/useParser', () => {
+    const actualUseParser = jest.requireActual('@composables/useParser') as any;
 
     return {
       ...actualUseParser.default,

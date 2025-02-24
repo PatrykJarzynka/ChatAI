@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
-import { API_URL } from '../api/apiConfig';
-import { HttpMethod } from '../enums/HttpMethod';
+import { API_URL } from '@api/apiConfig';
+import { HttpMethod } from '@enums/HttpMethod';
 import useParser from '../composables/useParser';
 
 

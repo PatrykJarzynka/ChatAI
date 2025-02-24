@@ -1,9 +1,9 @@
 import { Injectable, signal } from '@angular/core';
-import { ChatHistory } from '../types/ChatHistory';
-import { ApiService } from '../services/ApiService';
-import { Chat } from '../types/Chat';
+import { ChatHistory } from '@appTypes/ChatHistory';
+import { ApiService } from '@services/ApiService';
+import { Chat } from '@appTypes/Chat';
 import { CHAT_ENDPOINT } from '../constants';
-import useParser from '../composables/useParser';
+import useParser from '@composables/useParser';
 
 
 const { parseArrayOfObjectsIntoMap } = useParser;

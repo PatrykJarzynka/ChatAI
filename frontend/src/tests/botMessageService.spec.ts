@@ -1,14 +1,14 @@
 import { beforeEach, describe, expect, jest, test } from '@jest/globals';
-import { BotMessageData, BotMessageService } from '../services/BotMessageService';
+import { BotMessageData, BotMessageService } from '@services/BotMessageService';
 import { CHAT_ENDPOINT } from '../constants';
-import { MOCK_USER, MOCK_USER_CHAT_DATA } from '../utils/mockedData';
-import { ApiService } from '../services/ApiService';
-import { UserService } from '../services/UserService';
-import { StatusType } from '../enums/StatusType';
-import { UserChatData } from '../types/UserChatData';
+import { MOCK_USER, MOCK_USER_CHAT_DATA } from '@utils/mockedData';
+import { ApiService } from '@services/ApiService';
+import { UserService } from '@services/UserService';
+import { StatusType } from '@enums/StatusType';
+import { UserChatData } from 'appTypes/UserChatData';
 
 
-jest.mock('../services/ApiService');
+jest.mock('@services/ApiService');
 
 describe('botMessageService', () => {
   let apiServiceMock: jest.Mocked<ApiService>;

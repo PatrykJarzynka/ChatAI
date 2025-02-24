@@ -1,4 +1,4 @@
-import { BotMessageData } from '../services/BotMessageService';
+import { BotMessageData } from '@services/BotMessageService';
 
 
 export interface ChatItem {

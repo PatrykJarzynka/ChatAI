@@ -1,13 +1,13 @@
 import { beforeEach, describe, expect, jest, test } from '@jest/globals';
-import { ChatHistoryService } from '../services/ChatHistoryService';
-import { MOCK_CHAT_HISTORY, MOCK_CHAT_WITH_ITEMS } from '../utils/mockedData';
-import { ApiService } from '../services/ApiService';
+import { ChatHistoryService } from '@services/ChatHistoryService';
+import { MOCK_CHAT_HISTORY, MOCK_CHAT_WITH_ITEMS } from '@utils/mockedData';
+import { ApiService } from '@services/ApiService';
 import { CHAT_ENDPOINT } from '../constants';
-import useParser from '../composables/useParser';
-import { ChatHistory } from '../types/ChatHistory';
+import useParser from '@composables/useParser';
+import { ChatHistory } from '@appTypes/ChatHistory';
 
 
-jest.mock('../services/ApiService');
+jest.mock('@services/ApiService');
 const { parseArrayOfObjectsIntoMap } = useParser;
 
 describe('chatHistoryService', () => {

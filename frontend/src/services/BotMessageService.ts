@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { CHAT_ENDPOINT } from '../constants';
-import { StatusType } from '../enums/StatusType';
-import { ApiService } from '../services/ApiService';
-import { UserChatData } from '../types/UserChatData';
-import { UserService } from '../services/UserService';
+import { StatusType } from '@enums/StatusType';
+import { ApiService } from '@services/ApiService';
+import { UserChatData } from 'appTypes/UserChatData';
+import { UserService } from '@services/UserService';
 
 
 export interface BotMessageData {
