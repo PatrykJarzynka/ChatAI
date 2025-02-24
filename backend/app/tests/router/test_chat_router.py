@@ -52,7 +52,7 @@ def test_on_user_query_send(session: Session, client: TestClient):
 
     user_chat_data = {
         "message": "Hello",
-        "user_id": "testUser",
+        "user_id": 123,
         "chat_id": 1
     }
 

@@ -50,7 +50,7 @@ def register(user: UserCreateDTO, user_service: user_service_dependency, jwt_ser
     return access_token
 
 @router.get('/auth/refresh')
-def register(jwt_service: jwt_service_dependency, token: Annotated[str, Depends(oauth2_scheme)]) -> Token:
+def refresh(jwt_service: jwt_service_dependency, token: Annotated[str, Depends(oauth2_scheme)]) -> Token:
     dekodedToken = jwt_service.decode_access_token(token)
     user_id = int(dekodedToken['sub'])
     new_access_token = jwt_service.create_access_token({"sub": str(user_id)})

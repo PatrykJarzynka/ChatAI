@@ -1,7 +1,11 @@
+import sys
+import os
 import pytest
 from fastapi.testclient import TestClient
 from sqlmodel import SQLModel, create_engine, Session
 from sqlmodel.pool import StaticPool
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from app_types.token import Token
 from database import get_session
