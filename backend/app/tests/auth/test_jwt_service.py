@@ -52,3 +52,11 @@ def test_decode_access_token_invalid(jwt_service):
 
     assert exc_info.value.status_code == 401
     assert exc_info.value.detail == 'Could not validate credentials'
+
+def test_decode_access_token_expired(jwt_service: JWTService):
+    expired_token = jwt_service.create_access_token(data={"sub": "test_user"}, expires_delta=timedelta(minutes=-10))
+
+    with pytest.raises(HTTPException) as exc_info:
+        jwt_service.decode_access_token(expired_token)
+        assert exc_info.value.status_code == 401
+        assert exc_info.value.detail == 'Token expired'

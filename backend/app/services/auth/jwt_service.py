@@ -25,9 +25,10 @@ class JWTService:
                             expires_delta: timedelta | None = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)):
         to_encode = data.copy()
         if expires_delta:
-            expire = datetime.now(timezone.utc) + expires_delta
+            expire = datetime.now(tz=timezone.utc) + expires_delta
+            print(expire)
         else:
-            expire = datetime.now(timezone.utc) + timedelta(minutes=15)
+            expire = datetime.now(tz=timezone.utc) + timedelta(minutes=15)
         to_encode.update({"exp": expire})
         encoded_jwt = jwt.encode(to_encode, self.SECRET_KEY, algorithm=self.ALGORITHM)
         return Token(access_token=encoded_jwt, token_type="bearer")
@@ -49,6 +50,8 @@ class JWTService:
             payload = jwt.decode(token, self.SECRET_KEY, algorithms=[self.ALGORITHM])
             return payload
         except ExpiredSignatureError:
+            print('EXPIRED!')
             raise expired_exception
         except InvalidTokenError:
+            print('INVALID!')
             raise credentials_exception
