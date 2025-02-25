@@ -45,11 +45,21 @@ export class ChatView {
 
   async ngOnInit() {
     const token = localStorage.getItem('token');
+    let validToken = false;
 
     if (token) {
-      const user = await this.userService.fetchUser();
-      this.userService.setCurrentUser(user);
-      this.authService.handleSettingRefreshTokenInterval(token);
+
+      try {
+        validToken = !!await this.authService.verifyToken();
+      } catch (error) {
+        await this.router.navigate(['/']);
+      }
+
+      if (validToken) {
+        const user = await this.userService.fetchUser();
+        this.userService.setCurrentUser(user);
+        this.authService.handleSettingRefreshTokenInterval(token);
+      }
     } else {
       await this.router.navigate(['/']);
     }

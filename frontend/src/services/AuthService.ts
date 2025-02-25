@@ -54,6 +54,10 @@ export class AuthService {
     return await this.apiService.get<Token>(`${ ENDPOINT }/refresh`);
   }
 
+  public async verifyToken(): Promise<Token> {
+    return await this.apiService.get<Token>(`${ ENDPOINT }/verify`);
+  }
+
   public handleSettingRefreshTokenInterval(token: string): void {
     if (this.refreshTokenCallInterval) {
       clearInterval(this.refreshTokenCallInterval);

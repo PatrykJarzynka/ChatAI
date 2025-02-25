@@ -204,17 +204,29 @@ describe('appComponent', () => {
       expect(router.navigate).toHaveBeenCalledWith(['/']);
     });
 
+    test('should redirect to auth page when access token is invalid', async () => {
+      localStorage.setItem('token', 'invalidToken');
+      jest.spyOn(router, 'navigate');
+
+      jest.spyOn(authService, 'verifyToken').mockRejectedValue('Invalid token.');
+      await component.ngOnInit();
+
+      expect(router.navigate).toHaveBeenCalledWith(['/']);
+    });
+
     test('should get user and set token', async () => {
       localStorage.setItem('token', 'mockToken');
       jest.spyOn(userService, 'fetchUser').mockResolvedValue(MOCK_USER);
       jest.spyOn(authService, 'handleSettingRefreshTokenInterval').mockImplementation(() => {
       });
+      jest.spyOn(authService, 'verifyToken').mockResolvedValue({ accessToken: 'verifiedToken', tokenType: 'bearer' });
       await component.ngOnInit();
 
       const currentUser = userService.getCurrentUser();
 
       expect(userService.fetchUser).toHaveBeenCalled();
       expect(authService.handleSettingRefreshTokenInterval).toHaveBeenCalled();
+      expect(authService.verifyToken).toHaveBeenCalled();
       expect(currentUser()).toEqual(MOCK_USER);
     });
   });

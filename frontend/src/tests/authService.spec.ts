@@ -151,6 +151,5 @@ describe('authService', () => {
 
     expect(authService.fetchRefreshedAccessToken).toHaveBeenCalled();
     expect(Storage.prototype.setItem).toHaveBeenCalledWith('token', mockToken.accessToken);
-
   });
 });
