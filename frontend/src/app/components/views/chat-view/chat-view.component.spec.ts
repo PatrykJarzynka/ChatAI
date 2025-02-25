@@ -19,6 +19,7 @@ import { Router } from '@angular/router';
 import { UserService } from '@services/UserService';
 import { AppSidebar } from '@components/core/app-sidebar/app-sidebar.component';
 import { ChatActions } from '@components/features/chat/chat-actions/chat-actions.component';
+import { AuthService } from '@services/AuthService';
 
 
 jest.mock('@composables/useChatActions', () => (
@@ -34,6 +35,7 @@ describe('appComponent', () => {
   let chatService: ChatService;
   let chatHistoryService: ChatHistoryService;
   let userService: UserService;
+  let authService: AuthService;
   let mockHandleFetchingBotMessage: jest.Mock;
 
   beforeEach(() => {
@@ -45,6 +47,7 @@ describe('appComponent', () => {
     chatService = TestBed.inject(ChatService);
     chatHistoryService = TestBed.inject(ChatHistoryService);
     userService = TestBed.inject(UserService);
+    authService = TestBed.inject(AuthService);
     router = TestBed.inject(Router);
 
     jest.spyOn(chatHistoryService, 'fetchChatHistories').mockResolvedValue([MOCK_CHAT_HISTORY]);
@@ -201,23 +204,29 @@ describe('appComponent', () => {
       expect(router.navigate).toHaveBeenCalledWith(['/']);
     });
 
-    test('should get user', async () => {
+    test('should get user and set token', async () => {
       localStorage.setItem('token', 'mockToken');
       jest.spyOn(userService, 'fetchUser').mockResolvedValue(MOCK_USER);
+      jest.spyOn(authService, 'handleSettingRefreshTokenInterval').mockImplementation(() => {
+      });
       await component.ngOnInit();
 
       const currentUser = userService.getCurrentUser();
 
       expect(userService.fetchUser).toHaveBeenCalled();
+      expect(authService.handleSettingRefreshTokenInterval).toHaveBeenCalled();
       expect(currentUser()).toEqual(MOCK_USER);
     });
   });
 
   describe('logout', () => {
-    test('should logout user on button click', async () => {
+    test('should logout user on button click and remove refresh token interval', async () => {
       localStorage.setItem('token', 'mockToken');
+      authService.refreshTokenCallInterval = 1;
       jest.spyOn(component, 'onLogoutButtonClick');
       jest.spyOn(router, 'navigate');
+      jest.spyOn(global, 'clearInterval');
+
       const profileButton = fixture.nativeElement.querySelector('.profile-button');
 
       await profileButton.click();
@@ -230,6 +239,7 @@ describe('appComponent', () => {
 
       const token = localStorage.getItem('token');
 
+      expect(global.clearInterval).toHaveBeenCalled();
       expect(component.onLogoutButtonClick).toHaveBeenCalled();
       expect(token).toBeNull();
       expect(router.navigate).toHaveBeenCalledWith(['/']);
