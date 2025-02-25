@@ -49,7 +49,7 @@ export class ChatView {
     if (token) {
       const user = await this.userService.fetchUser();
       this.userService.setCurrentUser(user);
-      this.authService.setRefreshTokenInterval(token);
+      this.authService.handleSettingRefreshTokenInterval(token);
     } else {
       await this.router.navigate(['/']);
     }
@@ -64,7 +64,11 @@ export class ChatView {
 
   async onLogoutButtonClick() {
     localStorage.removeItem('token');
-    this.authService.removeRefreshTokenInterval();
+
+    if (this.authService.refreshTokenCallInterval) {
+      clearInterval(this.authService.refreshTokenCallInterval);
+    }
+
     await this.router.navigate(['/']);
   }
 

@@ -20,11 +20,29 @@ export class AuthService {
   ) {
   }
 
-  async register(data: UserRegisterData): Promise<Token> {
+  public calculateIntervalDelay(accessToken: string, timeInMsBeforeTokenExpire: number): number {
+    const decodedToken = jwtDecode(accessToken);
+
+    let delay = 0;
+
+    if (decodedToken.exp) {
+      const expireTimeInMs = decodedToken.exp * 1000;
+      const executionTime = expireTimeInMs - timeInMsBeforeTokenExpire;
+      const calculatedDelay = executionTime - Date.now();
+
+      if (calculatedDelay >= 0) {
+        delay = calculatedDelay;
+      }
+    }
+
+    return delay;
+  }
+
+  public async register(data: UserRegisterData): Promise<Token> {
     return await this.apiService.post<Token, UserRegisterData>(`${ ENDPOINT }/register`, data);
   }
 
-  async login(data: UserLoginData): Promise<Token> {
+  public async login(data: UserLoginData): Promise<Token> {
     const loginData = new URLSearchParams();
     loginData.append('username', data.email);
     loginData.append('password', data.password);
@@ -32,41 +50,37 @@ export class AuthService {
     return await this.apiService.post<Token, URLSearchParams>(`${ ENDPOINT }/login`, loginData, false, true);
   }
 
-  async getRefreshedAccessToken(): Promise<Token> {
+  public async fetchRefreshedAccessToken(): Promise<Token> {
     return await this.apiService.get<Token>(`${ ENDPOINT }/refresh`);
   }
 
-  setRefreshTokenInterval(token: string): void {
-    if (this.refreshTokenCallInterval) {
-      this.removeRefreshTokenInterval();
-    }
-
-    const decodedToken = jwtDecode(token);
-
-    if (decodedToken.exp) {
-      const expireTimeInMs = decodedToken.exp * 1000;
-
-      const executionTime = expireTimeInMs - 20 * 1000;
-      const delay = executionTime - Date.now();
-
-      const finalDelay = Math.max(delay, 0); // finalDelay set to 0 if token is already expired
-
-      this.refreshTokenCallInterval = window.setInterval(async () => {
-        try {
-          const refreshedToken = await this.getRefreshedAccessToken();
-          localStorage.setItem('token', refreshedToken.accessToken);
-          this.setRefreshTokenInterval(refreshedToken.accessToken);
-        } catch (error) {
-          console.error('Failed to refresh token');
-        }
-
-      }, finalDelay);
-    }
-  }
-
-  removeRefreshTokenInterval(): void {
+  public handleSettingRefreshTokenInterval(token: string): void {
     if (this.refreshTokenCallInterval) {
       clearInterval(this.refreshTokenCallInterval);
     }
+
+    const delay = this.calculateIntervalDelay(token, 20000);
+    this.setRefreshTokenInterval(delay);
+  }
+
+
+  public setRefreshTokenInterval(delay: number): void {
+    this.refreshTokenCallInterval = window.setInterval(async () => {
+      try {
+        await this.refreshToken();
+        const newToken = localStorage.getItem('token');
+        if (newToken) {
+          this.handleSettingRefreshTokenInterval(newToken);
+        }
+      } catch (error) {
+        console.error('Failed to refresh token');
+      }
+
+    }, delay);
+  }
+
+  public async refreshToken(): Promise<void> {
+    const refreshedToken = await this.fetchRefreshedAccessToken();
+    localStorage.setItem('token', refreshedToken.accessToken);
   }
 }
