@@ -19,7 +19,7 @@ load_dotenv(env_path)
 class JWTService:
     SECRET_KEY = os.getenv("SECRET_KEY")
     ALGORITHM = "HS256"
-    ACCESS_TOKEN_EXPIRE_MINUTES = 1
+    ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
     def create_access_token(self, data: dict,
                             expires_delta: timedelta | None = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)):
