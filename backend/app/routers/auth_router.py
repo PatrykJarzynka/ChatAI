@@ -9,6 +9,7 @@ from app_types.user_create_dto import UserCreateDTO
 from database import get_session
 from dependencies import hash_service_dependency, jwt_service_dependency
 from services.user_service import UserService
+from services.auth.jwt_service import JWTService
 
 router = APIRouter()
 
@@ -19,8 +20,12 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 def get_user_service(session: session_dependency, hash_service: hash_service_dependency):
     return UserService(session, hash_service)
 
-
 user_service_dependency = Annotated[UserService, Depends(get_user_service)]
+
+def get_verify_token_function(jwt_service: jwt_service_dependency, token: Annotated[str, Depends(oauth2_scheme)]):
+    return jwt_service.decode_access_token(token)
+
+verify_token_dependency = Annotated[dict,Depends(get_verify_token_function)]
 
 
 @router.post('/auth/login')
@@ -50,16 +55,14 @@ def register(user: UserCreateDTO, user_service: user_service_dependency, jwt_ser
     return access_token
 
 @router.get('/auth/refresh')
-def refresh(jwt_service: jwt_service_dependency, token: Annotated[str, Depends(oauth2_scheme)]) -> Token:
-    dekodedToken = jwt_service.decode_access_token(token)
-    user_id = int(dekodedToken['sub'])
+def refresh(jwt_service: jwt_service_dependency, token: Annotated[str, Depends(oauth2_scheme)], decoded_token: verify_token_dependency) -> Token:
+    user_id = int(decoded_token['sub'])
     new_access_token = jwt_service.create_access_token({"sub": str(user_id)})
     return new_access_token
 
 @router.get('/auth/verify')
-def verify_token(jwt_service: jwt_service_dependency, token: Annotated[str, Depends(oauth2_scheme)]):
-    dekoded_token = jwt_service.decode_access_token(token)
-    if (dekoded_token):
+def verify_token(jwt_service: jwt_service_dependency, token: Annotated[str, Depends(oauth2_scheme)], decoded_token: verify_token_dependency):
+    if (decoded_token):
         return token
 
 

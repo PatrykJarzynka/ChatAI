@@ -26,10 +26,14 @@ def get_jwt_service():
 user_service_dependency = Annotated[UserService, Depends(get_user_service)]
 jwt_service_dependency = Annotated[JWTService, Depends(get_jwt_service)]
 
+def get_verify_token_function(jwt_service: jwt_service_dependency, token: Annotated[str, Depends(oauth2_scheme)]):
+    return jwt_service.decode_access_token(token)
+
+verify_token_dependency = Annotated[dict,Depends(get_verify_token_function)]
+
 
 @router.get("/user/me", response_model=UserResponseDTO)
 def get_user_by_id(user_service: user_service_dependency, jwt_service: jwt_service_dependency,
-                   token: Annotated[str, Depends(oauth2_scheme)]):
-    dekodedToken = jwt_service.decode_access_token(token)
-    user_id = int(dekodedToken['sub'])
+                   token: Annotated[str, Depends(oauth2_scheme)], decoded_token: verify_token_dependency):
+    user_id = int(decoded_token['sub'])
     return user_service.get_user_by_id(user_id)
