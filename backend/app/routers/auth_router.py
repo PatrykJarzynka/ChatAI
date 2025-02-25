@@ -55,3 +55,12 @@ def refresh(jwt_service: jwt_service_dependency, token: Annotated[str, Depends(o
     user_id = int(dekodedToken['sub'])
     new_access_token = jwt_service.create_access_token({"sub": str(user_id)})
     return new_access_token
+
+@router.get('/auth/verify')
+def verify_token(jwt_service: jwt_service_dependency, token: Annotated[str, Depends(oauth2_scheme)]):
+    dekoded_token = jwt_service.decode_access_token(token)
+    if (dekoded_token):
+        return token
+
+
+
