@@ -30,14 +30,14 @@ def test_get_all_chats_history(session: Session, client: TestClient, jwt_service
     test_token = jwt_service.create_access_token({"sub": '1'})
     headers = {"Authorization": f"Bearer {test_token.access_token}"}
 
-    chat_items = [ChatItem(user_message='Hello', bot_message='Hello.', user_id='testUser')]
-    chat = Chat(chat_items=chat_items)
+    chat_items = [ChatItem(user_message='Hello', bot_message='Hello.')]
+    chat = Chat(chat_items=chat_items, user_id=1)
 
     session.add(chat)
     session.commit()
     session.refresh(chat)
 
-    response = client.get("/chat/history", headers=headers)
+    response = client.get(f"/chat/history?user_id={1}", headers=headers)
     data = response.json()
     assert response.status_code == 200
     assert data == [{"id": chat.id, "title": chat_items[0].user_message}]
@@ -47,8 +47,8 @@ def test_get_chat_by_id(session: Session, client: TestClient, jwt_service: JWTSe
     test_token = jwt_service.create_access_token({"sub": '1'})
     headers = {"Authorization": f"Bearer {test_token.access_token}"}
 
-    chat_items = [ChatItem(user_message='Hello', bot_message='Hello.', user_id='testUser')]
-    chat = Chat(chat_items=chat_items)
+    chat_items = [ChatItem(user_message='Hello', bot_message='Hello.')]
+    chat = Chat(chat_items=chat_items, user_id=1)
 
     session.add(chat)
     session.commit()
@@ -65,13 +65,12 @@ def test_on_user_query_send(session: Session, client: TestClient, jwt_service: J
     test_token = jwt_service.create_access_token({"sub": '1'})
     headers = {"Authorization": f"Bearer {test_token.access_token}"}
 
-    chat = Chat(chat_items=[])
+    chat = Chat(chat_items=[], user_id=1)
     session.add(chat)
     session.commit()
 
     user_chat_data = {
         "message": "Hello",
-        "user_id": 123,
         "chat_id": 1
     }
 

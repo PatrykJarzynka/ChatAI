@@ -37,7 +37,7 @@ describe('ChatHistory', () => {
     apiService = TestBed.inject(ApiService);
     chatService = TestBed.inject(ChatService);
     chatHistoryService = TestBed.inject(ChatHistoryService);
-    jest.spyOn(chatHistoryService, 'fetchChatHistories').mockResolvedValue([]);
+    jest.spyOn(chatHistoryService, 'fetchUserChatHistory').mockResolvedValue([]);
 
     fixture = TestBed.createComponent(ChatHistory);
     component = fixture.componentInstance;
@@ -95,12 +95,6 @@ describe('ChatHistory', () => {
     fixture.detectChanges();
 
     checkRenderedList(Array.from(component.chatHistories()));
-  });
-
-  test('should fetch chat histories on init', () => {
-    jest.spyOn(chatHistoryService, 'fetchChatHistories');
-
-    expect(chatHistoryService.fetchChatHistories).toBeCalled();
   });
 
   test('should update current chat after click on chat history item', async () => {

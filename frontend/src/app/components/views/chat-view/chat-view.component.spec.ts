@@ -50,7 +50,7 @@ describe('appComponent', () => {
     authService = TestBed.inject(AuthService);
     router = TestBed.inject(Router);
 
-    jest.spyOn(chatHistoryService, 'fetchChatHistories').mockResolvedValue([MOCK_CHAT_HISTORY]);
+    jest.spyOn(chatHistoryService, 'fetchUserChatHistory').mockResolvedValue([MOCK_CHAT_HISTORY]);
     mockHandleFetchingBotMessage = jest.fn();
     ( useChatActions as jest.Mock ).mockReturnValue({
       handleFetchingBotMessage: mockHandleFetchingBotMessage,

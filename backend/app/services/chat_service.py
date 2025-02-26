@@ -41,9 +41,9 @@ class ChatService:
 
     @staticmethod
     def create_chat_item(user_chat_data: UserChatData) -> ChatItem:
-        return ChatItem(user_id=user_chat_data.user_id, user_message=user_chat_data.message,
+        return ChatItem(user_message=user_chat_data.message,
                         chat_id=user_chat_data.chat_id)
 
     @staticmethod
-    def create_new_chat() -> Chat:
-        return Chat()
+    def create_new_chat(user_id: int) -> Chat:
+        return Chat(user_id=user_id)

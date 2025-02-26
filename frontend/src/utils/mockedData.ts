@@ -50,7 +50,6 @@ const MOCK_CHAT_HISTORY: ChatHistory = {
 };
 
 const MOCK_USER_CHAT_DATA: UserChatData = {
-  userId: MOCK_USER_ID,
   chatId: MOCK_CHAT_ID,
   message: MOCK_QUERY
 };

@@ -19,8 +19,8 @@ export class ChatHistoryService {
   ) {
   }
 
-  async fetchChatHistories() {
-    return await this.apiService.get<ChatHistory[]>(`${ CHAT_ENDPOINT }/history`);
+  async fetchUserChatHistory(userId: number) {
+    return await this.apiService.get<ChatHistory[]>(`${ CHAT_ENDPOINT }/history?userId=${ userId }`);
   }
 
   getAllChatHistories(): Map<number, ChatHistory> {

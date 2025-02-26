@@ -24,7 +24,7 @@ class UserService:
             raise HTTPException(status_code=409, detail="Email already registered")
 
         hashed_password = self.hash_service.hash_password(user.password)
-        new_user = User(full_name=user.full_name, email=user.email, password=hashed_password)
+        new_user = User(full_name=user.full_name, email=user.email, password=hashed_password, chats=[])
 
         return new_user
 

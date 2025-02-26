@@ -30,17 +30,10 @@ export class BotMessageService {
   }
 
   createUserChatData(chatId: number, userQuery: string): UserChatData {
-    const user = this.userService.getCurrentUser();
-
-    if (!user()) {
-      throw new Error('User chat data cannot be created, because user is not initialized!');
-    } else {
-      return {
-        userId: user()!.id,
-        chatId,
-        message: userQuery,
-      };
-    }
+    return {
+      chatId,
+      message: userQuery,
+    };
   }
 
   async fetchBotResponse(chatId: number, userQuery: string): Promise<string> {

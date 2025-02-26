@@ -17,6 +17,7 @@ import { ChatHistory } from '@components/features/chat/chat-history/chat-history
 import { ChatWindow } from '@components/features/chat/chat-window/chat-window.component';
 import { ChatActions } from '@components/features/chat/chat-actions/chat-actions.component';
 import { AuthService } from '@services/AuthService';
+import { ChatHistoryService } from '@services/ChatHistoryService';
 
 
 @Component({
@@ -36,6 +37,7 @@ export class ChatView {
   constructor(
     private chatService: ChatService,
     private userService: UserService,
+    private chatHistoryService: ChatHistoryService,
     private router: Router,
     private authService: AuthService,
   ) {
@@ -63,6 +65,11 @@ export class ChatView {
     } else {
       await this.router.navigate(['/']);
     }
+  }
+
+  async initUserChatHistory(userId: number) {
+    const chatHistories = await this.chatHistoryService.fetchUserChatHistory(userId);
+    this.chatHistoryService.setChatHistories(chatHistories);
   }
 
   async startNewChat() {

@@ -48,21 +48,14 @@ describe('botMessageService', () => {
 
   describe('createUserChatData', () => {
     test('should create user chat data with current user id', async () => {
-
-      userService.setCurrentUser(MOCK_USER);
       const result = botService.createUserChatData(MOCK_USER_CHAT_DATA.chatId, MOCK_USER_CHAT_DATA.message);
 
       const expected: UserChatData = {
-        userId: MOCK_USER.id,
         chatId: MOCK_USER_CHAT_DATA.chatId,
         message: MOCK_USER_CHAT_DATA.message
       };
 
       expect(result).toEqual(expected);
-    });
-
-    test('should throw error when user is not initialized', () => {
-      expect(() => botService.createUserChatData(MOCK_USER_CHAT_DATA.chatId, MOCK_USER_CHAT_DATA.message)).toThrowError('User chat data cannot be created, because user is not initialized!');
     });
   });
 });

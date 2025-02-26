@@ -29,8 +29,6 @@ const { parseChatResponseToChat } = useParser;
 })
 export class ChatHistory {
 
-  protected readonly Array = Array;
-
   constructor(
     private chatHistoryService: ChatHistoryService,
     private chatService: ChatService
@@ -62,11 +60,6 @@ export class ChatHistory {
   chatHistories = () => this.chatHistoryService.getAllChatHistories().values();
   selectedChatId = () => this.chatService.getCurrentChat()?.id;
 
-  async ngOnInit() {
-    const chatHistories = await this.chatHistoryService.fetchChatHistories();
-    this.chatHistoryService.setChatHistories(chatHistories);
-  }
-
   async updateCurrentChat(chatId: number) {
     if (this.chatService.getCurrentChat()?.id === chatId) {
       return;
@@ -80,4 +73,6 @@ export class ChatHistory {
       this.chatService.setCurrentChat(chat);
     }
   }
+
+  protected readonly Array = Array;
 }

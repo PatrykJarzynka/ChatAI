@@ -48,15 +48,13 @@ verify_token_dependency = Annotated[dict,Depends(get_verify_token_function)]
 
 @router.get('/chat', response_model=ChatDto)
 def get_new_chat(chat_service: chat_service_dependency, jwt_service: jwt_service_dependency,  token: Annotated[str, Depends(oauth2_scheme)], decoded_token: verify_token_dependency) -> Chat:
-    jwt_service.decode_access_token(token)
-
-    new_chat = chat_service.create_new_chat()
+    new_chat = chat_service.create_new_chat(int(decoded_token['sub']))
     chat_service.save_chat(new_chat)
     return new_chat
 
 
 @router.get('/chat/history')
-async def get_all_chats_history(chat_history_service: chat_history_service_dependency, token: Annotated[str, Depends(oauth2_scheme)], decoded_token: verify_token_dependency) -> list[ChatHistory]:
+async def get_all_chats_history(user_id: int, chat_history_service: chat_history_service_dependency, token: Annotated[str, Depends(oauth2_scheme)], decoded_token: verify_token_dependency) -> list[ChatHistory]:
     return chat_history_service.get_all_chats_history_data()
 
 

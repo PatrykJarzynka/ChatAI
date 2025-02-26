@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, jest, test } from '@jest/globals';
 import { ChatHistoryService } from '@services/ChatHistoryService';
-import { MOCK_CHAT_HISTORY, MOCK_CHAT_WITH_ITEMS } from '@utils/mockedData';
+import { MOCK_CHAT_HISTORY, MOCK_CHAT_WITH_ITEMS, MOCK_USER } from '@utils/mockedData';
 import { ApiService } from '@services/ApiService';
 import { CHAT_ENDPOINT } from '../constants';
 import useParser from '@composables/useParser';
@@ -23,18 +23,9 @@ describe('chatHistoryService', () => {
     test('should fetch chat histories', async () => {
       apiServiceMock.get.mockResolvedValue(Promise.resolve([MOCK_CHAT_HISTORY]));
 
-      const result = await chatHistoryService.fetchChatHistories();
+      const result = await chatHistoryService.fetchUserChatHistory(MOCK_USER.id);
 
-      expect(apiServiceMock.get).toHaveBeenCalledWith(`${ CHAT_ENDPOINT }/history`);
-      expect(result).toEqual([MOCK_CHAT_HISTORY]);
-    });
-
-    test('should log an error if fetchChatHistories fails', async () => {
-      apiServiceMock.get.mockResolvedValue(Promise.resolve([MOCK_CHAT_HISTORY]));
-
-      const result = await chatHistoryService.fetchChatHistories();
-
-      expect(apiServiceMock.get).toHaveBeenCalledWith(`${ CHAT_ENDPOINT }/history`);
+      expect(apiServiceMock.get).toHaveBeenCalledWith(`${ CHAT_ENDPOINT }/history?userId=${ MOCK_USER.id }`);
       expect(result).toEqual([MOCK_CHAT_HISTORY]);
     });
   });

@@ -8,6 +8,9 @@ class ChatHistoryService:
     def __init__(self, session: Session):
         self.session = session
 
+    # def get_chat_histories_by_user_id(user_id: int):
+    #     statement = select(Chat).where(Chat.)
+
     def get_all_chats_history_data(self) -> list[ChatHistory]:
         statement = select(Chat)
         allChats = self.session.exec(statement).all()

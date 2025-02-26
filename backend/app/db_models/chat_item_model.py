@@ -8,7 +8,6 @@ if TYPE_CHECKING:
 
 class ChatItem(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
-    user_id: str
     user_message: str = Field(sa_column=Column(Text))
     bot_message: str | None = Field(sa_column=Column(Text), default=None)
 
