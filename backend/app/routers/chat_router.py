@@ -54,8 +54,8 @@ def get_new_chat(chat_service: chat_service_dependency, jwt_service: jwt_service
 
 
 @router.get('/chat/history')
-async def get_all_chats_history(user_id: int, chat_history_service: chat_history_service_dependency, token: Annotated[str, Depends(oauth2_scheme)], decoded_token: verify_token_dependency) -> list[ChatHistory]:
-    return chat_history_service.get_all_chats_history_data()
+async def get_chat_histories(userId: int, chat_history_service: chat_history_service_dependency, token: Annotated[str, Depends(oauth2_scheme)], decoded_token: verify_token_dependency) -> list[ChatHistory]:
+    return chat_history_service.get_chats_history_data_by_user_id(userId)
 
 
 @router.get('/chat/{chat_id}', response_model=ChatDto)

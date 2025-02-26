@@ -61,6 +61,8 @@ export class ChatView {
         const user = await this.userService.fetchUser();
         this.userService.setCurrentUser(user);
         this.authService.handleSettingRefreshTokenInterval(token);
+
+        await this.initUserChatHistory(user.id);
       }
     } else {
       await this.router.navigate(['/']);

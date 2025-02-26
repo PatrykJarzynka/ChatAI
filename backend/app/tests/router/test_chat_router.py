@@ -26,18 +26,21 @@ def test_get_new_chat(session: Session, client: TestClient, jwt_service: JWTServ
     assert data["chat_items"] == []
 
 
-def test_get_all_chats_history(session: Session, client: TestClient, jwt_service: JWTService):
+def test_get_chat_histories(session: Session, client: TestClient, jwt_service: JWTService):
     test_token = jwt_service.create_access_token({"sub": '1'})
     headers = {"Authorization": f"Bearer {test_token.access_token}"}
 
     chat_items = [ChatItem(user_message='Hello', bot_message='Hello.')]
+    chat_items2 = [ChatItem(user_message='Hello!', bot_message='Hello!')]
     chat = Chat(chat_items=chat_items, user_id=1)
+    chat2 = Chat(chat_items=chat_items2, user_id=2) #second_user
 
     session.add(chat)
+    session.add(chat2)
     session.commit()
     session.refresh(chat)
 
-    response = client.get(f"/chat/history?user_id={1}", headers=headers)
+    response = client.get(f"/chat/history?userId={1}", headers=headers)
     data = response.json()
     assert response.status_code == 200
     assert data == [{"id": chat.id, "title": chat_items[0].user_message}]

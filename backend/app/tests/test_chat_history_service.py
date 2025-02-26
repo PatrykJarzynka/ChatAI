@@ -39,13 +39,10 @@ def test_convert_chat_with_no_items_to_history_data(chat_history_service: ChatHi
     assert chat_history_data == expected_data
 
 
-def test_get_all_chats_history_data(chat_history_service: ChatHistoryService, chat_service: ChatService):
-    chat_1 = Chat(chat_items=[ChatItem(user_id='testUser', user_message='Hello there', chat_id=1, bot_message='Hello'),
-                              ChatItem(user_id='testUser', user_message='How are you?', chat_id=1,
-                                       bot_message='Good.')],
-                                       user_id=1)
-    chat_2 = Chat(chat_items=[ChatItem(user_id='testUser2', user_message='Hello.', bot_message='Hello.')], user_id=1)
-    chat_3 = Chat(chat_items=[], user_id=1)
+def test_get_chats_history_data_by_user_id(chat_history_service: ChatHistoryService, chat_service: ChatService):
+    chat_1 = Chat(chat_items=[ChatItem(user_message='Hello there', bot_message='Hello'), ChatItem(user_message='How are you?', chat_id=1, bot_message='Good.')],user_id=1)
+    chat_2 = Chat(chat_items=[ChatItem(user_message='Hello.', bot_message='Hello.')], user_id=1)
+    chat_3 = Chat(chat_items=[], user_id=2)
 
     chat_service.save_chat(chat_1)
     chat_service.save_chat(chat_2)
@@ -54,6 +51,20 @@ def test_get_all_chats_history_data(chat_history_service: ChatHistoryService, ch
     expected_data = [ChatHistory(id=chat_1.id, title=chat_1.chat_items[0].user_message),
                      ChatHistory(id=chat_2.id, title=chat_2.chat_items[0].user_message)]
 
-    all_chat_histories_data = chat_history_service.get_all_chats_history_data()
+    chat_histories = chat_history_service.get_chats_history_data_by_user_id(1)
 
-    assert all_chat_histories_data == expected_data
+    assert chat_histories == expected_data
+
+def test_get_chats_by_user_id(chat_history_service: ChatHistoryService, chat_service: ChatService):
+    chat_1 = Chat(chat_items=[ChatItem(user_message='Hello there', bot_message='Hello'), ChatItem(user_message='How are you?', chat_id=1, bot_message='Good.')],user_id=1)
+    chat_2 = Chat(chat_items=[ChatItem(user_message='Hello.', bot_message='Hello.')], user_id=2)
+    chat_3 = Chat(chat_items=[], user_id=1)
+
+    chat_service.save_chat(chat_1)
+    chat_service.save_chat(chat_2)
+    chat_service.save_chat(chat_3)
+
+    chats = chat_history_service.get_chats_by_user_id(1)
+
+    assert chats == [chat_1, chat_3]
+
