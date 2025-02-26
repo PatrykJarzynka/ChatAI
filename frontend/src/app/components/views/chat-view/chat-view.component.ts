@@ -82,13 +82,20 @@ export class ChatView {
   }
 
   async onLogoutButtonClick() {
+    this.clearUserState();
+
+    await this.router.navigate(['/']);
+  }
+
+  clearUserState() {
+    this.chatService.clearCurrentChat();
+    this.chatHistoryService.clearChatHistory();
+
     localStorage.removeItem('token');
 
     if (this.authService.refreshTokenCallInterval) {
       clearInterval(this.authService.refreshTokenCallInterval);
     }
-
-    await this.router.navigate(['/']);
   }
 
   async onUserQuerySend(userQuery: string) {

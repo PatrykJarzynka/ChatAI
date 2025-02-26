@@ -109,6 +109,10 @@ export class ChatService {
     this.currentChat.set(chat);
   }
 
+  clearCurrentChat() {
+    this.currentChat.set(null);
+  }
+
   updateChatHistory() {
     const currentChat = this.getCurrentChat();
 

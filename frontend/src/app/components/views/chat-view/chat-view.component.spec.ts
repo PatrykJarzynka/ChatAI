@@ -232,12 +232,9 @@ describe('appComponent', () => {
   });
 
   describe('logout', () => {
-    test('should logout user on button click and remove refresh token interval', async () => {
-      localStorage.setItem('token', 'mockToken');
-      authService.refreshTokenCallInterval = 1;
-      jest.spyOn(component, 'onLogoutButtonClick');
+    test('should call clearing function and navigate to auth page after logout button click', async () => {
+      jest.spyOn(component, 'clearUserState');
       jest.spyOn(router, 'navigate');
-      jest.spyOn(global, 'clearInterval');
 
       const profileButton = fixture.nativeElement.querySelector('.profile-button');
 
@@ -249,12 +246,27 @@ describe('appComponent', () => {
 
       logoutButton.nativeElement.click();
 
+      expect(component.clearUserState).toHaveBeenCalled();
+      expect(router.navigate).toHaveBeenCalledWith(['/']);
+    });
+
+
+    test('should clear user state', async () => {
+      localStorage.setItem('token', 'mockToken');
+      authService.refreshTokenCallInterval = 1;
+
+      jest.spyOn(chatService, 'clearCurrentChat');
+      jest.spyOn(chatHistoryService, 'clearChatHistory');
+      jest.spyOn(global, 'clearInterval');
+
+      component.clearUserState();
+
       const token = localStorage.getItem('token');
 
+      expect(chatService.clearCurrentChat).toHaveBeenCalled();
+      expect(chatHistoryService.clearChatHistory).toHaveBeenCalled();
       expect(global.clearInterval).toHaveBeenCalled();
-      expect(component.onLogoutButtonClick).toHaveBeenCalled();
       expect(token).toBeNull();
-      expect(router.navigate).toHaveBeenCalledWith(['/']);
     });
   });
 });

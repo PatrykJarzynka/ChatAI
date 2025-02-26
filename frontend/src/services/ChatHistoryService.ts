@@ -48,6 +48,10 @@ export class ChatHistoryService {
     this.setChatHistoryMapItem(chatHistory);
   }
 
+  clearChatHistory(): void {
+    this.chatHistoriesMap().clear();
+  }
+
   createChatHistory(chat: Chat): ChatHistory {
     return {
       id: chat.id,

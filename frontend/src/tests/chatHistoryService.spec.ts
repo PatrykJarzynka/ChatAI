@@ -64,4 +64,15 @@ describe('chatHistoryService', () => {
       expect(result).toEqual(expected);
     });
   });
+
+  describe('clearChatHistory', () => {
+    test('should clear the chat history', async () => {
+      chatHistoryService.setChatHistories([MOCK_CHAT_HISTORY]);
+      chatHistoryService.clearChatHistory();
+
+      const currentChatHistories = chatHistoryService.getAllChatHistories();
+
+      expect(currentChatHistories.size).toEqual(0);
+    });
+  });
 });

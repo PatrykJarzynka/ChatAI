@@ -174,6 +174,17 @@ describe('chatService', () => {
       expect(selectedChatHistory).toEqual({ id: currentChat?.id, title: currentChat?.chatItems[0].userMessage });
     });
   });
+
+  describe('clearChat', () => {
+    test('should set chat to null', () => {
+      chatService.setCurrentChat(MOCK_CHAT_WITH_ITEMS);
+      chatService.clearCurrentChat();
+
+      const currentChat = chatService.getCurrentChat();
+
+      expect(currentChat).toBe(null);
+    });
+  });
 });
 
 
