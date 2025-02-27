@@ -8,7 +8,7 @@ def hash_service():
     return HashService()
 
 
-def test_hash_password(hash_service):
+def test_hash_password(hash_service: HashService):
     password = "TestPassword123"
 
     hashed_password = hash_service.hash_password(password)
@@ -18,7 +18,7 @@ def test_hash_password(hash_service):
     assert hashed_password.startswith('$2b$'), "Hashed password format should start with $2b$ (bcrypt)"
 
 
-def test_verify_password(hash_service):
+def test_verify_password(hash_service: HashService):
     password = "TestPassword123"
 
     hashed_password = hash_service.hash_password(password)

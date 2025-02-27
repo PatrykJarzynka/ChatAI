@@ -3,6 +3,8 @@ services:
   frontend:
     build: ./frontend
     image: affciak/frontend:latest
+    environment: 
+      - API_URL=http://backend:8000
     ports:
       - "80:80"
     depends_on:
@@ -10,6 +12,7 @@ services:
 
   backend:
     build: ./backend
+    hostname: backend
     image: affciak/backend:latest
     ports:
       - "8000:8000"
@@ -24,6 +27,7 @@ services:
   db:
     image: mysql:8
     restart: always
+    hostname: db
     ports:
       - "7777:3306"
     volumes:

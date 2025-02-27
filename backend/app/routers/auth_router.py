@@ -9,7 +9,10 @@ from app_types.user_create_dto import UserCreateDTO
 from database import get_session
 from dependencies import hash_service_dependency, jwt_service_dependency
 from services.user_service import UserService
-from services.auth.jwt_service import JWTService
+from google.oauth2 import id_token
+import google.auth.transport.requests
+import requests
+import time
 
 router = APIRouter()
 
@@ -64,6 +67,34 @@ def refresh(jwt_service: jwt_service_dependency, token: Annotated[str, Depends(o
 def verify_token(jwt_service: jwt_service_dependency, token: Annotated[str, Depends(oauth2_scheme)], decoded_token: verify_token_dependency):
     if (decoded_token):
         return token
+    
+@router.post('/auth/google')
+def verify_token(google_token: str):
+    client_id = '268450421384-sh5e3buktug7k543dlg1soqpbb9otoi5.apps.googleusercontent.com'
 
+    try:
+       verified_token = id_token.verify_oauth2_token(google_token, google.auth.transport.requests.Request(), audience=client_id)
 
+       print('Token poprawnie zweryfikowany')
+
+       iss = verify_token.get('iss')
+       exp = verify_token.get('exp')
+
+       if iss != "https://accounts.google.com":
+           print(iss)
+           raise ValueError('Invalid issuer token!')
+       else:
+           print('Issuer poprawnie zweryfikowany')
+
+       current_time = time.time()
+       if exp < current_time:
+           print(exp)
+           raise ValueError('Google token expired!')
+       else:
+           print('Expire time zweryfikowany poprawnie')
+
+       print(verified_token)
+       
+    except ValueError as e:
+        print('Invalid')
 

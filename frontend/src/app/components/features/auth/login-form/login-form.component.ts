@@ -1,15 +1,15 @@
-import { Component, output } from '@angular/core';
+import { Component, effect, input, output } from '@angular/core';
 import { MatButton } from '@angular/material/button';
 import { MatCardActions, MatCardContent, MatCardHeader, MatCardSubtitle, MatCardTitle } from '@angular/material/card';
-import { Router } from '@angular/router';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { MatError, MatFormField } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
 import useParser from '@composables/useParser';
-import { AuthService } from '@services/AuthService';
 import { UserLoginData } from 'appTypes/UserLoginData';
-import { AxiosError } from 'axios';
 import { ErrorMessage } from '@enums/ErrorMessage';
+import {
+  LoginGoogleButtonComponent
+} from '@components/features/auth/login-google-button/login-google-button.component';
 
 
 @Component({
@@ -26,6 +26,7 @@ import { ErrorMessage } from '@enums/ErrorMessage';
     MatFormField,
     MatInput,
     ReactiveFormsModule,
+    LoginGoogleButtonComponent,
   ],
   templateUrl: './login-form.component.html',
   styleUrl: './login-form.component.scss'
@@ -34,10 +35,11 @@ export class LoginForm {
   form: FormGroup;
   parseErrors: (errors: ValidationErrors | null) => string | null;
 
-  constructor(
-    private router: Router,
-    private authService: AuthService
-  ) {
+  newAccountClick = output<void>();
+  loginSubmit = output<UserLoginData>();
+  authErrors = input<ErrorMessage | null>(null);
+
+  constructor() {
     const { parseValidationErrorToString } = useParser;
 
     this.form = new FormGroup({
@@ -46,11 +48,23 @@ export class LoginForm {
     });
 
     this.parseErrors = parseValidationErrorToString;
+
+    effect(() => {
+      this.setErrors(this.authErrors());
+    });
   }
 
-  newAccountClick = output<void>();
+  setErrors(error: ErrorMessage | null) {
+    if (error === ErrorMessage.WrongCredentials) {
+      this.form.controls['email'].setErrors({ credentials: true });
+      this.form.controls['password'].setErrors({ credentials: true });
+    } else {
+      this.form.controls['email'].setErrors(null);
+      this.form.controls['password'].setErrors(null);
+    }
+  }
 
-  async onSubmit(): Promise<void> {
+  onSubmit(): void {
     if (this.form.invalid) {
       return;
     }
@@ -60,18 +74,7 @@ export class LoginForm {
       password: this.form.controls['password'].value
     };
 
-    try {
-      const response = await this.authService.login(loginData);
-      localStorage.setItem('token', response.accessToken);
-      await this.router.navigate(['/chat']);
-    } catch (error) {
-      if (error instanceof AxiosError) {
-        if (error.response?.data.detail === ErrorMessage.WrongCredentials) {
-          this.form.controls['email'].setErrors({ credentials: true });
-          this.form.controls['password'].setErrors({ credentials: true });
-        }
-      }
-    }
+    this.loginSubmit.emit(loginData);
   }
 
   onNewAccountClick(): void {

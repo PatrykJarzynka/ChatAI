@@ -2,32 +2,20 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { describe, test, beforeEach, expect, jest } from '@jest/globals';
 import { BrowserAnimationsModule, NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { RegisterForm } from './register-form.component';
-import { AuthService } from '@services/AuthService';
-import { AxiosError } from 'axios';
 import { ErrorMessage } from '@enums/ErrorMessage';
 import { UserRegisterData } from 'appTypes/UserRegisterData';
-import { Token } from '@models/Token';
-import { Router } from '@angular/router';
 
 
 describe('RegisterForm', () => {
   let component: RegisterForm;
   let fixture: ComponentFixture<RegisterForm>;
-  let authService: AuthService;
   let submitButton: HTMLButtonElement;
-  let router: Router;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [RegisterForm, BrowserAnimationsModule, NoopAnimationsModule],
-      providers: [
-        { provide: Router, useValue: { navigate: jest.fn() } },
-      ]
     })
       .compileComponents();
-
-    router = TestBed.inject(Router);
-    authService = TestBed.inject(AuthService);
 
     fixture = TestBed.createComponent(RegisterForm);
     component = fixture.componentInstance;
@@ -37,16 +25,57 @@ describe('RegisterForm', () => {
     fixture.detectChanges();
   });
 
-  test('should submit form after button click', () => {
+  test('should call onSubmit function after button click', () => {
     jest.spyOn(component, 'onSubmit');
     submitButton.click();
 
     expect(component.onSubmit).toHaveBeenCalled();
   });
 
+  test('should emit registerSubmit event with user\'s provided data', () => {
+    const mockData: UserRegisterData = {
+      email: 'test@test.pl',
+      password: 'TestPassword123.',
+      fullName: 'Harry Angel'
+    };
+
+    jest.spyOn(component.registerSubmit, 'emit');
+
+    component.form.controls['email'].setValue(mockData.email);
+    component.form.controls['password'].setValue(mockData.password);
+    component.form.controls['confirmPassword'].setValue(mockData.password);
+    component.form.controls['fullName'].setValue(mockData.fullName);
+
+    fixture.detectChanges();
+
+    component.onSubmit();
+
+    expect(component.registerSubmit.emit).toHaveBeenCalledWith(mockData);
+  });
+
+  test('should not emit registerSubmit when form is invalid', () => {
+    const invalidMockData: UserRegisterData = {
+      email: 'test@test',
+      password: '',
+      fullName: 'Harry Angel.'
+    };
+
+    jest.spyOn(component.registerSubmit, 'emit');
+
+    component.form.controls['email'].setValue(invalidMockData.email);
+    component.form.controls['password'].setValue(invalidMockData.password);
+    component.form.controls['fullName'].setValue(invalidMockData.fullName);
+
+    fixture.detectChanges();
+
+    component.onSubmit();
+
+    expect(component.registerSubmit.emit).not.toHaveBeenCalled();
+  });
+
   test('should set error "required" on each field', async () => {
     const expectedError = { required: true };
-    jest.spyOn(authService, 'register');
+    jest.spyOn(component.registerSubmit, 'emit');
     jest.spyOn(component, 'onSubmit');
     jest.spyOn(component, 'parseErrors');
 
@@ -61,13 +90,11 @@ describe('RegisterForm', () => {
     expect(component.form.invalid).toBe(true);
 
     expect(component.parseErrors).toHaveBeenCalledWith(expectedError);
-    expect(authService.register).not.toHaveBeenCalled();
   });
 
   test('should set error "comparePassword" on confirmPassword field', () => {
     const mockPassword = 'password';
     const expectedError = { comparePassword: true };
-    jest.spyOn(authService, 'register');
     jest.spyOn(component, 'onSubmit');
     jest.spyOn(component, 'parseErrors');
 
@@ -82,13 +109,11 @@ describe('RegisterForm', () => {
 
     expect(component.form.invalid).toBe(true);
     expect(component.parseErrors).toHaveBeenCalledWith(expectedError);
-    expect(authService.register).not.toHaveBeenCalled();
   });
 
   test('should set error "email" on email field', () => {
     const expectedError = { email: true };
     const wrongEmails = ['test.com', 'test@.com', 'test', '@test.com'];
-    jest.spyOn(authService, 'register');
     jest.spyOn(component, 'onSubmit');
     jest.spyOn(component, 'parseErrors');
 
@@ -102,40 +127,20 @@ describe('RegisterForm', () => {
 
       expect(component.form.invalid).toBe(true);
       expect(component.parseErrors).toHaveBeenCalledWith(expectedError);
-      expect(authService.register).not.toHaveBeenCalled();
     });
   });
 
   test('should set error "emailExist" on email field', async () => {
     const expectedError = { emailExists: true };
-    const mockFormData: UserRegisterData = {
-      fullName: 'Mock name',
-      email: 'test@test.com',
-      password: 'MockPassword',
-    };
-
-    const axiosError = new AxiosError('Request failed');
-    ( axiosError as any ).response = { data: { detail: ErrorMessage.EmailRegistered } };
-
-    jest.spyOn(authService, 'register').mockRejectedValue(axiosError);
-    jest.spyOn(component, 'onSubmit');
+    // const mockFormData: UserRegisterData = {
+    //   fullName: 'Mock name',
+    //   email: 'test@test.com',
+    //   password: 'MockPassword',
+    // };
+    jest.spyOn(component, 'setErrors');
     jest.spyOn(component, 'parseErrors');
 
-    component.form.setValue({
-      fullName: mockFormData.fullName,
-      email: mockFormData.email,
-      password: mockFormData.password,
-      confirmPassword: mockFormData.password
-    });
-
-    fixture.detectChanges();
-
-    submitButton.click();
-
-    expect(component.onSubmit).toHaveBeenCalled();
-
-    expect(authService.register).toHaveBeenCalledWith(mockFormData);
-    await expect(authService.register).rejects.toThrowError();
+    component.setErrors(ErrorMessage.EmailRegistered);
 
     fixture.detectChanges();
 
@@ -144,29 +149,24 @@ describe('RegisterForm', () => {
     expect(component.form.invalid).toBe(true);
   });
 
-  test('should save token in local storage and redirect to chat view', async () => {
-    const mockFormData: UserRegisterData = {
-      fullName: 'Mock name',
-      email: 'test@test.com',
-      password: 'MockPassword',
-    };
-    const mockResponse: Token = { accessToken: 'mockToken', tokenType: 'bearer' };
+  test('should set errors based on authErrors input', () => {
+    fixture.componentRef.setInput('authErrors', ErrorMessage.EmailRegistered);
+    jest.spyOn(component, 'setErrors');
 
-    component.form.setValue({
-      fullName: mockFormData.fullName,
-      email: mockFormData.email,
-      password: mockFormData.password,
-      confirmPassword: mockFormData.password
-    });
+    fixture.detectChanges();
 
-    jest.spyOn(authService, 'register').mockResolvedValue(mockResponse);
-    jest.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
-    });
+    expect(component.setErrors).toHaveBeenCalledWith(ErrorMessage.EmailRegistered);
+  });
 
-    await component.onSubmit();
+  test('should clear email errors', () => {
+    fixture.componentRef.setInput('authErrors', ErrorMessage.EmailRegistered);
+    const expectedError = null;
+    jest.spyOn(component, 'setErrors');
 
-    expect(authService.register).toHaveBeenCalledWith(mockFormData);
-    expect(localStorage.setItem).toHaveBeenCalledWith('token', mockResponse.accessToken);
-    expect(router.navigate).toHaveBeenCalledWith(['/chat']);
+    fixture.detectChanges();
+
+    component.setErrors(null);
+
+    expect(component.form.controls['email'].errors).toEqual(expectedError);
   });
 });

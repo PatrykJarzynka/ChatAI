@@ -4,6 +4,7 @@ import { UserRegisterData } from '@appTypes/UserRegisterData';
 import { Token } from '@models/Token';
 import { UserLoginData } from '@appTypes/UserLoginData';
 import { jwtDecode } from 'jwt-decode';
+import { GoogleToken } from '@appTypes/GoogleToken';
 
 
 const ENDPOINT = 'auth';
@@ -86,5 +87,9 @@ export class AuthService {
   public async refreshToken(): Promise<void> {
     const refreshedToken = await this.fetchRefreshedAccessToken();
     localStorage.setItem('token', refreshedToken.accessToken);
+  }
+
+  public async verifyGoogleToken(token: GoogleToken): Promise<boolean> {
+    return await this.apiService.post<boolean, string>(`${ ENDPOINT }/google`, token.credential);
   }
 }

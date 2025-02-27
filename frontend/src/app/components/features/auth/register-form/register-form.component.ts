@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, effect, input, output } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButton } from '@angular/material/button';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
@@ -7,10 +7,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatCardHeader, MatCardSubtitle, MatCardTitle } from '@angular/material/card';
 import { UserRegisterData } from 'appTypes/UserRegisterData';
-import { AuthService } from '@services/AuthService';
 import { ErrorMessage } from '@enums/ErrorMessage';
-import { AxiosError } from 'axios';
-import { Router } from '@angular/router';
 import useParser from '@composables/useParser';
 
 
@@ -24,8 +21,10 @@ import useParser from '@composables/useParser';
 export class RegisterForm {
   form: FormGroup;
   parseErrors: (errors: ValidationErrors | null) => string | null;
+  registerSubmit = output<UserRegisterData>();
+  authErrors = input<ErrorMessage | null>(null);
 
-  constructor(private authService: AuthService, private router: Router) {
+  constructor() {
     const { validateSamePassword } = useValidators;
     const { parseValidationErrorToString } = useParser;
 
@@ -39,9 +38,21 @@ export class RegisterForm {
     });
 
     this.parseErrors = parseValidationErrorToString;
+
+    effect(() => {
+      this.setErrors(this.authErrors());
+    });
   }
 
-  async onSubmit() {
+  setErrors(error: ErrorMessage | null) {
+    if (error === ErrorMessage.EmailRegistered) {
+      this.form.controls['email'].setErrors({ emailExists: true });
+    } else {
+      this.form.controls['email'].setErrors(null);
+    }
+  }
+
+  onSubmit() {
     if (this.form.invalid) {
       return;
     }
@@ -52,19 +63,21 @@ export class RegisterForm {
       fullName: this.form.controls['fullName'].value,
     };
 
-    try {
-      const response = await this.authService.register(registerData);
-      if (response) {
-        localStorage.setItem('token', response.accessToken);
-        await this.router.navigate(['/chat']);
-      }
+    this.registerSubmit.emit(registerData);
 
-    } catch (error) {
-      if (error instanceof AxiosError) {
-        if (error.response?.data.detail === ErrorMessage.EmailRegistered) {
-          this.form.controls['email'].setErrors({ emailExists: true });
-        }
-      }
-    }
+    // try {
+    //   const response = await this.authService.register(registerData);
+    //   if (response) {
+    //     localStorage.setItem('token', response.accessToken);
+    //     await this.router.navigate(['/chat']);
+    //   }
+    //
+    // } catch (error) {
+    //   if (error instanceof AxiosError) {
+    //     if (error.response?.data.detail === ErrorMessage.EmailRegistered) {
+    //       this.form.controls['email'].setErrors({ emailExists: true });
+    //     }
+    //   }
+    // }
   }
 }

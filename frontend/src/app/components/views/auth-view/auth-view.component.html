@@ -22,10 +22,17 @@
         [selectedIndex]="selectedTabIndex()"
       >
         <mat-tab>
-          <login-form (newAccountClick)="selectedTabIndex.set(1)"/>
+          <login-form
+            (newAccountClick)="selectedTabIndex.set(1)"
+            (loginSubmit)="onLoginFormSubmit($event)"
+            [authErrors]="loginFormError()"
+          />
         </mat-tab>
         <mat-tab style="overflow: hidden">
-          <register-form/>
+          <register-form
+            (registerSubmit)="onRegisterFormSubmit($event)"
+            [authErrors]="registerFormError()"
+          />
         </mat-tab>
       </mat-tab-group>
     </div>
