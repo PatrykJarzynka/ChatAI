@@ -7,6 +7,10 @@ import { jwtDecode } from 'jwt-decode';
 import { GoogleToken } from '@appTypes/GoogleToken';
 
 
+interface GoogleData {
+  google_token: string;
+}
+
 const ENDPOINT = 'auth';
 
 @Injectable({
@@ -90,8 +94,6 @@ export class AuthService {
   }
 
   public async verifyGoogleToken(token: GoogleToken): Promise<boolean> {
-    return await this.apiService.post<boolean, {
-      google_token: string
-    }>(`${ ENDPOINT }/google`, { google_token: token.credential });
+    return await this.apiService.post<boolean, GoogleData>(`${ ENDPOINT }/google`, { google_token: token.credential });
   }
 }
