@@ -5,6 +5,7 @@ import { Token } from '@models/Token';
 import { UserRegisterData } from '@appTypes/UserRegisterData';
 import { UserLoginData } from '@appTypes/UserLoginData';
 import { jwtDecode } from 'jwt-decode';
+import { AuthProvider } from '@appTypes/AuthProvider';
 
 
 jest.mock('jwt-decode', () => ( {
@@ -32,7 +33,8 @@ describe('authService', () => {
     const registerData: UserRegisterData = {
       email: 'test@test.com',
       fullName: 'XYZ',
-      password: 'mockPassword'
+      password: 'mockPassword',
+      provider: AuthProvider.LOCAL,
     };
 
     const response = await authService.register(registerData);

@@ -74,7 +74,7 @@ export class AuthView {
     }
   }
 
-  onGoogleLogin(token: GoogleToken) {
-    console.log(token);
+  async onGoogleLogin(token: GoogleToken) {
+    await this.authService.verifyGoogleToken(token);
   }
 }

@@ -9,6 +9,7 @@ import { MatCardHeader, MatCardSubtitle, MatCardTitle } from '@angular/material/
 import { UserRegisterData } from 'appTypes/UserRegisterData';
 import { ErrorMessage } from '@enums/ErrorMessage';
 import useParser from '@composables/useParser';
+import { AuthProvider } from '@appTypes/AuthProvider';
 
 
 @Component({
@@ -61,6 +62,7 @@ export class RegisterForm {
       email: this.form.controls['email'].value,
       password: this.form.controls['password'].value,
       fullName: this.form.controls['fullName'].value,
+      provider: AuthProvider.LOCAL
     };
 
     this.registerSubmit.emit(registerData);

@@ -10,6 +10,7 @@ import { Token } from '@models/Token';
 import { ErrorMessage } from '@enums/ErrorMessage';
 import { AxiosError } from 'axios';
 import { UserRegisterData } from '@appTypes/UserRegisterData';
+import { AuthProvider } from '@appTypes/AuthProvider';
 
 
 describe('AuthView', () => {
@@ -76,7 +77,8 @@ describe('AuthView', () => {
     const mockFormData: UserRegisterData = {
       email: 'test@test.com',
       password: 'MockPassword',
-      fullName: 'Harry Angel'
+      fullName: 'Harry Angel',
+      provider: AuthProvider.LOCAL,
     };
 
     const mockResponseToken: Token = { accessToken: 'mockToken', tokenType: 'bearer' };
@@ -99,7 +101,8 @@ describe('AuthView', () => {
     const mockFormData: UserRegisterData = {
       email: 'test@test.com',
       password: 'MockPassword',
-      fullName: 'Harry Angel'
+      fullName: 'Harry Angel',
+      provider: AuthProvider.LOCAL,
     };
 
     const axiosError = new AxiosError('Request failed');

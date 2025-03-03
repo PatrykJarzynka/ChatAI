@@ -90,6 +90,8 @@ export class AuthService {
   }
 
   public async verifyGoogleToken(token: GoogleToken): Promise<boolean> {
-    return await this.apiService.post<boolean, string>(`${ ENDPOINT }/google`, token.credential);
+    return await this.apiService.post<boolean, {
+      google_token: string
+    }>(`${ ENDPOINT }/google`, { google_token: token.credential });
   }
 }

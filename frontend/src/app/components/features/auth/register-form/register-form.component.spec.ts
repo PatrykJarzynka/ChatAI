@@ -4,6 +4,7 @@ import { BrowserAnimationsModule, NoopAnimationsModule } from '@angular/platform
 import { RegisterForm } from './register-form.component';
 import { ErrorMessage } from '@enums/ErrorMessage';
 import { UserRegisterData } from 'appTypes/UserRegisterData';
+import { AuthProvider } from '@appTypes/AuthProvider';
 
 
 describe('RegisterForm', () => {
@@ -36,7 +37,8 @@ describe('RegisterForm', () => {
     const mockData: UserRegisterData = {
       email: 'test@test.pl',
       password: 'TestPassword123.',
-      fullName: 'Harry Angel'
+      fullName: 'Harry Angel',
+      provider: AuthProvider.LOCAL,
     };
 
     jest.spyOn(component.registerSubmit, 'emit');
@@ -57,7 +59,8 @@ describe('RegisterForm', () => {
     const invalidMockData: UserRegisterData = {
       email: 'test@test',
       password: '',
-      fullName: 'Harry Angel.'
+      fullName: 'Harry Angel.',
+      provider: AuthProvider.LOCAL,
     };
 
     jest.spyOn(component.registerSubmit, 'emit');
