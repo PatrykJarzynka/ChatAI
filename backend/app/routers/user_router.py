@@ -33,7 +33,6 @@ verify_token_dependency = Annotated[dict,Depends(get_verify_token_function)]
 
 
 @router.get("/user/me", response_model=UserResponseDTO)
-def get_user_by_id(user_service: user_service_dependency, jwt_service: jwt_service_dependency,
-                   token: Annotated[str, Depends(oauth2_scheme)], decoded_token: verify_token_dependency):
+def get_user_by_id(user_service: user_service_dependency, decoded_token: verify_token_dependency):
     user_id = int(decoded_token['sub'])
     return user_service.get_user_by_id(user_id)
