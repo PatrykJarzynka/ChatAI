@@ -45,7 +45,9 @@
         Sign in
       </button>
 
-      <login-google-button/>
+      <p class="login-divider">or</p>
+
+      <login-google-button (googleLogin)="googleLogin.emit($event)"/>
 
       <div class="no-account-container">
         <p class="no-account-question">Don't have a Chat A.I+ account?</p>

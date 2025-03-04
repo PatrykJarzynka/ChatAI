@@ -33,10 +33,6 @@ export class AuthView {
   ) {
   }
 
-  ngOnInit(): void {
-    ( window as unknown as ExtendedWindow ).onGoogleLogin = this.onGoogleLogin.bind(this);
-  }
-
   onIconBackClick(): void {
     this.selectedTabIndex.set(0);
   }
@@ -75,6 +71,12 @@ export class AuthView {
   }
 
   async onGoogleLogin(token: GoogleToken) {
-    await this.authService.verifyGoogleToken(token);
+    try {
+      const access_token = await this.authService.getAccessTokenWithGoogleLogin(token);
+      localStorage.setItem('token', access_token.accessToken);
+      await this.router.navigate(['/chat']);
+    } catch (e) {
+      console.error(e);
+    }
   }
 }

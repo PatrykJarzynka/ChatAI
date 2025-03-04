@@ -93,7 +93,7 @@ export class AuthService {
     localStorage.setItem('token', refreshedToken.accessToken);
   }
 
-  public async verifyGoogleToken(token: GoogleToken): Promise<boolean> {
-    return await this.apiService.post<boolean, GoogleData>(`${ ENDPOINT }/google`, { google_token: token.credential });
+  public async getAccessTokenWithGoogleLogin(token: GoogleToken): Promise<Token> {
+    return await this.apiService.post<Token, GoogleData>(`${ ENDPOINT }/google`, { google_token: token.credential });
   }
 }

@@ -10,6 +10,7 @@ import { ErrorMessage } from '@enums/ErrorMessage';
 import {
   LoginGoogleButtonComponent
 } from '@components/features/auth/login-google-button/login-google-button.component';
+import { GoogleToken } from '@appTypes/GoogleToken';
 
 
 @Component({
@@ -37,6 +38,7 @@ export class LoginForm {
 
   newAccountClick = output<void>();
   loginSubmit = output<UserLoginData>();
+  googleLogin = output<GoogleToken>();
   authErrors = input<ErrorMessage | null>(null);
 
   constructor() {

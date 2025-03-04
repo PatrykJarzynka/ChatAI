@@ -41,7 +41,7 @@
   flex-direction: column;
   justify-content: center;
   width: 100%;
-  row-gap: 40px;
+  row-gap: 15px;
 
   .no-account-question {
     text-align: center;
@@ -52,4 +52,30 @@
     flex-direction: column;
     justify-content: center;
   }
+}
+
+.login-divider {
+  position: relative;
+  display: inline-block;
+  text-align: center;
+  margin: 0;
+  color: var(--tertiary-light);
+}
+
+.login-divider::before,
+.login-divider::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 45%;
+  height: 1px;
+  background-color: var(--divide-color)
+}
+
+.login-divider::before {
+  left: 0;
+}
+
+.login-divider::after {
+  right: 0;
 }
