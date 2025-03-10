@@ -3,7 +3,7 @@ from services.auth.google_service import GoogleService
 from unittest.mock import patch
 from google.oauth2 import id_token
 import google.auth.transport.requests
-import time
+from unittest.mock import MagicMock
 
 
 @pytest.fixture
@@ -35,33 +35,45 @@ def test_verify_and_decode_token_failed(google_service: GoogleService):
 
             assert str(verify_error.value) == "Not authenicated!"
 
-def test_validate_iss_successfully(google_service: GoogleService):
-    mocked_id_info = {"iss": 'https://accounts.google.com'}
+def test_fetch_tokens(google_service: GoogleService, monkeypatch):
+    monkeypatch.setenv('GOOGLE_CLIENT_ID',"mockedId")
+    monkeypatch.setenv('GOOGLE_SECRET',"mockedSecret")
+    mockedCode = 'mockedCode'
 
-    result = google_service.validate_iss(mocked_id_info)
-    assert result == True
+    mock_response = MagicMock()
+    mock_response.json.return_value={'id_token': 'aaa', 'refresh_token': 'bbb'}
 
-def test_validate_iss_failed(google_service: GoogleService):
-    mocked_id_info = {"iss": 'mock_iss'}
+    expected_data = {
+        "code": mockedCode,
+        "client_id": 'mockedId',
+        "client_secret": 'mockedSecret',
+        "redirect_uri": 'postmessage',
+        "grant_type": 'authorization_code'
+    }
+
+    with patch('requests.post', return_value = mock_response) as mock_post:
+        google_service.fetch_tokens(mockedCode)
+
+        mock_post.assert_called_with('https://oauth2.googleapis.com/token', data=expected_data)
+
+def test_refresh_token(google_service: GoogleService, monkeypatch):
+    monkeypatch.setenv('GOOGLE_CLIENT_ID',"mockedId")
+    monkeypatch.setenv('GOOGLE_SECRET',"mockedSecret")
+    mockedRefreshToken = 'xyz'
+
+    mock_response = MagicMock()
+    mock_response.json.return_value={'id_token': 'aaa', 'refresh_token': 'bbb'}
+
+    expected_data = {
+        "client_id": "mockedId",
+        "client_secret": "mockedSecret",
+        "refresh_token": mockedRefreshToken,
+        "grant_type": 'refresh_token'
+        }
     
-    with pytest.raises(ValueError) as validate_iss_error:
-        google_service.validate_iss(mocked_id_info)
-    
-    assert str(validate_iss_error.value) == "Invalid issuer token!"
+    with patch('requests.post', return_value = mock_response) as mock_post:
+        google_service.refresh_id_token(mockedRefreshToken)
 
-def test_validate_exp_time_successfully(google_service: GoogleService):
-    current_time = time.time() + 86400
-    mocked_id_info = {"exp": current_time}
+        mock_post.assert_called_with('https://oauth2.googleapis.com/token', data=expected_data)
 
-    result = google_service.validate_exp_time(mocked_id_info)
-    assert result == True
 
-def test_validate_exp_time_failed(google_service: GoogleService):
-    current_time = time.time() - 86400
-    mocked_id_info = {"exp": current_time}
-
-    with pytest.raises(ValueError) as validate_exp_time_error:
-        google_service.validate_exp_time(mocked_id_info)
-
-    assert str(validate_exp_time_error.value) == "Google token expired!"
-                
