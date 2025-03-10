@@ -30,7 +30,6 @@ class BotService:
         try:
             memory = ChatMemoryBuffer.from_defaults(chat_history=self.prepare_chat_memory(chat_items))
 
-            # google_search_tool = GoogleSearchToolSpec(key='AIzaSyCKLg4FDIFUHvmx66QfThve3np_iQJp4LA', engine='47a2afa3094394fb4', num=3)
             # documents = SimpleWebPageReader(html_to_text=True).load_data(['https://www.codeconcept.pl/'])
 
             # index = SummaryIndex.from_documents(documents)
