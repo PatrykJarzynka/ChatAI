@@ -1,5 +1,5 @@
 from enum import Enum
 
-class AuthProvider(str, Enum):
+class Tenant(str, Enum):
     GOOGLE = "google"
     LOCAL = "local"

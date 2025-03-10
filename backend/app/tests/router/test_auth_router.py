@@ -13,7 +13,7 @@ from services.user_service import UserService
 from main import app
 from dependencies import get_jwt_service
 from app_types.token import Token
-from app_types.auth_provider import AuthProvider
+from app_types.tenant import Tenant
 
 MOCKED_TOKEN = Token(access_token="fake_token", token_type="bearer")
 
@@ -43,7 +43,7 @@ def test_register_successfully(session: Session, client: TestClient):
     "full_name": 'XYZ',
     "email": "test@test.pl",
     "password": "Test123.",
-    "provider": AuthProvider.LOCAL
+    "tenant": Tenant.LOCAL
     })
 
     data = response.json()
@@ -57,20 +57,20 @@ def test_register_successfully(session: Session, client: TestClient):
     assert created_user.email == 'test@test.pl'
     assert created_user.full_name == 'XYZ'
     assert created_user.password != 'Test123.'
-    assert created_user.provider == AuthProvider.LOCAL
+    assert created_user.tenant == Tenant.LOCAL
 
 
 def test_register_existing_email(user_service: UserService, client: TestClient):
     app.dependency_overrides[get_jwt_service] = override_jwt_service
 
-    registered_user = User(email='test@test.pl', full_name='XYZ', password='someHashedPassword', provider=AuthProvider.LOCAL)
+    registered_user = User(email='test@test.pl', full_name='XYZ', password='someHashedPassword', tenant=Tenant.LOCAL)
     user_service.save_user(registered_user)
 
     response = client.post('/auth/register', json={
     "full_name": 'TestName',
     "email": "test@test.pl",
     "password": "Test123.",
-    "provider": AuthProvider.LOCAL
+    "tenant": Tenant.LOCAL
     })
 
     assert response.status_code == 409
@@ -84,7 +84,7 @@ def test_login_successfully(user_service: UserService, client: TestClient):
         "full_name": 'TestName',
         "email": "test@test.pl",
         "password": "Test123.",
-        "provider": AuthProvider.LOCAL
+        "tenant": Tenant.LOCAL
     })
 
     response = client.post('/auth/login', data={
@@ -105,7 +105,7 @@ def test_login_wrong_credentials(user_service: UserService, client: TestClient):
         "full_name": 'TestName',
         "email": "test@test.pl",
         "password": "Test123.",
-        "provider": AuthProvider.LOCAL
+        "tenant": Tenant.LOCAL
     })
 
     response_wrong_username = client.post('/auth/login', data={

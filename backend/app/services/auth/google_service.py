@@ -1,8 +1,9 @@
 from google.oauth2 import id_token
 import google.auth.transport.requests
+from app_types.google_tokens import GoogleTokens
 from dotenv import load_dotenv
 import os
-import time
+import requests
 
 env_file = ".env.production" if os.getenv("DOCKER_ENV") == "production" else ".env.development"
 
@@ -22,21 +23,34 @@ class GoogleService:
         except:
             raise ValueError('Not authenicated!')
         
-    def validate_iss(self, id_info: dict) -> bool:
-        iss = id_info.get('iss')
+    def fetch_tokens(self, code: str) -> dict:
+        CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
+        SECRET = os.getenv("GOOGLE_SECRET")
 
-        if iss != "https://accounts.google.com":
-           raise ValueError('Invalid issuer token!')
-        else:
-            return True
+        data = {
+        "code": code,
+        "client_id": CLIENT_ID,
+        "client_secret": SECRET,
+        "redirect_uri": 'postmessage',
+        "grant_type": 'authorization_code'
+        }
+
+        response = requests.post('https://oauth2.googleapis.com/token', data=data)
+        return response.json()
+
+    def refresh_id_token(self, refresh_token: str) -> dict:
+        CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
+        SECRET = os.getenv("GOOGLE_SECRET")
+
+        data = {
+        "client_id": CLIENT_ID,
+        "client_secret": SECRET,
+        "refresh_token": refresh_token,
+        "grant_type": 'refresh_token'
+        }
+
+        response = requests.post('https://oauth2.googleapis.com/token', data=data)
+        return response.json()
+
     
-    def validate_exp_time(self, id_info: dict) -> bool:
-        exp = id_info.get('exp')
-        current_time = time.time()
-
-        if exp < current_time:
-           raise ValueError('Google token expired!')
-        else:
-            return True
-
 

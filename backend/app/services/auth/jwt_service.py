@@ -45,8 +45,10 @@ class JWTService:
             detail="Token expired",
             headers={"WWW-Authenticate": "Bearer"},
         )
+        
 
         try:
+
             payload = jwt.decode(token, self.SECRET_KEY, algorithms=[self.ALGORITHM])
             return payload
         except ExpiredSignatureError:

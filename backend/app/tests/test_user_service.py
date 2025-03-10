@@ -8,7 +8,7 @@ from sqlmodel import Session
 from app_types.user_create_dto import UserCreateDTO
 from db_models.user_model import User
 from services.auth.hash_service import HashService
-from app_types.auth_provider import AuthProvider
+from app_types.tenant import Tenant
 from services.user_service import UserService
 
 
@@ -23,7 +23,7 @@ def user_service(session: Session, hash_service: HashService):
 
 
 def test_create_user_successfully(user_service: UserService):
-    create_user_data = UserCreateDTO(email=cast(EmailStr, 'test@test.pl'), password='Test123.', full_name='TestName', provider=AuthProvider.LOCAL)
+    create_user_data = UserCreateDTO(email=cast(EmailStr, 'test@test.pl'), password='Test123.', full_name='TestName', tenant=Tenant.LOCAL)
     new_user = user_service.create_user(create_user_data)
 
     assert isinstance(new_user, User)
@@ -33,9 +33,9 @@ def test_create_user_successfully(user_service: UserService):
 
 
 def test_create_user_existing_email(user_service: UserService):
-    user_service.save_user(User(email='test@test.pl', full_name='TestName', password='SomeHashedPassword',provider=AuthProvider.LOCAL))
+    user_service.save_user(User(email='test@test.pl', full_name='TestName', password='SomeHashedPassword',tenant=Tenant.LOCAL))
 
-    create_user_data = UserCreateDTO(email=cast(EmailStr, 'test@test.pl'), password='Test123.', full_name='TestName2', provider=AuthProvider.LOCAL)
+    create_user_data = UserCreateDTO(email=cast(EmailStr, 'test@test.pl'), password='Test123.', full_name='TestName2', tenant=Tenant.LOCAL)
 
     with pytest.raises(HTTPException) as exc_info:
         user_service.create_user(create_user_data)
@@ -45,7 +45,7 @@ def test_create_user_existing_email(user_service: UserService):
 
 
 def test_authenticate_local_user_successfully(user_service: UserService):
-    create_user_data = UserCreateDTO(email=cast(EmailStr, 'test@test.pl'), password='Test123.', full_name='TestName2', provider=AuthProvider.LOCAL)
+    create_user_data = UserCreateDTO(email=cast(EmailStr, 'test@test.pl'), password='Test123.', full_name='TestName2', tenant=Tenant.LOCAL)
     user = user_service.create_user(create_user_data)  # create new user with hashed password
     user_service.save_user(user)
 
@@ -55,7 +55,7 @@ def test_authenticate_local_user_successfully(user_service: UserService):
 
 
 def test_authenticate_local_user_wrong_password(user_service: UserService):
-    create_user_data = UserCreateDTO(email=cast(EmailStr, 'test@test.pl'), password='Test123.', full_name='TestName2', provider=AuthProvider.LOCAL)
+    create_user_data = UserCreateDTO(email=cast(EmailStr, 'test@test.pl'), password='Test123.', full_name='TestName2', tenant=Tenant.LOCAL)
     user = user_service.create_user(create_user_data)  # create new user with hashed password
     user_service.save_user(user)
 
@@ -69,8 +69,8 @@ def test_authenticate_local_user_not_existing_user(user_service: UserService):
 
     assert authenticated_user is False
 
-def test_authenticate_local_user_google_provider(user_service: UserService):
-    google_user_data = UserCreateDTO(email=cast(EmailStr, 'test@test.pl'), password='Test123.', full_name='TestName2', provider=AuthProvider.GOOGLE)
+def test_authenticate_local_user_google_tenant(user_service: UserService):
+    google_user_data = UserCreateDTO(email=cast(EmailStr, 'test@test.pl'), password='Test123.', full_name='TestName2', tenant=Tenant.GOOGLE)
     user = user_service.create_user(google_user_data)
     user_service.save_user(user)
 
@@ -79,7 +79,7 @@ def test_authenticate_local_user_google_provider(user_service: UserService):
     assert authenticated_user is False
 
 def test_get_user_by_id_successfully(user_service: UserService):
-    create_user_data = UserCreateDTO(email=cast(EmailStr, 'test@test.pl'), password='Test123.', full_name='TestName2', provider=AuthProvider.LOCAL)
+    create_user_data = UserCreateDTO(email=cast(EmailStr, 'test@test.pl'), password='Test123.', full_name='TestName2', tenant=Tenant.LOCAL)
     user = user_service.create_user(create_user_data)  # create new user with hashed password
     user_service.save_user(user)
 
@@ -95,7 +95,7 @@ def test_get_user_by_id_failed(user_service: UserService):
     assert getting_error.value.detail == 'User not found'
 
 def test_get_user_by_email_successfully(user_service: UserService):
-    create_user_data = UserCreateDTO(email=cast(EmailStr, 'test@test.pl'), password='Test123.', full_name='TestName2', provider=AuthProvider.LOCAL)
+    create_user_data = UserCreateDTO(email=cast(EmailStr, 'test@test.pl'), password='Test123.', full_name='TestName2', tenant=Tenant.LOCAL)
     user = user_service.create_user(create_user_data)  # create new user with hashed password
     user_service.save_user(user)
 
@@ -111,7 +111,7 @@ def test_get_user_by_email_failed(user_service: UserService):
     assert getting_error.value.detail == 'User not found'
 
 def test_is_user_with_provided_email_in_db_successfully(user_service: UserService):
-    create_user_data = UserCreateDTO(email=cast(EmailStr, 'test@test.pl'), password='Test123.', full_name='TestName2', provider=AuthProvider.LOCAL)
+    create_user_data = UserCreateDTO(email=cast(EmailStr, 'test@test.pl'), password='Test123.', full_name='TestName2', tenant=Tenant.LOCAL)
     user = user_service.create_user(create_user_data)  # create new user with hashed password
     user_service.save_user(user)
 

@@ -1,3 +1,5 @@
+import os
+import requests
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -5,13 +7,15 @@ from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 from sqlmodel import Session
 
 from app_types.token import Token
-from app_types.google_token_dto import GoogleTokenDTO
+from app_types.google_auth_code_request import GoogleAuthCodeRequest
+from app_types.google_refresh_token_request import GoogleRefreshTokenRequest
 from app_types.user_create_dto import UserCreateDTO
-from app_types.auth_provider import AuthProvider
+from app_types.tenant import Tenant
+from app_types.google_tokens import GoogleTokens
 from database import get_session
-from dependencies import hash_service_dependency, jwt_service_dependency
+from dependencies import hash_service_dependency, jwt_service_dependency, verify_token_dependency, google_service_dependency
 from services.user_service import UserService
-from services.auth.google_service import GoogleService
+
 
 router = APIRouter()
 
@@ -23,17 +27,6 @@ def get_user_service(session: session_dependency, hash_service: hash_service_dep
     return UserService(session, hash_service)
 
 user_service_dependency = Annotated[UserService, Depends(get_user_service)]
-
-def get_verify_token_function(jwt_service: jwt_service_dependency, token: Annotated[str, Depends(oauth2_scheme)]):
-    return jwt_service.decode_access_token(token)
-
-verify_token_dependency = Annotated[dict,Depends(get_verify_token_function)]
-
-def get_google_service():
-    return GoogleService()
-
-google_service_dependency = Annotated[GoogleService, Depends(get_google_service)]
-
 
 @router.post('/auth/login')
 async def login_for_access_token(
@@ -57,43 +50,44 @@ async def login_for_access_token(
 def register(user: UserCreateDTO, user_service: user_service_dependency, jwt_service: jwt_service_dependency) -> Token:
     new_user = user_service.create_user(user)
     user_service.save_user(new_user)
+    new_user.tenant_id = new_user.id
+    user_service.save_user(new_user)
 
     access_token = jwt_service.create_access_token({"sub": str(new_user.id)})
     return access_token
 
-@router.get('/auth/refresh')
-def refresh(jwt_service: jwt_service_dependency, decoded_token: verify_token_dependency) -> Token:
-    user_id = int(decoded_token['sub'])
-    new_access_token = jwt_service.create_access_token({"sub": str(user_id)})
+@router.post('/auth/refresh')
+def refresh(jwt_service: jwt_service_dependency, user_service: user_service_dependency, google_service: google_service_dependency, decoded_token: verify_token_dependency, body: GoogleRefreshTokenRequest) -> str:
+    tenant_id = decoded_token['sub']
+    user = user_service.get_user_by_tenant_id(tenant_id)
+
+    if user.tenant == Tenant.LOCAL:
+        new_access_token = jwt_service.create_access_token({"sub": str(user.id)}).access_token
+    elif user.tenant == Tenant.GOOGLE:
+        if body.refreshToken:
+            new_access_token = google_service.refresh_id_token(body.refreshToken)["id_token"]
+        else:
+            raise HTTPException(
+                detail='No refresh token provided!',
+                status_code=400
+            )
+    else:
+        raise HTTPException(
+            detail='Tenant not supported',
+            status_code=400
+        )
+
+    
     return new_access_token
 
 @router.get('/auth/verify')
-def verify_token(jwt_service: jwt_service_dependency, token: Annotated[str, Depends(oauth2_scheme)], decoded_token: verify_token_dependency):
-    if (decoded_token):
-        return token
-    
+def verify_token(decoded_token: verify_token_dependency):
+    return {"isValid": True}
+
 @router.post('/auth/google')
-def verify_token(token_data: GoogleTokenDTO, google_service: google_service_dependency, user_service: user_service_dependency, jwt_service: jwt_service_dependency) -> Token:
-    decoded_token = None
-
-    try:
-        decoded_token = google_service.verify_and_decode_token(token_data.google_token)
-        google_service.validate_iss(decoded_token)
-        google_service.validate_exp_time(decoded_token)
-    except Exception as e:
-        raise HTTPException(status_code=401, detail=f"Failed to validate token: {e}")
-    
-    user_email = decoded_token['email']
-    user_already_exist = user_service.is_user_with_provided_email_in_db(user_email)
-
-    if user_already_exist:
-        existing_user = user_service.get_user_by_email(user_email)
-        return jwt_service.create_access_token({"sub": existing_user.id})
-    else:
-        user_name = decoded_token['given_name']
-        user_surname = decoded_token['family_name']
-        user_full_name = f"{user_name} {user_surname}"
-    
-        new_user_data = UserCreateDTO(email=user_email, password=None, full_name=user_full_name, provider=AuthProvider.GOOGLE)
-        return register(new_user_data, user_service, jwt_service)
-   
+async def get_tokens(body: GoogleAuthCodeRequest, google_service: google_service_dependency) -> GoogleTokens:
+    data = google_service.fetch_tokens(body.code)
+    return {
+        'refresh_token': data['refresh_token'],
+        'access_token': data['id_token'] # data contains access_token and id_token, but access_token is required to be passed when using google api, while id_token is simple google jwt that we can validate.
+    }

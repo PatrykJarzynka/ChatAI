@@ -1,14 +1,13 @@
 import { Injectable } from '@angular/core';
 import { ApiService } from '@services/ApiService';
 import { UserRegisterData } from '@appTypes/UserRegisterData';
-import { Token } from '@models/Token';
+import { GoogleTokens, Token } from '@models/Token';
 import { UserLoginData } from '@appTypes/UserLoginData';
 import { jwtDecode } from 'jwt-decode';
-import { GoogleToken } from '@appTypes/GoogleToken';
 
 
 interface GoogleData {
-  google_token: string;
+  code: string;
 }
 
 const ENDPOINT = 'auth';
@@ -55,12 +54,15 @@ export class AuthService {
     return await this.apiService.post<Token, URLSearchParams>(`${ ENDPOINT }/login`, loginData, false, true);
   }
 
-  public async fetchRefreshedAccessToken(): Promise<Token> {
-    return await this.apiService.get<Token>(`${ ENDPOINT }/refresh`);
+  public async fetchRefreshedAccessToken(): Promise<string> {
+    const refreshToken = localStorage.getItem('refresh');
+    return await this.apiService.post<string, {
+      refreshToken: string | null
+    }>(`${ ENDPOINT }/refresh`, Object.assign({}, { refreshToken: refreshToken }));
   }
 
-  public async verifyToken(): Promise<Token> {
-    return await this.apiService.get<Token>(`${ ENDPOINT }/verify`);
+  public async verifyToken(): Promise<{ isValid: boolean }> {
+    return await this.apiService.get<{ isValid: boolean }>(`${ ENDPOINT }/verify`);
   }
 
   public handleSettingRefreshTokenInterval(token: string): void {
@@ -90,10 +92,10 @@ export class AuthService {
 
   public async refreshToken(): Promise<void> {
     const refreshedToken = await this.fetchRefreshedAccessToken();
-    localStorage.setItem('token', refreshedToken.accessToken);
+    localStorage.setItem('token', refreshedToken);
   }
 
-  public async getAccessTokenWithGoogleLogin(token: GoogleToken): Promise<Token> {
-    return await this.apiService.post<Token, GoogleData>(`${ ENDPOINT }/google`, { google_token: token.credential });
+  public async getGoogleTokens(code: string): Promise<GoogleTokens> {
+    return await this.apiService.post<GoogleTokens, GoogleData>(`${ ENDPOINT }/google`, { code });
   }
 }

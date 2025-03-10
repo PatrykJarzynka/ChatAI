@@ -38,7 +38,7 @@ export class LoginForm {
 
   newAccountClick = output<void>();
   loginSubmit = output<UserLoginData>();
-  googleLogin = output<GoogleToken>();
+  googleLogin = output<string>();
   authErrors = input<ErrorMessage | null>(null);
 
   constructor() {

@@ -1,36 +1,42 @@
 import { Component, output } from '@angular/core';
-import { GoogleToken } from '@appTypes/GoogleToken';
 import { GOOGLE_CLIENT_ID } from '@api/apiConfig';
+import { MatButton } from '@angular/material/button';
 
+
+declare const google: any;
+
+interface GoogleAuthResponse {
+  authuser: string;
+  code: string;
+  prompt: string;
+  scope: string;
+}
 
 @Component({
   selector: 'login-google-button',
-  imports: [],
+  imports: [
+    MatButton
+  ],
   templateUrl: './login-google-button.component.html',
   styleUrl: './login-google-button.component.scss'
 })
-export class LoginGoogleButtonComponent {
 
-  googleLogin = output<GoogleToken>();
+
+export class LoginGoogleButtonComponent {
+  client: any;
+
+  googleLogin = output<string>();
 
   ngOnInit() {
-    ( window as any ).google.accounts.id.initialize({
+    this.client = google.accounts.oauth2.initCodeClient({
       client_id: GOOGLE_CLIENT_ID,
-      callback: (data: GoogleToken) => {
-        this.googleLogin.emit(data);
+      scope: 'openid email profile',
+      ux_mode: 'popup',
+      redirect_uri: 'postmessage',
+      access_type: 'offline',
+      callback: (response: GoogleAuthResponse) => {
+        this.googleLogin.emit(response.code);
       }
     });
-
-    ( window as any ).google.accounts.id.renderButton(
-      document.getElementById('google-button'),
-      {
-        theme: 'outline',
-        size: 'large',
-        shape: 'pill',
-        type: 'standard',
-        text: 'signin_with',
-        'data-logo-alignment': 'left'
-      }
-    );
   }
 }

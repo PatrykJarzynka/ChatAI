@@ -50,9 +50,9 @@ export class ChatView {
     let validToken = false;
 
     if (token) {
-
       try {
-        validToken = !!await this.authService.verifyToken();
+        const response = await this.authService.verifyToken();
+        validToken = response.isValid;
       } catch (error) {
         await this.router.navigate(['/']);
       }
@@ -92,6 +92,7 @@ export class ChatView {
     this.chatHistoryService.clearChatHistory();
 
     localStorage.removeItem('token');
+    localStorage.removeItem('refresh');
 
     if (this.authService.refreshTokenCallInterval) {
       clearInterval(this.authService.refreshTokenCallInterval);

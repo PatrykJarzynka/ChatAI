@@ -12,6 +12,7 @@ import { AxiosError } from 'axios';
 import { ErrorMessage } from '@enums/ErrorMessage';
 import { Router } from '@angular/router';
 import { UserRegisterData } from '@appTypes/UserRegisterData';
+import { UserService } from '@services/UserService';
 
 
 interface ExtendedWindow extends Window {
@@ -30,6 +31,7 @@ export class AuthView {
   constructor(
     private router: Router,
     private authService: AuthService,
+    private userService: UserService,
   ) {
   }
 
@@ -70,13 +72,26 @@ export class AuthView {
     }
   }
 
-  async onGoogleLogin(token: GoogleToken) {
+  async onGoogleLogin(authCode: string): Promise<void> {
     try {
-      const access_token = await this.authService.getAccessTokenWithGoogleLogin(token);
-      localStorage.setItem('token', access_token.accessToken);
+      const tokens = await this.authService.getGoogleTokens(authCode);
+      localStorage.setItem('token', tokens.accessToken);
+      localStorage.setItem('refresh', tokens.refreshToken);
+      await this.userService.createOrUpdateGoogleUser();
       await this.router.navigate(['/chat']);
     } catch (e) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('refresh');
       console.error(e);
     }
+
+    // try {
+    //   await this.authService.handleGoogleLogin(token);
+    //   localStorage.setItem('token', token.credential);
+    //
+    // } catch (e) {
+    //   localStorage.removeItem('token');
+    //   console.error(e);
+    // }
   }
 }

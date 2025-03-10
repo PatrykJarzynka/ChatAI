@@ -25,4 +25,8 @@ export class UserService {
   async fetchUser(): Promise<UserModel> {
     return await this.apiService.get<UserModel>(`${ ENDPOINT }/me`);
   }
+
+  async createOrUpdateGoogleUser(): Promise<void> {
+    await this.apiService.post<void, {}>(`${ ENDPOINT }/google`, Object);
+  }
 }

@@ -1,20 +1,29 @@
-<div id="google-button">
-  <div
-    id="g_id_onload"
-    data-context="signin"
-    data-ux_mode="popup"
-    data-callback="onGoogleLogin"
-    data-itp_support="true">
-  </div>
+<button
+  mat-stroked-button
+  (click)="client.requestCode()"
+  class="testClass"
+>
+  Sign in with Google
+</button>
 
-  <div
-    class="g_id_signin"
-    data-type="standard"
-    data-shape="pill"
-    data-theme="outline"
-    data-text="signin_with"
-    data-size="large"
-    data-logo_alignment="left">
-  </div>
-</div>
+<!--<div id="google-button">-->
+<!--  <div-->
+<!--    id="g_id_onload"-->
+<!--    data-context="signin"-->
+<!--    data-ux_mode="redirect"-->
+<!--    data-itp_support="true"-->
+<!--    data-response_type="code"-->
+<!--  >-->
+<!--  </div>-->
+
+<!--  <div-->
+<!--    class="g_id_signin"-->
+<!--    data-type="standard"-->
+<!--    data-shape="pill"-->
+<!--    data-theme="outline"-->
+<!--    data-text="signin_with"-->
+<!--    data-size="large"-->
+<!--    data-logo_alignment="left">-->
+<!--  </div>-->
+<!--</div>-->
 

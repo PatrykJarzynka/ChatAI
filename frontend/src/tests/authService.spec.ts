@@ -34,7 +34,7 @@ describe('authService', () => {
       email: 'test@test.com',
       fullName: 'XYZ',
       password: 'mockPassword',
-      provider: AuthProvider.LOCAL,
+      tenant: AuthProvider.LOCAL,
     };
 
     const response = await authService.register(registerData);

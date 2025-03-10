@@ -5,5 +5,5 @@ export interface UserRegisterData {
   email: string;
   password: string;
   fullName: string;
-  provider: AuthProvider;
+  tenant: AuthProvider;
 }

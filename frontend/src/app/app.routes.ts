@@ -5,5 +5,5 @@ import { ChatView } from '@components/views/chat-view/chat-view.component';
 
 export const routes: Routes = [
   { path: '', component: AuthView },
-  { path: 'chat', component: ChatView }
+  { path: 'chat', component: ChatView },
 ];

@@ -8,7 +8,7 @@ from services.auth.hash_service import HashService
 from services.user_service import UserService
 from app_types.user_create_dto import UserCreateDTO
 from app_types.user_response_dto import UserResponseDTO
-from app_types.auth_provider import AuthProvider
+from app_types.tenant import Tenant
 
 @pytest.fixture()
 def jwt_service():
@@ -23,7 +23,7 @@ def user_service(session: Session, hash_service):
     return UserService(session, hash_service)
 
 def test_get_user_by_id_with_valid_token(session: Session, client: TestClient, jwt_service: JWTService, user_service: UserService):
-    create_user_data = UserCreateDTO(email=cast(EmailStr, 'test@test.pl'), password='Test123.', full_name='TestName', provider=AuthProvider.LOCAL)
+    create_user_data = UserCreateDTO(email=cast(EmailStr, 'test@test.pl'), password='Test123.', full_name='TestName', tenant=Tenant.LOCAL)
     testUser = user_service.create_user(create_user_data)
     user_service.save_user(testUser)
 
