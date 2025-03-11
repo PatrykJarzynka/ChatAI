@@ -30,8 +30,6 @@ class UserService:
         elif user.tenant == Tenant.LOCAL:
             user_password = self.hash_service.hash_password(user.password)
             new_user = User(full_name=user.full_name, email=user.email, password=user_password, tenant=user.tenant, chats=[])
-        else:
-            raise HTTPException(status_code=500, detail="No tenant.")
         
         return new_user
 
