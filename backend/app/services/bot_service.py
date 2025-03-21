@@ -10,8 +10,10 @@ from llama_index.agent.openai import OpenAIAgent
 from llama_index.readers.web import SimpleWebPageReader
 from llama_index.core import SummaryIndex
 from db_models.chat_item_model import ChatItem
+from llama_index.core.tools import FunctionTool
+import os
 
-Settings.llm = OpenAI(temperature=0.2, model="gpt-4")
+Settings.llm = OpenAI(temperature=0.2, model="gpt-4o")
 
 
 class BotService:
@@ -27,19 +29,16 @@ class BotService:
         return list(chain.from_iterable(map(convert_chat_item_to_chat_messages, chat_items)))
 
     def fetch_bot_response(self, userQuery: str, chat_items: list[ChatItem]) -> str:
+        GOOGLE_SEARCH_API_KEY = os.getenv('GOOGLE_SEARCH_API_KEY')
+        GOOGLE_ENGINE_KEY = os.getenv('GOOGLE_ENGINE_KEY')
+
         try:
             memory = ChatMemoryBuffer.from_defaults(chat_history=self.prepare_chat_memory(chat_items))
 
-            # documents = SimpleWebPageReader(html_to_text=True).load_data(['https://www.codeconcept.pl/'])
-
-            # index = SummaryIndex.from_documents(documents)
-
-            # query_engine = index.as_chat_engine()
-            # response_url = query_engine.query('Jakie są tytuły 6 punktów, w sekcji "Usługi" na stronie codeconcept.pl?')
-            # print('ODPOWIEDŹ:----------------------------------------------',response_url)
+            google_search_tool = GoogleSearchToolSpec(key=GOOGLE_SEARCH_API_KEY, engine=GOOGLE_ENGINE_KEY)
             
-            # chat_agent = OpenAIAgent.from_tools(google_search_tool.to_tool_list(), memory=memory, llm=Settings.llm)
-            chat_agent = OpenAIAgent.from_tools(memory=memory, llm=Settings.llm)
+            chat_agent = OpenAIAgent.from_tools(google_search_tool.to_tool_list(), memory=memory, llm=Settings.llm, verbose=True)
+            
             response = chat_agent.chat(userQuery)
         
             return response.response

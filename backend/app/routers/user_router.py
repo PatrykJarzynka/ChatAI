@@ -32,13 +32,31 @@ def get_user_by_tenant_id(user_service: user_service_dependency, decoded_token: 
     user_id = decoded_token['sub']
     return user_service.get_user_by_tenant_id(user_id)
 
+@router.post('/user/microsoft')
+def create_or_update_user(user_service: user_service_dependency, decoded_token: verify_token_dependency) -> None:
+    
+    user_email = decoded_token['email']
+    microsoft_id = decoded_token['sub']
+
+    if user_service.is_tenant_user_in_db(microsoft_id): #TODO: Handle case when user with the same tenant id is already in the db
+        return
+    elif user_service.is_user_with_provided_email_in_db(user_email): #TODO: Handle case when local user with the same email as google email is already in the db
+        return
+    else:
+        user_full_name = decoded_token['name']
+
+        new_user_data = UserCreateDTO(tenant_id=microsoft_id, email=user_email, password=None, full_name=user_full_name, tenant=Tenant.MICROSOFT)
+        new_user = user_service.create_user(new_user_data)
+        user_service.save_user(new_user)
+        return
+
 
 @router.post('/user/google')
 def create_or_update_user(user_service: user_service_dependency, decoded_token: verify_token_dependency) -> None:
     user_email = decoded_token['email']
     google_id = decoded_token['sub']
 
-    if user_service.is_google_user_in_db(google_id): #TODO: Handle case when user with the same tenant id is already in the db
+    if user_service.is_tenant_user_in_db(google_id): #TODO: Handle case when user with the same tenant id is already in the db
         return
     elif user_service.is_user_with_provided_email_in_db(user_email): #TODO: Handle case when local user with the same email as google email is already in the db
         return

@@ -1,17 +1,7 @@
 from google.oauth2 import id_token
 import google.auth.transport.requests
-from app_types.google_tokens import GoogleTokens
-from dotenv import load_dotenv
 import os
 import requests
-
-env_file = ".env.production" if os.getenv("DOCKER_ENV") == "production" else ".env.development"
-
-base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
-env_path = os.path.join(base_dir, env_file)
-
-load_dotenv(env_path)
 
 class GoogleService:
 
@@ -20,7 +10,7 @@ class GoogleService:
 
         try:
             return id_token.verify_oauth2_token(token, google.auth.transport.requests.Request(), audience=client_id)
-        except:
+        except Exception as e:
             raise ValueError('Not authenicated!')
         
     def fetch_tokens(self, code: str) -> dict:
@@ -31,8 +21,8 @@ class GoogleService:
         "code": code,
         "client_id": CLIENT_ID,
         "client_secret": SECRET,
-        "redirect_uri": 'postmessage',
-        "grant_type": 'authorization_code'
+        "redirect_uri": 'http://localhost:4200/callback',
+        "grant_type": 'authorization_code',
         }
 
         response = requests.post('https://oauth2.googleapis.com/token', data=data)

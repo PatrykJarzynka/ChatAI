@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ApiService } from '@services/ApiService';
 import { UserRegisterData } from '@appTypes/UserRegisterData';
-import { GoogleTokens, Token } from '@models/Token';
+import { Token, Tokens } from '@models/Token';
 import { UserLoginData } from '@appTypes/UserLoginData';
 import { jwtDecode } from 'jwt-decode';
 
@@ -95,7 +95,11 @@ export class AuthService {
     localStorage.setItem('token', refreshedToken);
   }
 
-  public async getGoogleTokens(code: string): Promise<GoogleTokens> {
-    return await this.apiService.post<GoogleTokens, GoogleData>(`${ ENDPOINT }/google`, { code });
+  public async getGoogleTokens(code: string): Promise<Tokens> {
+    return await this.apiService.post<Tokens, GoogleData>(`${ ENDPOINT }/google`, { code });
+  }
+
+  public async getMicrosoftTokens(code: string): Promise<Tokens> {
+    return await this.apiService.post<Tokens, GoogleData>(`${ ENDPOINT }/microsoft`, { code });
   }
 }

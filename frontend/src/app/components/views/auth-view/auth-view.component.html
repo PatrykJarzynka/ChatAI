@@ -25,7 +25,8 @@
           <login-form
             (newAccountClick)="selectedTabIndex.set(1)"
             (loginSubmit)="onLoginFormSubmit($event)"
-            (googleLogin)="onGoogleLogin($event)"
+            (microsoftLogin)="onMicrosoftLogin()"
+            (googleLogin)="onGoogleLogin()"
             [authErrors]="loginFormError()"
           />
         </mat-tab>

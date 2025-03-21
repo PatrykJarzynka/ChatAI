@@ -1,4 +1,24 @@
-.testClass {
-  width: 100%;
-  color: black;
+.google-button {
+  font-size: 14px;
+  line-height: 20px;
+  height: 40px;
+  width: fit-content;
+  font-family: Roboto, sans-serif;
+  padding-inline: 12px;
+  display: flex;
+  column-gap: 10px;
+  font-weight: 500;
+  color: #1f1f1f;
+  align-items: center;
+  background-color: #fff;
+  border-radius: 5px;
+  border: thin solid #888;
+
+  .mat-icon {
+    margin: 0;
+  }
+}
+
+.google-button:hover {
+  cursor: pointer;
 }

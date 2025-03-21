@@ -29,4 +29,8 @@ export class UserService {
   async createOrUpdateGoogleUser(): Promise<void> {
     await this.apiService.post<void, {}>(`${ ENDPOINT }/google`, Object);
   }
+
+  async createOrUpdateMicrosoftUser(): Promise<void> {
+    await this.apiService.post<void, {}>(`${ ENDPOINT }/microsoft`, Object);
+  }
 }

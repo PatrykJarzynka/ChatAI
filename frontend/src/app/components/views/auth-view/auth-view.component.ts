@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTabsModule } from '@angular/material/tabs';
@@ -13,6 +13,7 @@ import { ErrorMessage } from '@enums/ErrorMessage';
 import { Router } from '@angular/router';
 import { UserRegisterData } from '@appTypes/UserRegisterData';
 import { UserService } from '@services/UserService';
+import { GOOGLE_LOGIN_URL, MICROSOFT_LOGIN_URL } from '@api/apiConfig';
 
 
 interface ExtendedWindow extends Window {
@@ -72,26 +73,11 @@ export class AuthView {
     }
   }
 
-  async onGoogleLogin(authCode: string): Promise<void> {
-    try {
-      const tokens = await this.authService.getGoogleTokens(authCode);
-      localStorage.setItem('token', tokens.accessToken);
-      localStorage.setItem('refresh', tokens.refreshToken);
-      await this.userService.createOrUpdateGoogleUser();
-      await this.router.navigate(['/chat']);
-    } catch (e) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('refresh');
-      console.error(e);
-    }
+  async onMicrosoftLogin(): Promise<void> {
+    window.location.href = MICROSOFT_LOGIN_URL;
+  }
 
-    // try {
-    //   await this.authService.handleGoogleLogin(token);
-    //   localStorage.setItem('token', token.credential);
-    //
-    // } catch (e) {
-    //   localStorage.removeItem('token');
-    //   console.error(e);
-    // }
+  async onGoogleLogin(): Promise<void> {
+    window.location.href = GOOGLE_LOGIN_URL;
   }
 }

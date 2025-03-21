@@ -3,7 +3,7 @@ export interface Token {
   tokenType: string;
 }
 
-export interface GoogleTokens {
+export interface Tokens {
   refreshToken: string;
   accessToken: string;
 }

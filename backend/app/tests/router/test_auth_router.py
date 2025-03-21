@@ -128,7 +128,7 @@ def test_refresh_token(client: TestClient, jwt_service: JWTService):
     test_token = jwt_service.create_access_token({"sub": '1'})
     headers = {"Authorization": f"Bearer {test_token.access_token}"}
 
-    with  patch.object(JWTService, 'decode_access_token', return_value={"sub": "1"}) as mock_decode, \
+    with  patch.object(JWTService, 'decode_local_token', return_value={"sub": "1"}) as mock_decode, \
           patch.object(JWTService, 'create_access_token', return_value=Token(access_token='xyz', token_type='bearer')) as mock_token_create:
         
             response = client.get('/auth/refresh', headers=headers)
@@ -141,7 +141,7 @@ def test_verify_token(client: TestClient, jwt_service: JWTService):
     test_token = jwt_service.create_access_token({"sub": '1'})
     headers = {"Authorization": f"Bearer {test_token.access_token}"}
 
-    with  patch.object(JWTService, 'decode_access_token', return_value={"sub": "1"}) as mock_decode:
+    with  patch.object(JWTService, 'decode_local_token', return_value={"sub": "1"}) as mock_decode:
         response = client.get('/auth/verify', headers=headers)
         data = response.json()
 
@@ -153,7 +153,7 @@ def test_verify_token_invalid(client: TestClient, jwt_service: JWTService):
     invalid_token = 'test.token'
     headersTokenInvalid = {"Authorization": f"Bearer {invalid_token}"}
 
-    with  patch.object(JWTService, 'decode_access_token', side_effect=HTTPException(detail="Token error", status_code=401)) as mock_decode:
+    with  patch.object(JWTService, 'decode_local_token', side_effect=HTTPException(detail="Token error", status_code=401)) as mock_decode:
         responseInvalid = client.get('/auth/verify', headers=headersTokenInvalid)
 
         mock_decode.assert_called_with(invalid_token)

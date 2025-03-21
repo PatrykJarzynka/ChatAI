@@ -38,7 +38,7 @@ describe('RegisterForm', () => {
       email: 'test@test.pl',
       password: 'TestPassword123.',
       fullName: 'Harry Angel',
-      provider: AuthProvider.LOCAL,
+      tenant: AuthProvider.LOCAL,
     };
 
     jest.spyOn(component.registerSubmit, 'emit');

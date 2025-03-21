@@ -47,14 +47,11 @@
 
       <p class="login-divider">or</p>
 
-      <!--      <button-->
-      <!--        mat-stroked-button-->
-      <!--        (click)="googleLogin.emit()"-->
-      <!--      >-->
-      <!--        Sign in with Google-->
-      <!--      </button>-->
+      <div class="sign-in-options">
+        <login-google-button (click)="googleLogin.emit()"/>
 
-      <login-google-button (googleLogin)="googleLogin.emit($event)"/>
+        <login-microsoft-button (click)="microsoftLogin.emit()"/>
+      </div>
 
       <div class="no-account-container">
         <p class="no-account-question">Don't have a Chat A.I+ account?</p>

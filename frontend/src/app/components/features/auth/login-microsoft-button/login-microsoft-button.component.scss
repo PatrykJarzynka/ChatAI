@@ -1,0 +1,17 @@
+.microsoft-button {
+  padding-inline: 12px;
+  display: flex;
+  column-gap: 12px;
+  align-items: center;
+  font-weight: 600;
+  background: #fff;
+  color: #5e5e5e;
+  border: 1px solid #8c8c8c;
+  font-size: 15px;
+  height: 41px;
+  width: fit-content;
+}
+
+.microsoft-button:hover {
+  cursor: pointer;
+}

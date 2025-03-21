@@ -78,7 +78,7 @@ describe('AuthView', () => {
       email: 'test@test.com',
       password: 'MockPassword',
       fullName: 'Harry Angel',
-      provider: AuthProvider.LOCAL,
+      tenant: AuthProvider.LOCAL,
     };
 
     const mockResponseToken: Token = { accessToken: 'mockToken', tokenType: 'bearer' };

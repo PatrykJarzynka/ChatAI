@@ -23,7 +23,7 @@ class UserService:
         if existing_user:
             raise HTTPException(status_code=409, detail="Email already registered")
         
-        if user.tenant == Tenant.GOOGLE:
+        if user.tenant == Tenant.GOOGLE or user.tenant == Tenant.MICROSOFT:
             if not user.tenant_id:
                 raise HTTPException(status_code=500, detail="No user tenant_id")
             new_user = User(tenant_id=user.tenant_id, full_name=user.full_name, email=user.email, password=None, tenant=user.tenant, chats=[])
@@ -75,8 +75,8 @@ class UserService:
         
         return bool(existing_user)
     
-    def is_google_user_in_db(self, google_user_id: str) -> bool:
-         statement = select(User).where(User.tenant_id == google_user_id)
+    def is_tenant_user_in_db(self, tenant_id: str) -> bool:
+         statement = select(User).where(User.tenant_id == tenant_id)
          existing_user = self.session.exec(statement).first()
 
          return bool(existing_user)

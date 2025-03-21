@@ -1,5 +1,5 @@
 import { Component, effect, input, output } from '@angular/core';
-import { MatButton } from '@angular/material/button';
+import { MatButton, MatFabButton } from '@angular/material/button';
 import { MatCardActions, MatCardContent, MatCardHeader, MatCardSubtitle, MatCardTitle } from '@angular/material/card';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { MatError, MatFormField } from '@angular/material/form-field';
@@ -10,7 +10,10 @@ import { ErrorMessage } from '@enums/ErrorMessage';
 import {
   LoginGoogleButtonComponent
 } from '@components/features/auth/login-google-button/login-google-button.component';
-import { GoogleToken } from '@appTypes/GoogleToken';
+import { MatIconModule } from '@angular/material/icon';
+import {
+  LoginMicrosoftButton
+} from '@components/features/auth/login-microsoft-button/login-microsoft-button.component';
 
 
 @Component({
@@ -28,6 +31,8 @@ import { GoogleToken } from '@appTypes/GoogleToken';
     MatInput,
     ReactiveFormsModule,
     LoginGoogleButtonComponent,
+    MatIconModule,
+    LoginMicrosoftButton
   ],
   templateUrl: './login-form.component.html',
   styleUrl: './login-form.component.scss'
@@ -38,7 +43,8 @@ export class LoginForm {
 
   newAccountClick = output<void>();
   loginSubmit = output<UserLoginData>();
-  googleLogin = output<string>();
+  googleLogin = output<void>();
+  microsoftLogin = output<void>();
   authErrors = input<ErrorMessage | null>(null);
 
   constructor() {
