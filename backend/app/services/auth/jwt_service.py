@@ -3,8 +3,6 @@ from datetime import timedelta, datetime, timezone
 
 import jwt
 from dotenv import load_dotenv
-from fastapi import HTTPException, status
-from jwt import InvalidTokenError, ExpiredSignatureError
 
 from app_types.token import Token
 
@@ -37,20 +35,6 @@ class JWTService:
         
 
     def decode_local_token(self, token: str):
-        credentials_exception = HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Could not validate credentials",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-
-        try:
-            payload = jwt.decode(token, self.SECRET_KEY, algorithms=[self.ALGORITHM])
-            return payload
-        except ExpiredSignatureError:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Token expired",
-                headers={"WWW-Authenticate": "Bearer"},
-            )
-        except InvalidTokenError:
-            raise credentials_exception
+        payload = jwt.decode(token, self.SECRET_KEY, algorithms=[self.ALGORITHM])
+        return payload
+    

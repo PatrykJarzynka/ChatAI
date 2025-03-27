@@ -61,6 +61,7 @@ class MicrosoftService:
     def fetch_tokens(self, code: str) -> dict:
         SECRET = os.getenv("MICROSOFT_SECRET")
         REDIRECT_URL = os.getenv('REDIRECT_URL')
+        AUTH_URL=os.getenv('MICROSOFT_AUTH_URL')
 
         data = {
         "code": code,
@@ -71,11 +72,12 @@ class MicrosoftService:
         "grant_type": 'authorization_code'
         }
 
-        response = requests.post('https://login.microsoftonline.com/common/oauth2/v2.0/token', data=data)
+        response = requests.post(AUTH_URL, data=data)
         return response.json()
     
     def refresh_id_token(self, refresh_token: str):
         SECRET = os.getenv("MICROSOFT_SECRET")
+        AUTH_URL=os.getenv('MICROSOFT_AUTH_URL')
 
         data = {
         "client_id": self.client_id,
@@ -84,5 +86,5 @@ class MicrosoftService:
         "grant_type": 'refresh_token'
         }
 
-        response = requests.post('https://login.microsoftonline.com/common/oauth2/v2.0/token', data=data)
+        response = requests.post(AUTH_URL, data=data)
         return response.json()
