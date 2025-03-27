@@ -20,7 +20,6 @@ export class AuthCallback {
   }
 
   ngOnInit() {
-    console.log('JEDZEIMY');
     this.route.queryParams.subscribe(async (params) => {
       const provider = params['state'];
       const authCode = params['code'];

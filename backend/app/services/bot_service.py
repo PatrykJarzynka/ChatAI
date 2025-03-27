@@ -5,9 +5,9 @@ from llama_index.core import Settings
 from llama_index.core.base.llms.types import ChatMessage
 from llama_index.core.memory import ChatMemoryBuffer
 from llama_index.llms.openai import OpenAI
-from llama_hub.tools.google_search.base import GoogleSearchToolSpec
+# from llama_hub.tools.google_search.base import GoogleSearchToolSpec
 from llama_index.agent.openai import OpenAIAgent
-from llama_index.readers.web import SimpleWebPageReader
+# from llama_index.readers.web import SimpleWebPageReader
 from llama_index.core import SummaryIndex
 from db_models.chat_item_model import ChatItem
 from llama_index.core.tools import FunctionTool
@@ -35,12 +35,14 @@ class BotService:
         try:
             memory = ChatMemoryBuffer.from_defaults(chat_history=self.prepare_chat_memory(chat_items))
 
-            google_search_tool = GoogleSearchToolSpec(key=GOOGLE_SEARCH_API_KEY, engine=GOOGLE_ENGINE_KEY)
+            # google_search_tool = GoogleSearchToolSpec(key=GOOGLE_SEARCH_API_KEY, engine=GOOGLE_ENGINE_KEY)
             
-            chat_agent = OpenAIAgent.from_tools(google_search_tool.to_tool_list(), memory=memory, llm=Settings.llm, verbose=True)
+            # chat_agent = OpenAIAgent.from_tools(google_search_tool.to_tool_list(), memory=memory, llm=Settings.llm, verbose=True)
             
-            response = chat_agent.chat(userQuery)
+            # response = chat_agent.chat(userQuery)
         
-            return response.response
+            # return response.response
+
+            return 'Mock message'
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Failed to fetch bot response: {e}")

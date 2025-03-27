@@ -43,18 +43,14 @@ class JWTService:
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-        expired_exception = HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Token expired",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-        
-
         try:
-
             payload = jwt.decode(token, self.SECRET_KEY, algorithms=[self.ALGORITHM])
             return payload
         except ExpiredSignatureError:
-            raise expired_exception
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Token expired",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
         except InvalidTokenError:
             raise credentials_exception

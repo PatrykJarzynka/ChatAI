@@ -17,14 +17,11 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 
 origins = [
-    "http://frontend:80",
     "http://localhost",
-    "http://localhost:4200"
+    "http://localhost:80",
+    "http://localhost:4200",
+    'http://127.0.0.1:8000'
 ]
-
-app.include_router(chat_router.router)
-app.include_router(auth_router.router)
-app.include_router(user_router.router)
 
 app.add_middleware(
     CORSMiddleware,
@@ -33,6 +30,10 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.include_router(chat_router.router)
+app.include_router(auth_router.router)
+app.include_router(user_router.router)
 
 logger = logging.getLogger(__name__)
 

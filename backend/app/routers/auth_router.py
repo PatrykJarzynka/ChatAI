@@ -61,29 +61,23 @@ def refresh(jwt_service: jwt_service_dependency, user_service: user_service_depe
     tenant_id = decoded_token['sub']
     user = user_service.get_user_by_tenant_id(tenant_id)
 
-    if user.tenant == Tenant.LOCAL:
-        new_access_token = jwt_service.create_access_token({"sub": str(user.id)}).access_token
-    elif user.tenant == Tenant.GOOGLE:
-        if body.refresh_token:
+    if body.refresh_token:
+        if user.tenant == Tenant.LOCAL:
+            new_access_token = jwt_service.create_access_token({"sub": str(user.id)}).access_token
+        elif user.tenant == Tenant.GOOGLE:
             new_access_token = google_service.refresh_id_token(body.refresh_token)["id_token"]
-        else:
-            raise HTTPException(
-                detail='No refresh token provided!',
-                status_code=400
-            )
-    elif user.tenant == Tenant.MICROSOFT:
-        if body.refresh_token:
+        elif user.tenant == Tenant.MICROSOFT:
             new_access_token = microsoft_service.refresh_id_token(body.refresh_token)["id_token"]
         else:
             raise HTTPException(
-                detail='No refresh token provided!',
+                detail='Tenant not supported',
                 status_code=400
             )
     else:
-        raise HTTPException(
-            detail='Tenant not supported',
-            status_code=400
-        )
+            raise HTTPException(
+                detail='No refresh token provided!',
+                status_code=400
+            )
 
     
     return new_access_token
@@ -102,7 +96,6 @@ async def get_tokens(body: AuthCodeRequest, microsoft_service: microsoft_service
 
 @router.post('/auth/google')
 async def get_tokens(body: AuthCodeRequest, google_service: google_service_dependency) -> GoogleTokens:
-    
     data = google_service.fetch_tokens(body.code)
     return {
         'refresh_token': data['refresh_token'],

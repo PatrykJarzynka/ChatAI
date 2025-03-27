@@ -10,7 +10,7 @@ RUN npm run build:prod
 
 FROM nginx:alpine
 
-COPY nginx.conf /etc/nginx/conf.d/
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 COPY --from=build /app/dist/chat-ai/browser /usr/share/nginx/html
 

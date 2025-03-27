@@ -16,12 +16,13 @@ class GoogleService:
     def fetch_tokens(self, code: str) -> dict:
         CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
         SECRET = os.getenv("GOOGLE_SECRET")
+        REDIRECT_URL = os.getenv('REDIRECT_URL')
 
         data = {
         "code": code,
         "client_id": CLIENT_ID,
         "client_secret": SECRET,
-        "redirect_uri": 'http://localhost:4200/callback',
+        "redirect_uri": REDIRECT_URL,
         "grant_type": 'authorization_code',
         }
 

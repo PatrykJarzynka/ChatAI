@@ -60,13 +60,14 @@ class MicrosoftService:
 
     def fetch_tokens(self, code: str) -> dict:
         SECRET = os.getenv("MICROSOFT_SECRET")
+        REDIRECT_URL = os.getenv('REDIRECT_URL')
 
         data = {
         "code": code,
         "client_id": self.client_id,
         "client_secret": SECRET,
         "scope": 'openid profile email',
-        "redirect_uri": 'http://localhost:4200/callback',
+        "redirect_uri": REDIRECT_URL,
         "grant_type": 'authorization_code'
         }
 
