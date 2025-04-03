@@ -3,8 +3,11 @@ services:
   frontend:
     build: ./frontend
     image: affciak/frontend:latest
-    environment: 
-      - API_URL=http://backend:8000
+    environment:
+      - REDIRECT_URL=${REDIRECT_URL}
+      - API_URL=${API_URL}
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - AZURE_CLIENT_ID=${AZURE_CLIENT_ID}
     ports:
       - "80:80"
     depends_on:
