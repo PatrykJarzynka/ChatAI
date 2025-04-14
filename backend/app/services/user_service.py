@@ -1,10 +1,10 @@
 from fastapi import HTTPException
 from sqlmodel import Session, select
 
-from app_types.user_create_dto import UserCreateDTO
+from models.user_create_dto import UserCreateDTO
 from db_models.user_model import User
 from services.auth.hash_service import HashService
-from app_types.tenant import Tenant
+from models.tenant import Tenant
 
 
 class UserService:

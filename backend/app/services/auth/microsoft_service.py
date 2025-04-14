@@ -3,12 +3,12 @@ import requests
 import jwt
 from jwt.algorithms import RSAAlgorithm
 from jwt.types import JWKDict
-from fastapi import HTTPException
+from config import get_settings
 
 
 class MicrosoftService:
     def __init__(self):
-        self.client_id = os.getenv('MICROSOFT_CLIENT_ID')
+        self.client_id = get_settings().MICROSOFT_CLIENT_ID
         self.authority = "https://login.microsoftonline.com/common/v2.0"
 
     def get_openid_config(self):
@@ -59,9 +59,10 @@ class MicrosoftService:
         return self.verify_and_decode_token(access_token, rsa_key)
 
     def fetch_tokens(self, code: str) -> dict:
-        SECRET = os.getenv("MICROSOFT_SECRET")
-        REDIRECT_URL = os.getenv('REDIRECT_URL')
-        AUTH_URL=os.getenv('MICROSOFT_AUTH_URL')
+        settings = get_settings()
+        SECRET = settings.MICROSOFT_SECRET
+        REDIRECT_URL = settings.REDIRECT_URL
+        AUTH_URL= settings.MICROSOFT_AUTH_URL
 
         data = {
         "code": code,
@@ -76,8 +77,9 @@ class MicrosoftService:
         return response.json()
     
     def refresh_id_token(self, refresh_token: str):
-        SECRET = os.getenv("MICROSOFT_SECRET")
-        AUTH_URL=os.getenv('MICROSOFT_AUTH_URL')
+        settings = get_settings()
+        SECRET = settings.MICROSOFT_SECRET
+        AUTH_URL= settings.MICROSOFT_AUTH_URL
 
         data = {
         "client_id": self.client_id,

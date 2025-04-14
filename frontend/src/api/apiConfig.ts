@@ -4,9 +4,9 @@ import { environment } from '../environment/environment';
 const REDIRECT_URL = environment.redirectUrl;
 export const API_URL = environment.apiUrl;
 export const GOOGLE_CLIENT_ID = environment.googleClientId;
-export const AZURE_CLIENT_ID = environment.azureClientId;
+export const MICROSOFT_CLIENT_ID = environment.microsoftClientId;
 export const MICROSOFT_LOGIN_URL = `https://login.microsoftonline.com/common/oauth2/v2.0/authorize?
-client_id=${ AZURE_CLIENT_ID }
+client_id=${ MICROSOFT_CLIENT_ID }
 &response_type=code
 &redirect_uri=${ REDIRECT_URL }
 &scope=offline_access user.read

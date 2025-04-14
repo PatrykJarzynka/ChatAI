@@ -1,5 +1,5 @@
 from pydantic import BaseModel, EmailStr
-from app_types.tenant import Tenant
+from models.tenant import Tenant
 
 
 class UserCreateDTO(BaseModel):

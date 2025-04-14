@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 from sqlmodel import Field
 
-from app_types.chat_item_dto import ChatItemDTO
+from models.chat_item_dto import ChatItemDTO
 
 
 class ChatDto(BaseModel):

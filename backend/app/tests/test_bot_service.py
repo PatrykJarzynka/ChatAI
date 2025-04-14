@@ -5,15 +5,15 @@ from llama_index.core import Settings
 from llama_index.core.base.llms.types import ChatMessage
 
 from db_models.chat_item_model import ChatItem
-from services.bot_service import BotService
+from services.open_ai_chat_service import OpenAIChatService
 
 
 @pytest.fixture
 def bot_service():
-    return BotService()
+    return OpenAIChatService()
 
 
-def test_prepare_chat_memory(bot_service: BotService):
+def test_prepare_chat_memory(bot_service: OpenAIChatService):
     chat_items = [ChatItem(user_id='testUser', user_message='Hello there', chat_id=1, bot_message='Hello'),
                   ChatItem(user_id='testUser', user_message='How are you?', chat_id=1, bot_message='Good.')]
     expected_data = [

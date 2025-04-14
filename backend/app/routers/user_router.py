@@ -3,9 +3,9 @@ from typing import Annotated
 from fastapi import APIRouter, Depends
 from sqlmodel import Session
 
-from app_types.user_response_dto import UserResponseDTO
-from app_types.user_create_dto import UserCreateDTO
-from app_types.tenant import Tenant
+from models.user_response_dto import UserResponseDTO
+from models.user_create_dto import UserCreateDTO
+from models.tenant import Tenant
 from dependencies import verify_token_dependency
 from database import get_session
 from dependencies import hash_service_dependency

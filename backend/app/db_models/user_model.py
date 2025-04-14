@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING
 from pydantic import EmailStr
 from sqlmodel import SQLModel, Field, Relationship
-from app_types.tenant import Tenant
+from models.tenant import Tenant
 
 if TYPE_CHECKING:
     from db_models.chat_model import Chat

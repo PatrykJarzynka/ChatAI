@@ -7,7 +7,10 @@ from services.auth.jwt_service import JWTService
 from services.auth.google_service import GoogleService
 from services.auth.microsoft_service import MicrosoftService
 from services.auth.auth_service import AuthService
+from services.open_ai_chat_service import OpenAIChatService
+from services.memory_buffer_service import MemoryBufferService
 from starlette.requests import Request
+
 
 def get_jwt_service():
     return JWTService()
@@ -24,17 +27,23 @@ def get_microsoft_service():
 def get_auth_service():
     return AuthService()
 
+def get_memory():
+    return MemoryBufferService()
+
+
+
 microsoft_service_dependency = Annotated[MicrosoftService, Depends(get_microsoft_service)]
 google_service_dependency = Annotated[GoogleService, Depends(get_google_service)]
 hash_service_dependency = Annotated[HashService, Depends(get_hash_service)]
 jwt_service_dependency = Annotated[JWTService, Depends(get_jwt_service)]
+memory_buffer_dependency = Annotated[MemoryBufferService, Depends(get_memory)]
 
 def verify_token(
                     request: Request,
                     auth_service: AuthService = Depends(get_auth_service),
-                 microsoft_service: MicrosoftService = Depends(get_microsoft_service),
-                 google_service: GoogleService = Depends(get_google_service), 
-                 jwt_service: JWTService = Depends(get_jwt_service)):
+                    microsoft_service: MicrosoftService = Depends(get_microsoft_service),
+                    google_service: GoogleService = Depends(get_google_service), 
+                    jwt_service: JWTService = Depends(get_jwt_service)):
 
     @auth_service.handle_token_exceptions
     def verify(
@@ -59,3 +68,5 @@ def verify_token(
     return verify(request, microsoft_service, google_service, jwt_service)
 
 verify_token_dependency = Annotated[dict, Depends(verify_token)]
+
+

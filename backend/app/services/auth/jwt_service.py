@@ -1,21 +1,12 @@
-import os
 from datetime import timedelta, datetime, timezone
 
 import jwt
-from dotenv import load_dotenv
+from config import get_settings
 
-from app_types.token import Token
-
-env_file = ".env.production" if os.getenv("DOCKER_ENV") == "production" else ".env.development"
-
-base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
-env_path = os.path.join(base_dir, env_file)
-
-load_dotenv(env_path)
+from models.token import Token
 
 class JWTService:
-    SECRET_KEY = os.getenv("SECRET_KEY")
+    SECRET_KEY = get_settings().SECRET_KEY
     ALGORITHM = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES = 30
 

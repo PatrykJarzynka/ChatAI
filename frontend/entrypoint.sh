@@ -16,9 +16,9 @@ if [ -z "$GOOGLE_CLIENT_ID" ]; then
   export GOOGLE_CLIENT_ID="268450421384-sh5e3buktug7k543dlg1soqpbb9otoi5.apps.googleusercontent.com"
 fi
 
-if [ -z "$AZURE_CLIENT_ID" ]; then
-  echo "AZURE_CLIENT_ID is not set. Using default value."
-  export AZURE_CLIENT_ID="d6efa951-4ad7-4e71-bf5d-1e8ef0615e92"
+if [ -z "MICROSOFT_CLIENT_ID" ]; then
+  echo "MICROSOFT_CLIENT_ID is not set. Using default value."
+  export MICROSOFT_CLIENT_ID="d6efa951-4ad7-4e71-bf5d-1e8ef0615e92"
 fi
 
 mkdir -p /usr/share/nginx/html/assets
@@ -29,7 +29,7 @@ window._env = {
   API_URL: "$API_URL",
   REDIRECT_URL: "$REDIRECT_URL",
   GOOGLE_CLIENT_ID: "$GOOGLE_CLIENT_ID",
-  AZURE_CLIENT_ID: "$AZURE_CLIENT_ID",
+  MICROSOFT_CLIENT_ID: "$MICROSOFT_CLIENT_ID",
 };
 EOF
 

@@ -1,27 +1,18 @@
-import os
-
-from dotenv import load_dotenv
 from sqlmodel import create_engine, Session, SQLModel
+from sqlalchemy.engine import Engine
+from config import get_settings
 
-env_file = ".env.production" if os.getenv("DOCKER_ENV") == "production" else ".env.development"
+def create_db_engine(settings) -> Engine:
+    db_root_user = settings.MYSQL_USER
+    db_root_password = settings.MYSQL_PASSWORD
+    db_host = settings.DB_HOST
+    db_port = settings.DB_PORT
+    db_name = settings.MYSQL_DATABASE
+    DATABASE_URL = f"mysql+pymysql://{db_root_user}:{db_root_password}@{db_host}:{db_port}/{db_name}"
 
-base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    return create_engine(DATABASE_URL)
 
-env_path = os.path.join(base_dir, env_file)
-
-load_dotenv(env_path)
-
-db_root_user = os.getenv("MYSQL_USER")
-db_root_password = os.getenv("MYSQL_PASSWORD")
-db_host = os.getenv("DB_HOST")
-db_port = os.getenv("DB_PORT")
-db_name = os.getenv("MYSQL_DATABASE")
-
-
-DATABASE_URL = f"mysql+pymysql://{db_root_user}:{db_root_password}@{db_host}:{db_port}/{db_name}"
-
-engine = create_engine(DATABASE_URL, echo=True)
-
+engine = create_db_engine(get_settings())
 
 def create_db_and_tables():
     SQLModel.metadata.create_all(engine)
@@ -30,3 +21,5 @@ def create_db_and_tables():
 def get_session():
     with Session(engine) as session:
         yield session
+
+    

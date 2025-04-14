@@ -5,10 +5,10 @@ from fastapi import HTTPException
 from pydantic import EmailStr
 from sqlmodel import Session
 
-from app_types.user_create_dto import UserCreateDTO
+from models.user_create_dto import UserCreateDTO
 from db_models.user_model import User
 from services.auth.hash_service import HashService
-from app_types.tenant import Tenant
+from models.tenant import Tenant
 from services.user_service import UserService
 
 

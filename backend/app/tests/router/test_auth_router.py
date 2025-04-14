@@ -12,8 +12,8 @@ from services.auth.jwt_service import JWTService
 from services.user_service import UserService
 from main import app
 from dependencies import get_jwt_service
-from app_types.token import Token
-from app_types.tenant import Tenant
+from models.token import Token
+from models.tenant import Tenant
 
 MOCKED_TOKEN = Token(access_token="fake_token", token_type="bearer")
 

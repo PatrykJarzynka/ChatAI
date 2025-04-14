@@ -8,7 +8,7 @@ from sqlmodel.pool import StaticPool
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from database import get_session
-from dependencies import get_jwt_service
+from config import get_settings
 from main import app
 from services.auth.jwt_service import JWTService
 

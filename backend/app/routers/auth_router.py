@@ -6,12 +6,12 @@ from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 from sqlmodel import Session
 
-from app_types.token import Token
-from app_types.auth_code_request import AuthCodeRequest
-from app_types.google_refresh_token_request import GoogleRefreshTokenRequest
-from app_types.user_create_dto import UserCreateDTO
-from app_types.tenant import Tenant
-from app_types.google_tokens import GoogleTokens
+from models.token import Token
+from models.auth_code_request import AuthCodeRequest
+from models.google_refresh_token_request import GoogleRefreshTokenRequest
+from models.user_create_dto import UserCreateDTO
+from models.tenant import Tenant
+from models.google_tokens import GoogleTokens
 from database import get_session
 from dependencies import hash_service_dependency, jwt_service_dependency, verify_token_dependency, google_service_dependency, microsoft_service_dependency
 from services.user_service import UserService

@@ -39,7 +39,11 @@
             </div>
           }
           @case (StatusType.Success) {
-            <p class="chat-message--response">{{ chatItem.botMessageData.text }}</p>
+            <p class="chat-message--response">
+              @if (chatItem.botMessageData.text) {
+                <div [innerHTML]="chatItem.botMessageData.text | markdown | async"></div>
+              }
+            </p>
           }
         }
       </div>

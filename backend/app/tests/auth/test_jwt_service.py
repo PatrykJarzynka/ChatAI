@@ -3,7 +3,7 @@ from datetime import timedelta, datetime, timezone
 import pytest
 from fastapi import HTTPException
 
-from app_types.token import Token
+from models.token import Token
 from services.auth.jwt_service import JWTService
 
 

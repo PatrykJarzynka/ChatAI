@@ -6,9 +6,9 @@ from starlette.testclient import TestClient
 from services.auth.jwt_service import JWTService
 from services.auth.hash_service import HashService
 from services.user_service import UserService
-from app_types.user_create_dto import UserCreateDTO
-from app_types.user_response_dto import UserResponseDTO
-from app_types.tenant import Tenant
+from models.user_create_dto import UserCreateDTO
+from models.user_response_dto import UserResponseDTO
+from models.tenant import Tenant
 
 @pytest.fixture()
 def jwt_service():

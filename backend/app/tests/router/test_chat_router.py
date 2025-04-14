@@ -6,7 +6,7 @@ from starlette.testclient import TestClient
 
 from db_models.chat_item_model import ChatItem
 from db_models.chat_model import Chat
-from services.bot_service import BotService
+from services.open_ai_chat_service import OpenAIChatService
 from services.auth.jwt_service import JWTService
 
 @pytest.fixture
@@ -79,7 +79,7 @@ def test_on_user_query_send(session: Session, client: TestClient, jwt_service: J
 
     mock_response = "Mock response."
 
-    with patch.object(BotService, "fetch_bot_response", return_value=mock_response) as mock_fetch:
+    with patch.object(OpenAIChatService, "fetch_bot_response", return_value=mock_response) as mock_fetch:
         response = client.post("/chat", json=user_chat_data, headers=headers)
 
     data = response.json()

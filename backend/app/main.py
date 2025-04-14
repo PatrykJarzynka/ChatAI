@@ -20,7 +20,8 @@ origins = [
     "http://localhost",
     "http://localhost:80",
     "http://localhost:4200",
-    'http://127.0.0.1:8000'
+    'http://127.0.0.1:8000',
+    'http://patryk-jarzynka.codeconcept.pl'
 ]
 
 app.add_middleware(
@@ -30,6 +31,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.state.memory_service = {}
 
 app.include_router(chat_router.router)
 app.include_router(auth_router.router)
