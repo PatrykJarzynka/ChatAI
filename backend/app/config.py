@@ -27,8 +27,10 @@ class Settings(BaseSettings):
     MICROSOFT_SECRET: str
     MICROSOFT_CLIENT_ID: str
     SERPER_API_KEY: str
+    AIR_API_KEY: str
     MICROSOFT_AUTH_URL: str
     GOOGLE_AUTH_URL: str
+    AIR_API_URL: str
 
     model_config = SettingsConfigDict(env_file=env_file, env_file_encoding="utf-8")
 

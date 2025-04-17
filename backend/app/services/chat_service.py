@@ -32,13 +32,12 @@ class ChatService:
 
     def add_chat_item_to_chat(self, chat_item: ChatItem, chat_id: int) -> None:
         current_chat = self.get_chat_by_id(chat_id)
-        print('ID: ',chat_id)
+
         if current_chat:
             current_chat.chat_items.append(chat_item)
             self.session.commit()
             self.session.refresh(current_chat)
             self.session.refresh(chat_item)
-            print('added')
 
         return
 

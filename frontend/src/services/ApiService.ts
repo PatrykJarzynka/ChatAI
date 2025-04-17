@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
-import { API_URL } from '@api/apiConfig';
 import { HttpMethod } from '@enums/HttpMethod';
 import useParser from '../composables/useParser';
+import { environment } from 'environment/environment';
 
 
 const { convertObjectsKeysCase } = useParser;
@@ -12,7 +12,7 @@ const { convertObjectsKeysCase } = useParser;
 })
 export class ApiService {
   private http: AxiosInstance;
-  private baseURL = API_URL;
+  private baseURL = environment.apiUrl;
 
 
   constructor() {

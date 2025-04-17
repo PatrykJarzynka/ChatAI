@@ -11,15 +11,16 @@ from interfaces.bot_service import BotService
 
 class OpenAIChatService(BotService):
 
-    def __init__(self, tools: List["FunctionTool"], bot_description: str, memory: "ChatMemoryBuffer"):
+    def __init__(self, tools: List["FunctionTool"], bot_description: str, memory: ChatMemoryBuffer):
         self.chat_agent = OpenAIAgent.from_tools(
             tools,
             memory=memory,
             llm=OpenAI(temperature=0.2, model="gpt-4o-mini"),
-            system_prompt=(bot_description)
+            system_prompt=(bot_description),
+            verbose=True
         )
 
-    def chat(self, user_query: str, chat_items: list[ChatItem]) -> str:
+    def chat(self, user_query: str) -> str:
         try: 
             data = self.chat_agent.chat(user_query)
 

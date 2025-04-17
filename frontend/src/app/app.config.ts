@@ -1,10 +1,15 @@
-import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
+import { ApplicationConfig, inject, provideAppInitializer, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { routes } from 'app/app.routes';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideHttpClient } from '@angular/common/http';
 import { provideMarkdown } from 'ngx-markdown';
+import { ConfigService } from '@services/ConfigService';
 
+
+export function initApp(configService: ConfigService) {
+  return configService.loadConfig();
+}
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -12,6 +17,7 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideAnimations(),
     provideHttpClient(),
-    provideMarkdown()
+    provideMarkdown(),
+    provideAppInitializer(() => initApp(inject(ConfigService))),
   ]
 };

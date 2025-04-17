@@ -32,8 +32,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.state.memory_service = {}
-
 app.include_router(chat_router.router)
 app.include_router(auth_router.router)
 app.include_router(user_router.router)

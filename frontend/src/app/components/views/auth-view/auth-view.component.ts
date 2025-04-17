@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTabsModule } from '@angular/material/tabs';
@@ -13,7 +13,7 @@ import { ErrorMessage } from '@enums/ErrorMessage';
 import { Router } from '@angular/router';
 import { UserRegisterData } from '@appTypes/UserRegisterData';
 import { UserService } from '@services/UserService';
-import { GOOGLE_LOGIN_URL, MICROSOFT_LOGIN_URL } from '@api/apiConfig';
+import { ConfigService } from '@services/ConfigService';
 
 
 interface ExtendedWindow extends Window {
@@ -33,6 +33,7 @@ export class AuthView {
     private router: Router,
     private authService: AuthService,
     private userService: UserService,
+    private configService: ConfigService,
   ) {
   }
 
@@ -74,10 +75,12 @@ export class AuthView {
   }
 
   async onMicrosoftLogin(): Promise<void> {
-    window.location.href = MICROSOFT_LOGIN_URL;
+    console.log(this.configService.getMicrosoftPath());
+    window.location.href = this.configService.getMicrosoftPath();
   }
 
   async onGoogleLogin(): Promise<void> {
-    window.location.href = GOOGLE_LOGIN_URL;
+    console.log(this.configService.getGooglePath());
+    window.location.href = this.configService.getGooglePath();
   }
 }

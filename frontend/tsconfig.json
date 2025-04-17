@@ -26,6 +26,9 @@
       ],
       "@components/*": [
         "app/components/*"
+      ],
+      "@assets/*": [
+        "assets/*"
       ]
     },
     "outDir": "./dist/out-tsc",

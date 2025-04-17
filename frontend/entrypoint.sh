@@ -16,25 +16,25 @@ if [ -z "$GOOGLE_CLIENT_ID" ]; then
   export GOOGLE_CLIENT_ID="268450421384-sh5e3buktug7k543dlg1soqpbb9otoi5.apps.googleusercontent.com"
 fi
 
-if [ -z "MICROSOFT_CLIENT_ID" ]; then
+if [ -z "$MICROSOFT_CLIENT_ID" ]; then
   echo "MICROSOFT_CLIENT_ID is not set. Using default value."
   export MICROSOFT_CLIENT_ID="d6efa951-4ad7-4e71-bf5d-1e8ef0615e92"
 fi
 
 mkdir -p /usr/share/nginx/html/assets
 
-# Generowanie pliku config.js z dynamicznymi zmiennymi
-cat <<EOF > /usr/share/nginx/html/assets/config.js
-window._env = {
-  API_URL: "$API_URL",
-  REDIRECT_URL: "$REDIRECT_URL",
-  GOOGLE_CLIENT_ID: "$GOOGLE_CLIENT_ID",
-  MICROSOFT_CLIENT_ID: "$MICROSOFT_CLIENT_ID",
-};
+# Generowanie pliku config.json z dynamicznymi zmiennymi
+cat <<EOF > /usr/share/nginx/html/assets/config.json
+{
+  "API_URL": "$API_URL",
+  "REDIRECT_URL": "$REDIRECT_URL",
+  "GOOGLE_CLIENT_ID": "$GOOGLE_CLIENT_ID",
+  "MICROSOFT_CLIENT_ID": "$MICROSOFT_CLIENT_ID"
+}
 EOF
 
-echo "Generated /usr/share/nginx/html/assets/config.js:"
-cat /usr/share/nginx/html/assets/config.js
+echo "Generated /usr/share/nginx/html/assets/config.json:"
+cat /usr/share/nginx/html/assets/config.json
 
 # Uruchomienie Nginx
 exec "$@"
