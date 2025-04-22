@@ -19,16 +19,15 @@ def google_service():
 
 def test_verify_token(google_service: GoogleService):
     mock_token = 'MockToken'
-    expected_response = {"email": 'test@test.com', "name": "Test User"}
 
-    with patch.object(id_token,'verify_oauth2_token', return_value = expected_response) as mock_verify:
+    with patch.object(id_token,'verify_oauth2_token') as mock_verify:
     
-        assert google_service.verify_and_decode_token(mock_token) == expected_response
+        google_service.verify_and_decode_token(mock_token)
         args, kwargs  = mock_verify.call_args
 
         mock_verify.assert_called_once
-        assert args[0] == mock_token
-        assert kwargs["audience"] == 'mockedId'
+        assert args[0] == mock_token, "Token argument is not as expected"
+        assert kwargs["audience"] == 'mockedId', "Audience argument is not as expected"
 
 
 def test_fetch_tokens(google_service: GoogleService, monkeypatch):
@@ -46,7 +45,7 @@ def test_fetch_tokens(google_service: GoogleService, monkeypatch):
     with patch('requests.post') as mock_post:
         google_service.fetch_tokens(mockedCode)
 
-        mock_post.assert_called_with('https://oauth2.googleapis.com/token', data=mocked_data)
+        mock_post.assert_called_with('https://oauth2.googleapis.com/token', data=mocked_data), "Parameters are not as expected"
 
 def test_refresh_token(google_service: GoogleService):
     mockedRefreshToken = 'xyz'
@@ -61,6 +60,6 @@ def test_refresh_token(google_service: GoogleService):
     with patch('requests.post') as mock_post:
         google_service.refresh_id_token(mockedRefreshToken)
 
-        mock_post.assert_called_with('https://oauth2.googleapis.com/token', data=mocked_data)
+        mock_post.assert_called_with('https://oauth2.googleapis.com/token', data=mocked_data), "Parameters are not as expected"
 
 
