@@ -45,7 +45,7 @@ def test_fetch_tokens(google_service: GoogleService, monkeypatch):
     with patch('requests.post') as mock_post:
         google_service.fetch_tokens(mockedCode)
 
-        mock_post.assert_called_with('https://oauth2.googleapis.com/token', data=mocked_data), "Parameters are not as expected"
+        mock_post.assert_called_with('https://oauth2.googleapis.com/token', data=mocked_data), "Api call's parameters are not as expected"
 
 def test_refresh_token(google_service: GoogleService):
     mockedRefreshToken = 'xyz'
@@ -60,6 +60,6 @@ def test_refresh_token(google_service: GoogleService):
     with patch('requests.post') as mock_post:
         google_service.refresh_id_token(mockedRefreshToken)
 
-        mock_post.assert_called_with('https://oauth2.googleapis.com/token', data=mocked_data), "Parameters are not as expected"
+        mock_post.assert_called_with('https://oauth2.googleapis.com/token', data=mocked_data), "Api call's parameters are not as expected"
 
 
