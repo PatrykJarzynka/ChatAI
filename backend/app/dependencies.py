@@ -6,7 +6,8 @@ from services.auth.hash_service import HashService
 from services.auth.jwt_service import JWTService
 from services.auth.google_service import GoogleService
 from services.auth.microsoft_service import MicrosoftService
-from services.auth.auth_service import AuthService
+from app.utilities.token_extractor import TokenExtractor
+from app.utilities.token_exception_manager import TokenExceptionManager
 from services.open_ai_chat_service import OpenAIChatService
 from services.memory_buffer_service import MemoryBufferService
 from starlette.requests import Request
@@ -24,8 +25,11 @@ def get_google_service():
 def get_microsoft_service():
     return MicrosoftService()
 
-def get_auth_service():
-    return AuthService()
+def get_token_extractor():
+    return TokenExtractor()
+
+def get_token_exception_manager():
+    return TokenExceptionManager()
 
 def get_memory():
     return MemoryBufferService()
@@ -40,19 +44,20 @@ memory_buffer_dependency = Annotated[MemoryBufferService, Depends(get_memory)]
 
 def verify_token(
                     request: Request,
-                    auth_service: AuthService = Depends(get_auth_service),
+                    token_extractor: TokenExtractor = Depends(get_token_extractor),
+                    token_exception_manager: TokenExceptionManager = Depends(get_token_exception_manager),
                     microsoft_service: MicrosoftService = Depends(get_microsoft_service),
                     google_service: GoogleService = Depends(get_google_service), 
                     jwt_service: JWTService = Depends(get_jwt_service)):
 
-    @auth_service.handle_token_exceptions
+    @token_exception_manager.handle_token_exceptions
     def verify(
             request: Request,
             microsoft_service: MicrosoftService,
             google_service: GoogleService,
             jwt_service: JWTService,
     ):
-        token = auth_service.get_token_from_header(request)
+        token = token_extractor.get_token_from_header(request)
         decoded_token = jwt_service.decode_token(token)
         issuer = decoded_token['iss']
 
