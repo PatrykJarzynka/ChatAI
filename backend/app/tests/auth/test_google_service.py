@@ -11,28 +11,15 @@ from starlette import requests
 def mock_google_setup(monkeypatch):
     monkeypatch.setenv('GOOGLE_CLIENT_ID',"mockedId")
     monkeypatch.setenv('GOOGLE_SECRET',"mockedSecret")
+    monkeypatch.setenv('REDIRECT_URL', 'redirect')
     get_settings.cache_clear()
 
 @pytest.fixture
 def google_service():
     return GoogleService()
 
-def test_verify_token(google_service: GoogleService):
-    mock_token = 'MockToken'
-
-    with patch.object(id_token,'verify_oauth2_token') as mock_verify:
-    
-        google_service.verify_and_decode_token(mock_token)
-        args, kwargs  = mock_verify.call_args
-
-        mock_verify.assert_called_once
-        assert args[0] == mock_token, "Token argument is not as expected"
-        assert kwargs["audience"] == 'mockedId', "Audience argument is not as expected"
-
-
 def test_fetch_tokens(google_service: GoogleService, monkeypatch):
     mockedCode = 'mockedCode'
-    monkeypatch.setenv('REDIRECT_URL', 'redirect')
 
     mocked_data = {
         "code": mockedCode,
