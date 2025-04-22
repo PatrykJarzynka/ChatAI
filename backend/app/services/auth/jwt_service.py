@@ -26,6 +26,5 @@ class JWTService:
         
 
     def decode_local_token(self, token: str):
-        payload = jwt.decode(token, self.SECRET_KEY, algorithms=[self.ALGORITHM])
-        return payload
+        return jwt.decode(token, self.SECRET_KEY, algorithms=[self.ALGORITHM])
     
