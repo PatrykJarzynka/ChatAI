@@ -3,7 +3,6 @@ from typing import List
 from llama_index.core.tools import FunctionTool
 from llama_index.core.memory import ChatMemoryBuffer
 
-#abstract
 class BotService(ABC):
 
     @abstractmethod

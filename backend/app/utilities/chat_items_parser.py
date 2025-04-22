@@ -11,5 +11,4 @@ class ChatItemsParser:
                 ChatMessage(content=f"{item.user_message}", role='user'),
                 ChatMessage(content=f"{item.bot_message}", role='assistant')
             ]
-        print(chat_items)
         return list(chain.from_iterable(map(convert_chat_item_to_chat_messages, chat_items)))

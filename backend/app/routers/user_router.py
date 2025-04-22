@@ -34,7 +34,6 @@ def get_user_by_tenant_id(user_service: user_service_dependency, decoded_token: 
 
 @router.post('/user/microsoft')
 def create_or_update_user(user_service: user_service_dependency, decoded_token: verify_token_dependency) -> None:
-    
     user_email = decoded_token['email']
     microsoft_id = decoded_token['sub']
 

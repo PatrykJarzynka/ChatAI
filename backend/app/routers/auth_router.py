@@ -65,9 +65,9 @@ def refresh(jwt_service: jwt_service_dependency, user_service: user_service_depe
         if user.tenant == Tenant.LOCAL:
             new_access_token = jwt_service.create_access_token({"sub": str(user.id)}).access_token
         elif user.tenant == Tenant.GOOGLE:
-            new_access_token = google_service.refresh_id_token(body.refresh_token)["id_token"]
+            new_access_token = google_service.refresh_tokens(body.refresh_token)["id_token"]
         elif user.tenant == Tenant.MICROSOFT:
-            new_access_token = microsoft_service.refresh_id_token(body.refresh_token)["id_token"]
+            new_access_token = microsoft_service.refresh_tokens(body.refresh_token)["id_token"]
         else:
             raise HTTPException(
                 detail='Tenant not supported',

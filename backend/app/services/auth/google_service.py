@@ -2,47 +2,40 @@ from google.oauth2 import id_token
 import google.auth.transport.requests
 import requests
 from config import get_settings
+from interfaces.auth_token_service import AuthTokenService
+from models.token_service_config import TokenServiceConfig
 
-class GoogleService:
+class GoogleService(AuthTokenService):
 
-    def verify_and_decode_token(self, token: str) -> dict:
+    def __init__(self):
         settings = get_settings()
-        client_id = settings.GOOGLE_CLIENT_ID
+        config = TokenServiceConfig(client_id=settings.GOOGLE_CLIENT_ID, secret=settings.GOOGLE_SECRET, redirect_url=settings.REDIRECT_URL, auth_url=settings.GOOGLE_AUTH_URL)
+        super().__init__(config)
 
-        return id_token.verify_oauth2_token(token, google.auth.transport.requests.Request(), audience=client_id)
+    def decode_token(self, token: str) -> dict:
+        return id_token.verify_oauth2_token(token, google.auth.transport.requests.Request(), audience=self.CLIENT_ID)
         
     def fetch_tokens(self, code: str) -> dict:
-        settings = get_settings()
-        CLIENT_ID = settings.GOOGLE_CLIENT_ID
-        SECRET = settings.GOOGLE_SECRET
-        REDIRECT_URL = settings.REDIRECT_URL
-        AUTH_URL=settings.GOOGLE_AUTH_URL
-
         data = {
         "code": code,
-        "client_id": CLIENT_ID,
-        "client_secret": SECRET,
-        "redirect_uri": REDIRECT_URL,
+        "client_id": self.CLIENT_ID,
+        "client_secret": self.CLIENT_SECRET,
+        "redirect_uri": self.REDIRECT_URL,
         "grant_type": 'authorization_code',
         }
 
-        response = requests.post(AUTH_URL, data=data)
+        response = requests.post(self.AUTH_URL, data=data)
         return response.json()
 
-    def refresh_id_token(self, refresh_token: str) -> dict:
-        settings = get_settings()
-        CLIENT_ID = settings.GOOGLE_CLIENT_ID
-        SECRET = settings.GOOGLE_SECRET
-        AUTH_URL= settings.GOOGLE_AUTH_URL
-
+    def refresh_tokens(self, refresh_token: str) -> dict:
         data = {
-        "client_id": CLIENT_ID,
-        "client_secret": SECRET,
+        "client_id": self.CLIENT_ID,
+        "client_secret": self.CLIENT_SECRET,
         "refresh_token": refresh_token,
         "grant_type": 'refresh_token'
         }
 
-        response = requests.post(AUTH_URL, data=data)
+        response = requests.post(self.AUTH_URL, data=data)
         return response.json()
 
     

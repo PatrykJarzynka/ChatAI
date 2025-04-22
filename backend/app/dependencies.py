@@ -6,8 +6,8 @@ from services.auth.hash_service import HashService
 from services.auth.jwt_service import JWTService
 from services.auth.google_service import GoogleService
 from services.auth.microsoft_service import MicrosoftService
-from app.utilities.token_extractor import TokenExtractor
-from app.utilities.token_exception_manager import TokenExceptionManager
+from utilities.token_extractor import TokenExtractor
+from utilities.token_exception_manager import TokenExceptionManager
 from services.open_ai_chat_service import OpenAIChatService
 from services.memory_buffer_service import MemoryBufferService
 from starlette.requests import Request
@@ -62,9 +62,9 @@ def verify_token(
         issuer = decoded_token['iss']
 
         if 'accounts.google.com' in issuer:
-            return google_service.verify_and_decode_token(token)
+            return google_service.decode_token(token)
         elif 'login.microsoftonline.com' in issuer:
-            return microsoft_service.validate_token(token)
+            return microsoft_service.decode_token(token)
         elif issuer == 'local':
             return jwt_service.decode_local_token(token)
         else:
