@@ -1,10 +1,7 @@
 import pytest
 from services.auth.google_service import GoogleService
 from unittest.mock import patch
-from google.oauth2 import id_token
-from unittest.mock import MagicMock
 from config import get_settings
-from starlette import requests
 
 
 @pytest.fixture(autouse=True)
@@ -18,7 +15,7 @@ def mock_google_setup(monkeypatch):
 def google_service():
     return GoogleService()
 
-def test_fetch_tokens(google_service: GoogleService, monkeypatch):
+def test_fetch_tokens(google_service: GoogleService):
     mockedCode = 'mockedCode'
 
     mocked_data = {
