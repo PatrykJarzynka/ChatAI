@@ -8,7 +8,6 @@ from services.auth.google_service import GoogleService
 from services.auth.microsoft_service import MicrosoftService
 from utilities.token_extractor import TokenExtractor
 from utilities.token_exception_handler import TokenExceptionHandler
-from services.open_ai_chat_service import OpenAIChatService
 from services.memory_buffer_service import MemoryBufferService
 from starlette.requests import Request
 
@@ -33,7 +32,6 @@ def get_token_exception_handler():
 
 def get_memory():
     return MemoryBufferService()
-
 
 
 microsoft_service_dependency = Annotated[MicrosoftService, Depends(get_microsoft_service)]
