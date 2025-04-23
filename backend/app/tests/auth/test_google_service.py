@@ -42,6 +42,7 @@ def test_refresh_token(google_service: GoogleService):
         }
     
     with patch('requests.post') as mock_post:
+        
         google_service.refresh_tokens(mockedRefreshToken)
 
         mock_post.assert_called_with('https://oauth2.googleapis.com/token', data=mocked_data), "Api call's parameters are not as expected"
