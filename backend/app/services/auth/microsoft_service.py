@@ -1,5 +1,6 @@
 import requests
 import jwt
+from jwt.algorithms import RSAAlgorithm
 from config import get_settings
 from models.token_service_config import TokenServiceConfig
 from interfaces.auth_token_service import AuthTokenService
@@ -16,7 +17,7 @@ class MicrosoftService(AuthTokenService):
         
     def decode_token(self, access_token: str):
         rsa_key = self.public_keys_provider.get_rsa_key(access_token)
-        public_key = self.public_keys_provider.convert_jwk_to_pem(rsa_key)
+        public_key = RSAAlgorithm.from_jwk(rsa_key)
 
         decoded_token = jwt.decode(
             access_token,
