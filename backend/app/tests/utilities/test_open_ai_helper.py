@@ -9,7 +9,7 @@ def open_ai_helper():
     return OpenAIHelper()
 
 def test_get_state_assigned_to_city(open_ai_helper: OpenAIHelper):
-    states = ['Silesia', 'GreaterPoland', 'Lubelskie']
+    states = ['Silesia', 'Greater Poland', 'Lubelskie']
     city = 'Gliwice'
     mock_response_text = 'mockResponse'
     mock_response = Mock()
