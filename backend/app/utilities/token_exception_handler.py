@@ -1,8 +1,10 @@
 import jwt
 from fastapi import HTTPException, status
+from functools import wraps
 
-class TokenExceptionManager:
+class TokenExceptionHandler:
     def handle_token_exceptions(self, func):
+        @wraps(func)
         def wrapper(*args, **kwargs):
             try:
                 return func(*args, **kwargs)

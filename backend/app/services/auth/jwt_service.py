@@ -10,8 +10,8 @@ class JWTService:
     ALGORITHM = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
-    def decode_token(self, jwt_token:str) -> dict:
-        return jwt.decode(jwt_token, options={"verify_signature": False})
+    def get_token_issuer(self, jwt_token: str) -> str:
+        return jwt.decode(jwt_token, options={"verify_signature": False})['iss']
 
     def create_access_token(self, data: dict,
                             expires_delta: timedelta | None = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)):

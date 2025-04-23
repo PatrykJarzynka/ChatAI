@@ -13,7 +13,7 @@ from services.chat_service import ChatService
 from services.auth.jwt_service import JWTService
 from services.auth.google_service import GoogleService
 from services.user_service import UserService
-from dependencies import verify_token_dependency, hash_service_dependency
+from dependencies import token_decoder, hash_service_dependency
 from starlette.requests import Request
 from containers import session_dependency, get_bot_service
 
@@ -41,7 +41,7 @@ user_service_dependency = Annotated[UserService, Depends(get_user_service)]
 
 
 @router.get('/chat', response_model=ChatDto)
-def get_new_chat(chat_service: chat_service_dependency, user_service: user_service_dependency, decoded_token: verify_token_dependency) -> Chat:
+def get_new_chat(chat_service: chat_service_dependency, user_service: user_service_dependency, decoded_token: token_decoder) -> Chat:
     tenant_id = decoded_token['sub']
     user_id = user_service.get_user_by_tenant_id(tenant_id).id
 
@@ -52,17 +52,17 @@ def get_new_chat(chat_service: chat_service_dependency, user_service: user_servi
 
 
 @router.get('/chat/history')
-async def get_chat_histories(userId: int, chat_history_service: chat_history_service_dependency, decoded_token: verify_token_dependency) -> list[ChatHistory]:
+async def get_chat_histories(userId: int, chat_history_service: chat_history_service_dependency, decoded_token: token_decoder) -> list[ChatHistory]:
     return chat_history_service.get_chats_history_data_by_user_id(userId)
 
 
 @router.get('/chat/{chat_id}', response_model=ChatDto)
-def get_chat_by_id(chat_id: int, chat_service: chat_service_dependency, decoded_token: verify_token_dependency) -> Chat:
+def get_chat_by_id(chat_id: int, chat_service: chat_service_dependency, decoded_token: token_decoder) -> Chat:
     return chat_service.get_chat_by_id(chat_id)
 
 
 @router.post('/chat')
-def on_user_query_send(user_chat_data: UserChatData, chat_service: chat_service_dependency, decoded_token: verify_token_dependency, bot_service: OpenAIChatService = Depends(get_bot_service)) -> str:
+def on_user_query_send(user_chat_data: UserChatData, chat_service: chat_service_dependency, decoded_token: token_decoder, bot_service: OpenAIChatService = Depends(get_bot_service)) -> str:
     try:
         new_chat_item = chat_service.create_chat_item(user_chat_data)
         new_chat_item.bot_message = bot_service.chat(user_chat_data.message)

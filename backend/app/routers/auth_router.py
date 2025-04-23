@@ -13,7 +13,7 @@ from models.user_create_dto import UserCreateDTO
 from models.tenant import Tenant
 from models.google_tokens import GoogleTokens
 from database import get_session
-from dependencies import hash_service_dependency, jwt_service_dependency, verify_token_dependency, google_service_dependency, microsoft_service_dependency
+from dependencies import hash_service_dependency, jwt_service_dependency, token_decoder, google_service_dependency, microsoft_service_dependency
 from services.user_service import UserService
 
 
@@ -57,7 +57,7 @@ def register(user: UserCreateDTO, user_service: user_service_dependency, jwt_ser
     return access_token
 
 @router.post('/auth/refresh')
-def refresh(jwt_service: jwt_service_dependency, user_service: user_service_dependency, google_service: google_service_dependency, microsoft_service: microsoft_service_dependency, decoded_token: verify_token_dependency, body: GoogleRefreshTokenRequest) -> str:
+def refresh(jwt_service: jwt_service_dependency, user_service: user_service_dependency, google_service: google_service_dependency, microsoft_service: microsoft_service_dependency, decoded_token: token_decoder, body: GoogleRefreshTokenRequest) -> str:
     tenant_id = decoded_token['sub']
     user = user_service.get_user_by_tenant_id(tenant_id)
 
@@ -83,7 +83,7 @@ def refresh(jwt_service: jwt_service_dependency, user_service: user_service_depe
     return new_access_token
 
 @router.get('/auth/verify')
-def verify_token(decoded_token: verify_token_dependency):
+def verify_token(decoded_token: token_decoder):
     return {"isValid": True}
 
 @router.post('/auth/microsoft')

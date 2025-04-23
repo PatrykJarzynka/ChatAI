@@ -6,7 +6,7 @@ from services.chat_service import ChatService
 from services.open_ai_chat_service import OpenAIChatService
 from services.memory_buffer_service import MemoryBufferService
 from services.web_service import WebService
-from dependencies import verify_token_dependency
+from dependencies import token_decoder
 from config import get_settings
 from clients.serper_api_manager import SerperApiManager
 from clients.serper_response_parser import SerperResponseParser
@@ -20,7 +20,7 @@ session_dependency = Annotated[Session, Depends(get_session)]
 def get_chat_service(session: session_dependency):
       return ChatService(session)
 
-async def get_bot_service(request: Request, decoded_token: verify_token_dependency, chat_service: ChatService = Depends(get_chat_service)) -> OpenAIChatService:
+async def get_bot_service(request: Request, decoded_token: token_decoder, chat_service: ChatService = Depends(get_chat_service)) -> OpenAIChatService:
 
         SERPER_API_KEY = get_settings().SERPER_API_KEY
         web_service = WebService(SerperApiManager(api_key=SERPER_API_KEY), SerperResponseParser())

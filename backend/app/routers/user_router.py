@@ -6,7 +6,7 @@ from sqlmodel import Session
 from models.user_response_dto import UserResponseDTO
 from models.user_create_dto import UserCreateDTO
 from models.tenant import Tenant
-from dependencies import verify_token_dependency
+from dependencies import token_decoder
 from database import get_session
 from dependencies import hash_service_dependency
 from services.auth.jwt_service import JWTService
@@ -28,12 +28,12 @@ user_service_dependency = Annotated[UserService, Depends(get_user_service)]
 jwt_service_dependency = Annotated[JWTService, Depends(get_jwt_service)]
 
 @router.get("/user/me", response_model=UserResponseDTO)
-def get_user_by_tenant_id(user_service: user_service_dependency, decoded_token: verify_token_dependency):
+def get_user_by_tenant_id(user_service: user_service_dependency, decoded_token: token_decoder):
     user_id = decoded_token['sub']
     return user_service.get_user_by_tenant_id(user_id)
 
 @router.post('/user/microsoft')
-def create_or_update_user(user_service: user_service_dependency, decoded_token: verify_token_dependency) -> None:
+def create_or_update_user(user_service: user_service_dependency, decoded_token: token_decoder) -> None:
     user_email = decoded_token['email']
     microsoft_id = decoded_token['sub']
 
@@ -51,7 +51,7 @@ def create_or_update_user(user_service: user_service_dependency, decoded_token: 
 
 
 @router.post('/user/google')
-def create_or_update_user(user_service: user_service_dependency, decoded_token: verify_token_dependency) -> None:
+def create_or_update_user(user_service: user_service_dependency, decoded_token: token_decoder) -> None:
     user_email = decoded_token['email']
     google_id = decoded_token['sub']
 
