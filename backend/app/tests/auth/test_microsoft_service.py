@@ -22,7 +22,7 @@ def test_decode_token(microsoft_service: MicrosoftService):
     expected_decoded_token = {"sub": "test_user", "aud": "client_id_123"}
 
     with patch.object(microsoft_service.public_keys_provider,'get_rsa_key', return_value=mock_rsa_key) as mock_get_rsa, \
-        patch.object(microsoft_service.public_keys_provider,'convert_jwk_to_pem', return_value=mock_public_key) as mock_get_public_key, \
+        patch('jwt.algorithms.RSAAlgorithm.from_jwk', return_value=mock_public_key) as mock_get_public_key, \
         patch("jwt.decode", return_value=expected_decoded_token) as mock_jwt_decode:
 
         decoded = microsoft_service.decode_token(mock_token)
