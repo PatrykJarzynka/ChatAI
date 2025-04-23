@@ -4,15 +4,15 @@ from jwt.algorithms import RSAAlgorithm
 from jwt.types import JWKDict
 from cryptography.hazmat.primitives.asymmetric.rsa import RSAPrivateKey, RSAPublicKey
 from typing import Dict, Any, List
+from config import get_settings
 
 
 class MicrosoftPublicKeysProvider:
     def __init__(self):
-        self.authority = "https://login.microsoftonline.com/common/v2.0"
+        self.openid_config_url = get_settings().MICROSOFT_OPENID_CONFIG_URL
 
     def get_openid_config(self) -> Dict[str, Any]:
-        openid_config_url = f"{self.authority}/.well-known/openid-configuration"
-        response = requests.get(openid_config_url)
+        response = requests.get(self.openid_config_url)
         return response.json()
     
     def get_jwks_by_config(self, openid_config) -> List[Dict[str, str]]:

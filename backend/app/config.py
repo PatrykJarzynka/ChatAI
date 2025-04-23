@@ -29,6 +29,7 @@ class Settings(BaseSettings):
     SERPER_API_KEY: str
     AIR_API_KEY: str
     MICROSOFT_AUTH_URL: str
+    MICROSOFT_OPENID_CONFIG_URL: str
     GOOGLE_AUTH_URL: str
     AIR_API_URL: str
 
