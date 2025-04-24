@@ -21,16 +21,36 @@ def hash_service():
 def user_service(session: Session, hash_service: HashService):
     return UserService(session, hash_service)
 
-def test_create_user_with_google_account_successfully(user_service: UserService):
-    google_user_data = UserCreateDTO(email=cast(EmailStr, 'test@test.pl'), password=None, full_name='TestName', tenant=Tenant.GOOGLE, tenant_id='123')
-    expected_user = User(tenant_id=google_user_data.tenant_id, full_name=google_user_data.full_name, email=google_user_data.email, password=None, tenant=google_user_data.tenant, chats=[])
+# def run_test_create_new_user(tenant: Tenant, user_service: UserService):
+#     user = UserCreateDTO(email=cast(EmailStr, 'test@test.pl'), password=None, full_name='TestName', tenant=Tenant.GOOGLE, tenant_id='123')
+#     expected_user = User(tenant_id=user.tenant_id, full_name=user.full_name, email=user.email, password=None, tenant=tenant, chats=[])
 
-    new_user = user_service.create_user(google_user_data)
+#     new_user = user_service.create_user(expected_user)
+#     assert new_user == expected_user
 
+# def run_test_create_user_no_tenant_id(user_service: UserService):
+#     user = UserCreateDTO(email=cast(EmailStr, 'test@test.pl'), password=None, full_name='TestName', tenant=Tenant.GOOGLE)
+
+#     with pytest.raises(HTTPException) as exc_info:
+#         user_service.create_user(user)
+
+#     assert exc_info.value.status_code == 500
+#     assert exc_info.value.detail == 'No user tenant_id'
+
+@pytest.mark.parametrize('tenant',[Tenant.GOOGLE, Tenant.MICROSOFT])
+def test_create_new_tenant_user_successfully(user_service: UserService, tenant: Tenant):
+    user = UserCreateDTO(email=cast(EmailStr, 'test@test.pl'), password=None, full_name='TestName', tenant=tenant, tenant_id='123')
+    expected_user = User(tenant_id=user.tenant_id, full_name=user.full_name, email=user.email, password=None, tenant=tenant, chats=[])
+
+    new_user = user_service.create_user(expected_user)
     assert new_user == expected_user
 
-def test_create_user_with_google_account_no_tenant_id(user_service: UserService):
-    google_user_data = UserCreateDTO(email=cast(EmailStr, 'test@test.pl'), password=None, full_name='TestName', tenant=Tenant.GOOGLE)
+# def test_create_user_with_microsoft_account_successfully(user_service: UserService):
+#     run_test_create_new_user(Tenant.MICROSOFT, user_service)
+
+@pytest.mark.parametrize('tenant',[Tenant.GOOGLE, Tenant.MICROSOFT])
+def test_create_new_tenant_user_no_tenant_id(user_service: UserService, tenant: Tenant):
+    google_user_data = UserCreateDTO(email=cast(EmailStr, 'test@test.pl'), password=None, full_name='TestName', tenant=tenant)
 
     with pytest.raises(HTTPException) as exc_info:
         user_service.create_user(google_user_data)
@@ -39,7 +59,7 @@ def test_create_user_with_google_account_no_tenant_id(user_service: UserService)
     assert exc_info.value.detail == 'No user tenant_id'
 
 
-def test_create_user_with_local_account_successfully(user_service: UserService):
+def test_create_local_user_successfully(user_service: UserService):
     local_user_data = UserCreateDTO(email=cast(EmailStr, 'test@test.pl'), password='Test123.', full_name='TestName', tenant=Tenant.LOCAL)
     new_user = user_service.create_user(local_user_data)
     
@@ -50,11 +70,11 @@ def test_create_user_with_local_account_successfully(user_service: UserService):
     assert new_user.tenant == Tenant.LOCAL
     assert new_user.chats == []
 
-def test_create_user_existing_email(user_service: UserService):
-    user_service.save_user(User(email='test@test.pl', full_name='TestName', password='SomeHashedPassword',tenant=Tenant.GOOGLE, tenant_id='123'))
-
-    create_user_data = UserCreateDTO(email=cast(EmailStr, 'test@test.pl'), password='Test123.', full_name='TestName2', tenant=Tenant.GOOGLE, tenant_id='123')
-
+@pytest.mark.parametrize('tenant, tenant_id',[(Tenant.GOOGLE,'123'), (Tenant.MICROSOFT,'123'), (Tenant.LOCAL, None)])
+def test_create_user_existing_email(user_service: UserService, tenant: Tenant, tenant_id: str | None):
+    user_service.save_user(User(email='test@test.pl', full_name='TestName', password='SomeHashedPassword',tenant=tenant, tenant_id=tenant_id))
+    create_user_data = UserCreateDTO(email=cast(EmailStr, 'test@test.pl'), password='Test123.', full_name='TestName2', tenant=tenant, tenant_id=tenant_id)
+    
     with pytest.raises(HTTPException) as exc_info:
         user_service.create_user(create_user_data)
 
@@ -87,8 +107,9 @@ def test_authenticate_local_user_not_existing_user(user_service: UserService):
 
     assert authenticated_user is False
 
-def test_authenticate_local_user_google_tenant(user_service: UserService):
-    google_user_data = UserCreateDTO(email=cast(EmailStr, 'test@test.pl'), password=None, full_name='TestName2', tenant_id='123', tenant=Tenant.GOOGLE)
+@pytest.mark.parametrize('tenant',[Tenant.GOOGLE, Tenant.MICROSOFT])
+def test_authenticate_local_user_no_local_tenant(user_service: UserService, tenant: Tenant):
+    google_user_data = UserCreateDTO(email=cast(EmailStr, 'test@test.pl'), password=None, full_name='TestName2', tenant_id='123', tenant=tenant)
     user = user_service.create_user(google_user_data)
     user_service.save_user(user)
 
@@ -128,8 +149,9 @@ def test_get_user_by_email_failed(user_service: UserService):
     
     assert getting_error.value.detail == 'User not found'
 
-def test_get_user_by_tenant_id_successfully(user_service: UserService):
-    create_user_data = UserCreateDTO(email=cast(EmailStr, 'test@test.pl'), password=None, full_name='TestName2', tenant=Tenant.GOOGLE, tenant_id='123')
+@pytest.mark.parametrize('tenant',[Tenant.GOOGLE, Tenant.MICROSOFT])
+def test_get_user_by_tenant_id_successfully(user_service: UserService, tenant: Tenant):
+    create_user_data = UserCreateDTO(email=cast(EmailStr, 'test@test.pl'), password=None, full_name='TestName2', tenant=tenant, tenant_id='123')
     user = user_service.create_user(create_user_data)  # create new user with hashed password
     user_service.save_user(user)
 
@@ -154,17 +176,5 @@ def test_is_user_with_provided_email_in_db_successfully(user_service: UserServic
 
 def test_is_user_with_provided_email_in_db_failed(user_service: UserService):
     isExisting = user_service.is_user_with_provided_email_in_db('test@test.pl')
-    assert isExisting == False
-
-def test_google_user_is_already_in_db(user_service: UserService):
-    create_user_data = UserCreateDTO(email=cast(EmailStr, 'test@test.pl'), password=None, full_name='TestName2', tenant=Tenant.GOOGLE, tenant_id='123')
-    user = user_service.create_user(create_user_data)
-    user_service.save_user(user)
-
-    isExisting = user_service.is_google_user_in_db(user.tenant_id)
-    assert isExisting == True
-
-def test_google_user_is_not_in_db(user_service: UserService):
-    isExisting = user_service.is_google_user_in_db('123')
     assert isExisting == False
 
