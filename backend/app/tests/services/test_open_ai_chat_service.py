@@ -1,13 +1,14 @@
 from unittest.mock import patch, Mock
 
 import pytest
-from llama_index.core import Settings
 from llama_index.core.base.llms.types import ChatMessage
 
 from services.open_ai_chat_service import OpenAIChatService
 
 from llama_index.core.tools import FunctionTool
 from services.memory_buffer_service import MemoryBufferService
+
+from fastapi import HTTPException
 
 
 @pytest.fixture
@@ -33,3 +34,14 @@ def test_chat(open_ai_chat_service: OpenAIChatService):
 
     mock_chat.assert_called_once_with(query)
     assert response == 'How can I help you?'
+
+def test_chat_exception(open_ai_chat_service: OpenAIChatService):
+    query = 'Hello'
+    mock_exception_text = 'Test exception'
+
+    with patch.object(open_ai_chat_service.chat_agent, 'chat', side_effect=Exception(mock_exception_text)) as mock_chat:
+        with pytest.raises(HTTPException) as exception:
+            open_ai_chat_service.chat(query)
+        
+    assert exception.value.detail == f"Failed to fetch bot response: {mock_exception_text}"
+    assert exception.value.status_code == 500
