@@ -10,7 +10,7 @@ from config import get_settings
 from clients.serper_api_manager import SerperApiManager
 from clients.serper_response_parser import SerperResponseParser
 from utilities.chat_items_parser import ChatItemsParser
-from services.weather_service import WeatherService
+from clients.weather_service import WeatherService
 from starlette.requests import Request
 from llama_index.core.tools import FunctionTool
 from llama_index.core.memory import ChatMemoryBuffer
