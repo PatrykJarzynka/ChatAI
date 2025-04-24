@@ -2,7 +2,7 @@ from interfaces.web_manager import WebManager
 from typing import Dict
 import requests
 
-class SerperApiManager(WebManager):
+class SerperApiSearchEngine(WebManager):
 
     def __init__(self, api_key: str) -> Dict[str,str]:
         self.endpoint = "https://google.serper.dev/search"

@@ -1,6 +1,6 @@
 import pytest
 from services.web_service import WebService
-from clients.serper_api_manager import SerperApiManager
+from clients.serper_api_search_engine import SerperApiSearchEngine
 from clients.serper_response_parser import SerperResponseParser
 from unittest.mock import patch
 from llama_index.core import Document
@@ -11,10 +11,10 @@ def parser():
 
 @pytest.fixture
 def web_manager():
-     return SerperApiManager(api_key='test_key')
+     return SerperApiSearchEngine(api_key='test_key')
 
 @pytest.fixture
-def web_service(web_manager: SerperApiManager, parser: SerperResponseParser):
+def web_service(web_manager: SerperApiSearchEngine, parser: SerperResponseParser):
     return WebService(web_manager=web_manager, parser=parser)
 
 def test_provide_documents(web_service: WebService):
