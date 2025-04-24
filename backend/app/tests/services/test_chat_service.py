@@ -73,7 +73,7 @@ def test_get_chat_by_id(chat_service: ChatService):
     assert result == chat
 
 
-def test_delete_chat(chat_service):
+def test_delete_chat(chat_service: ChatService):
     chat = Chat(user_id=1)
 
     chat_service.save_chat(chat)
