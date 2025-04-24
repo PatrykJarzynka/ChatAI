@@ -4,7 +4,6 @@ from sqlmodel import Session
 from database import get_session
 from services.chat_service import ChatService
 from services.open_ai_chat_service import OpenAIChatService
-from services.memory_buffer_service import MemoryBufferService
 from services.web_service import WebService
 from dependencies import token_decoder
 from config import get_settings
@@ -14,6 +13,7 @@ from utilities.chat_items_parser import ChatItemsParser
 from services.weather_service import WeatherService
 from starlette.requests import Request
 from llama_index.core.tools import FunctionTool
+from llama_index.core.memory import ChatMemoryBuffer
 
 session_dependency = Annotated[Session, Depends(get_session)]
 
@@ -29,7 +29,7 @@ async def get_bot_service(request: Request, decoded_token: token_decoder, chat_s
         chat_items = chat_service.get_chat_items((await request.json()).get('chat_id'))
         chat_messages = ChatItemsParser().parse_to_chat_messages(chat_items)
 
-        memory = MemoryBufferService(chat_messages) 
+        memory = ChatMemoryBuffer.from_defaults(chat_history=chat_messages)
 
         web_search_tool = FunctionTool.from_defaults(
             web_service.provide_documents, description='Useful for getting current web data.'
@@ -38,5 +38,5 @@ async def get_bot_service(request: Request, decoded_token: token_decoder, chat_s
             weather_service.get_city_weather_data, description='Useful for getting the data about current weather and air pollution in given location. Use all of the parameters in English translation.'
         )
 
-        return OpenAIChatService(tools=[web_search_tool, weather_search_tool],memory=memory.get_memory(), bot_description="You are intelligent assistant who is responsible for answering user's questions.")
+        return OpenAIChatService(tools=[web_search_tool, weather_search_tool],memory=memory, bot_description="You are intelligent assistant who is responsible for answering user's questions.")
 

@@ -2,11 +2,11 @@ from unittest.mock import patch, Mock
 
 import pytest
 from llama_index.core.base.llms.types import ChatMessage
+from llama_index.core.memory import ChatMemoryBuffer
 
 from services.open_ai_chat_service import OpenAIChatService
 
 from llama_index.core.tools import FunctionTool
-from services.memory_buffer_service import MemoryBufferService
 
 from fastapi import HTTPException
 
@@ -20,9 +20,9 @@ def open_ai_chat_service():
                 ChatMessage(content=f"Hello.", role='user'),
                 ChatMessage(content=f"Hello there.", role='assistant')
             ]
-    memory = MemoryBufferService(chat_messages) 
+    memory = ChatMemoryBuffer.from_defaults(chat_history=chat_messages)
 
-    return OpenAIChatService(tools = [test_tool_1, test_tool_2], memory = memory.get_memory(), bot_description=bot_description)
+    return OpenAIChatService(tools = [test_tool_1, test_tool_2], memory = memory, bot_description=bot_description)
 
 def test_chat(open_ai_chat_service: OpenAIChatService):
     query = 'Hello'
