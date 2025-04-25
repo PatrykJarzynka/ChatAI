@@ -13,7 +13,7 @@ class UserService:
         self.session = session
         self.hash_service = hash_service
 
-    def save_user(self, user: User):
+    def save_user(self, user: User) -> None:
         self.session.add(user)
         self.session.commit()
         self.session.refresh(user)
@@ -33,7 +33,7 @@ class UserService:
         
         return new_user
 
-    def authenticate_local_user(self, email: str, password: str):
+    def authenticate_local_user(self, email: str, password: str) -> bool | User:
         statement = select(User).where(User.email == email)
         existing_user = self.session.exec(statement).first()
 
@@ -61,7 +61,7 @@ class UserService:
             raise HTTPException(status_code=404, detail="User not found")
         return existing_user
     
-    def get_user_by_tenant_id(self, tenant_id):
+    def get_user_by_tenant_id(self, tenant_id) -> User:
         statement = select(User).where(User.tenant_id == tenant_id)
         existing_user = self.session.exec(statement).first()
 

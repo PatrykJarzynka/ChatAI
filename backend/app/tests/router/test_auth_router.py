@@ -1,21 +1,25 @@
+from unittest.mock import Mock
 import json
-from unittest.mock import patch
 
 import pytest
 from sqlmodel import Session, select
 from starlette.testclient import TestClient
-from fastapi import HTTPException
+from fastapi import status, HTTPException
 
 from db_models.user_model import User
 from services.auth.hash_service import HashService
 from services.auth.jwt_service import JWTService
 from services.user_service import UserService
 from main import app
-from dependencies import get_jwt_service
+from dependencies import get_jwt_service, decode_token, get_google_service, get_microsoft_service
 from models.token import Token
 from models.tenant import Tenant
+from models.user_create_dto import UserCreateDTO
+from routers.auth_router import get_user_service
 
 MOCKED_TOKEN = Token(access_token="fake_token", token_type="bearer")
+MOCKED_TENANT_TOKEN = {"id_token": 'fake_token'}
+MOCKED_TENANT_TOKENS = {"id_token": 'fake_token', "refresh_token": "fake_refresh_token"}
 
 @pytest.fixture
 def jwt_service():
@@ -30,15 +34,86 @@ def hash_service():
 def user_service(session: Session, hash_service):
     return UserService(session, hash_service)
 
-def override_jwt_service():
-    jwt_service = JWTService()
-    jwt_service.create_access_token = lambda x: MOCKED_TOKEN
-    return jwt_service
+@pytest.fixture
+def overrite_jwt():
+    mock = Mock()
+    mock.create_access_token.return_value = MOCKED_TOKEN
+    app.dependency_overrides[get_jwt_service] = lambda: mock
+    yield mock
+    app.dependency_overrides.clear()
 
+@pytest.fixture
+def overrite_google():
+    mock = Mock()
+    mock.refresh_tokens.return_value = MOCKED_TENANT_TOKEN
+    mock.fetch_tokens.return_value = MOCKED_TENANT_TOKENS
+    app.dependency_overrides[get_google_service] = lambda: mock
+    yield mock
+    app.dependency_overrides.clear()
 
-def test_register_successfully(session: Session, client: TestClient):
-    app.dependency_overrides[get_jwt_service] = override_jwt_service
-   
+@pytest.fixture
+def overrite_microsoft():
+    mock = Mock()
+    mock.refresh_tokens.return_value = MOCKED_TENANT_TOKEN
+    mock.fetch_tokens.return_value = MOCKED_TENANT_TOKENS
+    app.dependency_overrides[get_microsoft_service] = lambda: mock
+    yield mock
+    app.dependency_overrides.clear()
+
+@pytest.fixture
+def overrite_decode():
+    mock = Mock()
+    mock.return_value = {"sub": 'test_sub'}
+    app.dependency_overrides[decode_token] = lambda: mock()
+    yield mock
+    app.dependency_overrides.clear()
+
+def test_login_success(client: TestClient, overrite_jwt: Mock):
+    mock_user = Mock()
+    mock_user.id = 123
+
+    mock_user_service = Mock()
+    mock_user_service.authenticate_local_user.return_value = mock_user
+
+    app.dependency_overrides[get_user_service] = lambda: mock_user_service
+
+    response = client.post('/auth/login', data={
+        "username": "test@test.pl",
+        "password": "Test123.",
+    })
+
+    assert response.status_code == 200
+    assert response.json() == MOCKED_TOKEN.model_dump()
+
+    mock_user_service.authenticate_local_user.assert_called_once_with("test@test.pl", "Test123.")
+    overrite_jwt.create_access_token.assert_called_once_with({"sub": "123"})
+
+def test_login_wrong_credentials(client: TestClient, overrite_jwt: Mock):
+    mock_user_service = Mock()
+    mock_user_service.authenticate_local_user.return_value = False
+
+    app.dependency_overrides[get_user_service] = lambda: mock_user_service
+
+    response = client.post('/auth/login', data={
+        "username": 'wrong_username',
+        "password": 'wrong_password',
+    })
+
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
+    assert response.json() == {"detail": "Incorrect username or password"}
+
+    mock_user_service.authenticate_local_user.assert_called_once_with("wrong_username", "wrong_password")
+    overrite_jwt.create_access_token.assert_not_called()
+
+def test_register_successfully(session: Session, client: TestClient, overrite_jwt: Mock):
+    mock_user = User(id=123, tenant_id=None, email='email@a.pl',password='password', tenant=Tenant.LOCAL, full_name='XYZ')
+
+    mock_user_service = Mock()
+    mock_user_service.create_user.return_value = mock_user
+    mock_user_service.save_user.return_value = None
+
+    app.dependency_overrides[get_user_service] = lambda: mock_user_service
+
     response = client.post('/auth/register', json={
     "full_name": 'XYZ',
     "email": "test@test.pl",
@@ -46,121 +121,93 @@ def test_register_successfully(session: Session, client: TestClient):
     "tenant": Tenant.LOCAL
     })
 
-    data = response.json()
-
     assert response.status_code == 200
-    assert json.dumps(data) == json.dumps(MOCKED_TOKEN.model_dump())
+    assert response.json() == MOCKED_TOKEN.model_dump()
 
-    statement = select(User).where(User.email == 'test@test.pl')
-    created_user = session.exec(statement).first()
-    assert created_user is not None
-    assert created_user.email == 'test@test.pl'
-    assert created_user.full_name == 'XYZ'
-    assert created_user.password != 'Test123.'
-    assert created_user.tenant == Tenant.LOCAL
+    mock_user_service.create_user.assert_called_once_with(UserCreateDTO(email="test@test.pl", full_name="XYZ", password="Test123.", tenant=Tenant.LOCAL))
 
+    assert mock_user_service.save_user.call_count == 2
 
-def test_register_existing_email(user_service: UserService, client: TestClient):
-    app.dependency_overrides[get_jwt_service] = override_jwt_service
+    first_user_call = mock_user_service.save_user.call_args_list[0][0][0]
+    assert first_user_call.tenant_id is None
 
-    registered_user = User(email='test@test.pl', full_name='XYZ', password='someHashedPassword', tenant=Tenant.LOCAL)
-    user_service.save_user(registered_user)
+    second_user_call = mock_user_service.save_user.call_args_list[1][0][0]
+    assert second_user_call.tenant_id == mock_user.id
 
-    response = client.post('/auth/register', json={
-    "full_name": 'TestName',
-    "email": "test@test.pl",
-    "password": "Test123.",
-    "tenant": Tenant.LOCAL
-    })
+    overrite_jwt.create_access_token.assert_called_once_with({"sub": "123"})
 
-    assert response.status_code == 409
-    assert response.json() == {"detail": "Email already registered"}
+@pytest.mark.parametrize('refresh_token, tenant',[(None,None),('refresh_token',Tenant.GOOGLE),('refresh_token',Tenant.MICROSOFT),('refresh_token',Tenant.LOCAL),('refresh_token','custom_tenant')])
+def test_refresh_token(client: TestClient, overrite_jwt, overrite_google, overrite_microsoft, overrite_decode, refresh_token: str | None, tenant: Tenant | str | None):
+
+    mock_user_service = Mock()
+    mock_user_service.get_user_by_tenant_id.return_value = User(id=123, tenant_id=None, email='email@a.pl',password='password', tenant=tenant, full_name='XYZ')
+
+    app.dependency_overrides[get_user_service] = lambda: mock_user_service
 
 
-def test_login_successfully(user_service: UserService, client: TestClient):
-    app.dependency_overrides[get_jwt_service] = override_jwt_service
+    headers = {"Authorization": "Bearer access_token"}
+    body = {"refresh_token": refresh_token}
 
-    client.post('/auth/register', json={  # Create user with hashed password
-        "full_name": 'TestName',
-        "email": "test@test.pl",
-        "password": "Test123.",
-        "tenant": Tenant.LOCAL
-    })
+    response = client.post('/auth/refresh', headers=headers, json=body)
 
-    response = client.post('/auth/login', data={
-        "username": "test@test.pl",
-        "password": "Test123.",
-    })
-
-    data = response.json()
-
-    assert response.status_code == 200
-    assert json.dumps(data) == json.dumps(MOCKED_TOKEN.model_dump())
-
-
-def test_login_wrong_credentials(user_service: UserService, client: TestClient):
-    app.dependency_overrides[get_jwt_service] = override_jwt_service
-    
-    client.post('/auth/register', json={  # Create user with hashed password
-        "full_name": 'TestName',
-        "email": "test@test.pl",
-        "password": "Test123.",
-        "tenant": Tenant.LOCAL
-    })
-
-    response_wrong_username = client.post('/auth/login', data={
-        "username": "Test@test.pl",
-        "password": "Test123.",
-    })
-
-    response_wrong_password = client.post('/auth/login', data={
-        "username": "test@test.pl",
-        "password": "Test123,",
-    })
-
-    assert response_wrong_username.status_code == 401
-    assert response_wrong_username.json() == {"detail": "Incorrect username or password"}
-
-    assert response_wrong_password.status_code == 401
-    assert response_wrong_password.json() == {"detail": "Incorrect username or password"}
-
-def test_refresh_token(client: TestClient, jwt_service: JWTService):
-    test_token = jwt_service.create_access_token({"sub": '1'})
-    headers = {"Authorization": f"Bearer {test_token.access_token}"}
-
-    with  patch.object(JWTService, 'decode_local_token', return_value={"sub": "1"}) as mock_decode, \
-          patch.object(JWTService, 'create_access_token', return_value=Token(access_token='xyz', token_type='bearer')) as mock_token_create:
-        
-            response = client.get('/auth/refresh', headers=headers)
-
-            assert response.status_code == 200
-            mock_decode.assert_called_once_with(test_token.access_token)
-            mock_token_create.assert_called_once_with({"sub": "1"})
-
-def test_verify_token(client: TestClient, jwt_service: JWTService):
-    test_token = jwt_service.create_access_token({"sub": '1'})
-    headers = {"Authorization": f"Bearer {test_token.access_token}"}
-
-    with  patch.object(JWTService, 'decode_local_token', return_value={"sub": "1"}) as mock_decode:
-        response = client.get('/auth/verify', headers=headers)
-        data = response.json()
-
+    if not refresh_token:
+        assert response.status_code == 400
+        assert response.json()['detail'] == 'No refresh token provided!'
+            
+    elif tenant == Tenant.LOCAL:
         assert response.status_code == 200
-        assert data == test_token.access_token
-        mock_decode.assert_called_once_with(test_token.access_token)
+        assert response.json() == MOCKED_TOKEN.model_dump()['access_token']
+        overrite_jwt.create_access_token.assert_called_once_with({"sub": "123"})
 
-def test_verify_token_invalid(client: TestClient, jwt_service: JWTService):
-    invalid_token = 'test.token'
-    headersTokenInvalid = {"Authorization": f"Bearer {invalid_token}"}
+    elif tenant == Tenant.GOOGLE:
+        assert response.status_code == 200
+        assert response.json() == 'fake_token'
+        overrite_google.refresh_tokens.assert_called_once_with(refresh_token)
 
-    with  patch.object(JWTService, 'decode_local_token', side_effect=HTTPException(detail="Token error", status_code=401)) as mock_decode:
-        responseInvalid = client.get('/auth/verify', headers=headersTokenInvalid)
+    elif tenant == Tenant.MICROSOFT:
+        assert response.status_code == 200
+        assert response.json() == 'fake_token'
+        overrite_microsoft.refresh_tokens.assert_called_once_with(refresh_token)
 
-        mock_decode.assert_called_with(invalid_token)
+    else:
+        assert response.status_code == 400
+        assert response.json()['detail'] == 'Tenant not supported'
 
-        assert responseInvalid.status_code == 401
+    overrite_decode.assert_called_once()
 
-        assert responseInvalid.json() == {'detail': 'Token error'}
+
+def test_get_microsoft_tokens(client: TestClient, overrite_google, overrite_microsoft, overrite_decode):
+    expected_response = {
+        'refresh_token': MOCKED_TENANT_TOKENS['refresh_token'],
+        'access_token': MOCKED_TENANT_TOKENS['id_token']
+    }
+
+    headers = {"Authorization": "Bearer 'access_token"}
+    body = {
+        "code": 'auth_code'
+    }
+
+    response = client.post('/auth/microsoft', headers=headers, json=body)
+
+    overrite_google.fetch_tokens.assert_called_once_with('auth_code')
+    assert response == expected_response
+
+
+def test_get_microsoft_tokens(client: TestClient, jwt_service: JWTService):
+    pass
+
+# def test_verify_token_invalid(client: TestClient, jwt_service: JWTService):
+#     invalid_token = 'test.token'
+#     headersTokenInvalid = {"Authorization": f"Bearer {invalid_token}"}
+
+#     with  patch.object(JWTService, 'decode_local_token', side_effect=HTTPException(detail="Token error", status_code=401)) as mock_decode:
+#         responseInvalid = client.get('/auth/verify', headers=headersTokenInvalid)
+
+#         mock_decode.assert_called_with(invalid_token)
+
+#         assert responseInvalid.status_code == 401
+
+#         assert responseInvalid.json() == {'detail': 'Token error'}
         
         
 

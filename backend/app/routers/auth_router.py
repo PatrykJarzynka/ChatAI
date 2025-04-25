@@ -1,8 +1,6 @@
-import os
-import requests
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 from sqlmodel import Session
 
@@ -35,10 +33,10 @@ async def login_for_access_token(
         form_data: Annotated[OAuth2PasswordRequestForm, Depends()]
 ) -> Token:
     user = user_service.authenticate_local_user(form_data.username, form_data.password)
-
+    
     if not user:
         raise HTTPException(
-            status_code=401,
+            status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect username or password",
             headers={"WWW-Authenticate": "Bearer"}
         )
@@ -50,15 +48,18 @@ async def login_for_access_token(
 def register(user: UserCreateDTO, user_service: user_service_dependency, jwt_service: jwt_service_dependency) -> Token:
     new_user = user_service.create_user(user)
     user_service.save_user(new_user)
-    new_user.tenant_id = new_user.id
-    user_service.save_user(new_user)
+    
+    user_copy = new_user.model_copy()
+    user_copy.tenant_id = user_copy.id
+    user_service.save_user(user_copy)
 
-    access_token = jwt_service.create_access_token({"sub": str(new_user.id)})
+    access_token = jwt_service.create_access_token({"sub": str(user_copy.id)})
     return access_token
 
 @router.post('/auth/refresh')
 def refresh(jwt_service: jwt_service_dependency, user_service: user_service_dependency, google_service: google_service_dependency, microsoft_service: microsoft_service_dependency, decoded_token: token_decoder, body: GoogleRefreshTokenRequest) -> str:
     tenant_id = decoded_token['sub']
+
     user = user_service.get_user_by_tenant_id(tenant_id)
 
     if body.refresh_token:
@@ -74,10 +75,10 @@ def refresh(jwt_service: jwt_service_dependency, user_service: user_service_depe
                 status_code=400
             )
     else:
-            raise HTTPException(
-                detail='No refresh token provided!',
-                status_code=400
-            )
+        raise HTTPException(
+            detail='No refresh token provided!',
+            status_code=400
+        )
 
     
     return new_access_token
