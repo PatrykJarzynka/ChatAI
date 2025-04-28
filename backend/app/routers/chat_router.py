@@ -14,7 +14,6 @@ from services.auth.jwt_service import JWTService
 from services.auth.google_service import GoogleService
 from services.user_service import UserService
 from dependencies import token_decoder, hash_service_dependency
-from starlette.requests import Request
 from containers import session_dependency, get_bot_service
 
 router = APIRouter()
