@@ -21,22 +21,6 @@ def hash_service():
 def user_service(session: Session, hash_service: HashService):
     return UserService(session, hash_service)
 
-# def run_test_create_new_user(tenant: Tenant, user_service: UserService):
-#     user = UserCreateDTO(email=cast(EmailStr, 'test@test.pl'), password=None, full_name='TestName', tenant=Tenant.GOOGLE, tenant_id='123')
-#     expected_user = User(tenant_id=user.tenant_id, full_name=user.full_name, email=user.email, password=None, tenant=tenant, chats=[])
-
-#     new_user = user_service.create_user(expected_user)
-#     assert new_user == expected_user
-
-# def run_test_create_user_no_tenant_id(user_service: UserService):
-#     user = UserCreateDTO(email=cast(EmailStr, 'test@test.pl'), password=None, full_name='TestName', tenant=Tenant.GOOGLE)
-
-#     with pytest.raises(HTTPException) as exc_info:
-#         user_service.create_user(user)
-
-#     assert exc_info.value.status_code == 500
-#     assert exc_info.value.detail == 'No user tenant_id'
-
 @pytest.mark.parametrize('tenant',[Tenant.GOOGLE, Tenant.MICROSOFT])
 def test_create_new_tenant_user_successfully(user_service: UserService, tenant: Tenant):
     user = UserCreateDTO(email=cast(EmailStr, 'test@test.pl'), password=None, full_name='TestName', tenant=tenant, tenant_id='123')
@@ -44,9 +28,6 @@ def test_create_new_tenant_user_successfully(user_service: UserService, tenant: 
 
     new_user = user_service.create_user(expected_user)
     assert new_user == expected_user
-
-# def test_create_user_with_microsoft_account_successfully(user_service: UserService):
-#     run_test_create_new_user(Tenant.MICROSOFT, user_service)
 
 @pytest.mark.parametrize('tenant',[Tenant.GOOGLE, Tenant.MICROSOFT])
 def test_create_new_tenant_user_no_tenant_id(user_service: UserService, tenant: Tenant):

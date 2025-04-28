@@ -10,7 +10,7 @@ if TYPE_CHECKING:
 class User(SQLModel, table=True):
     id: int = Field(primary_key=True)
     email: EmailStr = Field(unique=True)
-    password: str = Field(nullable=True) # password can be null when user is registered through Google Account
+    password: str = Field(nullable=True) # password can be null when user is registered through Google or Microsoft Account
     tenant_id: str = Field(unique=True, nullable=True)
     full_name: str = Field(nullable=False)
     tenant: str = Tenant

@@ -1,10 +1,9 @@
 from unittest.mock import Mock
-import json
 
 import pytest
-from sqlmodel import Session, select
+from sqlmodel import Session
 from starlette.testclient import TestClient
-from fastapi import status, HTTPException
+from fastapi import status
 
 from db_models.user_model import User
 from services.auth.hash_service import HashService
@@ -105,7 +104,7 @@ def test_login_wrong_credentials(client: TestClient, overrite_jwt: Mock):
     mock_user_service.authenticate_local_user.assert_called_once_with("wrong_username", "wrong_password")
     overrite_jwt.create_access_token.assert_not_called()
 
-def test_register_successfully(session: Session, client: TestClient, overrite_jwt: Mock):
+def test_register_successfully(client: TestClient, overrite_jwt: Mock):
     mock_user = User(id=123, tenant_id=None, email='email@a.pl',password='password', tenant=Tenant.LOCAL, full_name='XYZ')
 
     mock_user_service = Mock()
