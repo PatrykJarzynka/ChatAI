@@ -176,7 +176,7 @@ def test_refresh_token(client: TestClient, overrite_jwt, overrite_google, overri
     overrite_decode.assert_called_once()
 
 
-def test_get_microsoft_tokens(client: TestClient, overrite_google, overrite_microsoft, overrite_decode):
+def test_get_microsoft_tokens(client: TestClient, overrite_microsoft, overrite_decode):
     expected_response = {
         'refresh_token': MOCKED_TENANT_TOKENS['refresh_token'],
         'access_token': MOCKED_TENANT_TOKENS['id_token']
@@ -189,25 +189,26 @@ def test_get_microsoft_tokens(client: TestClient, overrite_google, overrite_micr
 
     response = client.post('/auth/microsoft', headers=headers, json=body)
 
+    assert response.json() == expected_response
+    overrite_microsoft.fetch_tokens.assert_called_once_with('auth_code')
+    
+
+
+def test_get_google_tokens(client: TestClient, overrite_google):
+    expected_response = {
+        'refresh_token': MOCKED_TENANT_TOKENS['refresh_token'],
+        'access_token': MOCKED_TENANT_TOKENS['id_token']
+    }
+
+    headers = {"Authorization": "Bearer 'access_token"}
+    body = {
+        "code": 'auth_code'
+    }
+
+    response = client.post('/auth/google', headers=headers, json=body)
+
+    assert response.json()  == expected_response
     overrite_google.fetch_tokens.assert_called_once_with('auth_code')
-    assert response == expected_response
-
-
-def test_get_microsoft_tokens(client: TestClient, jwt_service: JWTService):
-    pass
-
-# def test_verify_token_invalid(client: TestClient, jwt_service: JWTService):
-#     invalid_token = 'test.token'
-#     headersTokenInvalid = {"Authorization": f"Bearer {invalid_token}"}
-
-#     with  patch.object(JWTService, 'decode_local_token', side_effect=HTTPException(detail="Token error", status_code=401)) as mock_decode:
-#         responseInvalid = client.get('/auth/verify', headers=headersTokenInvalid)
-
-#         mock_decode.assert_called_with(invalid_token)
-
-#         assert responseInvalid.status_code == 401
-
-#         assert responseInvalid.json() == {'detail': 'Token error'}
         
         
 
