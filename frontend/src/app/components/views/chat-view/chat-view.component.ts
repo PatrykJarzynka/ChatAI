@@ -1,11 +1,10 @@
-import { Component, computed, model } from '@angular/core';
+import { Component, computed, model, signal } from '@angular/core';
 import { MatIcon } from '@angular/material/icon';
 import { MatTooltip } from '@angular/material/tooltip';
-import { MatCheckbox } from '@angular/material/checkbox';
 import { FormsModule } from '@angular/forms';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { AppSidebar } from '../../core/app-sidebar/app-sidebar.component';
-import { NgStyle } from '@angular/common';
+import { NgClass, NgStyle } from '@angular/common';
 import { MatButton, MatMiniFabButton } from '@angular/material/button';
 import { ChatService } from '@services/ChatService';
 import { Router } from '@angular/router';
@@ -18,21 +17,24 @@ import { ChatWindow } from '@components/features/chat/chat-window/chat-window.co
 import { ChatActions } from '@components/features/chat/chat-actions/chat-actions.component';
 import { AuthService } from '@services/AuthService';
 import { ChatHistoryService } from '@services/ChatHistoryService';
+import { MatTab, MatTabGroup, MatTabLabel } from '@angular/material/tabs';
+import { MatDivider } from '@angular/material/divider';
+import { ImportedFile } from 'appTypes/ImportedFile';
 
 
 @Component({
   selector: 'chat-view',
-  imports: [ChatWindow, ChatActions, MatIcon, MatTooltip, MatCheckbox, FormsModule, MatSidenavModule, AppSidebar, NgStyle, MatButton, ChatHistory, MatMiniFabButton, MatMenuTrigger, MatMenu, MatMenuItem,],
+  imports: [ChatWindow, ChatActions, MatIcon, MatTooltip, FormsModule, MatSidenavModule, AppSidebar, NgStyle, MatButton, ChatHistory, MatMiniFabButton, MatMenuTrigger, MatMenu, MatMenuItem, MatTabGroup, MatTab, MatTabLabel, MatDivider, MatIcon, NgClass],
   templateUrl: './chat-view.component.html',
   styleUrl: './chat-view.component.scss'
 })
 export class ChatView {
   title = 'chatAI';
   panelVisibility = model<boolean>(true);
-  shouldFail = model<boolean>(false);
 
-  private readonly handleFetchingBotMessage: (userQuery: string, shouldFail: boolean) => Promise<void>;
+  private readonly handleFetchingBotMessage: (userQuery: string) => Promise<void>;
   currentUser = computed(() => this.userService.getCurrentUser()());
+  importedFiles = signal<ImportedFile[]>([]);
 
   constructor(
     private chatService: ChatService,
@@ -105,13 +107,29 @@ export class ChatView {
     }
 
     this.chatService.createAndAddChatItemTemplate(userQuery);
-    await this.handleFetchingBotMessage(userQuery, this.shouldFail());
+    await this.handleFetchingBotMessage(userQuery);
   }
 
   async refetchBotMessage(userQuery: string): Promise<void> {
     const { handleFetchingBotMessage } = useChatActions(this.chatService);
     this.chatService.updateLatestBotMessageDataProperty('status', StatusType.Pending);
 
-    await handleFetchingBotMessage(userQuery, false);
+    await handleFetchingBotMessage(userQuery);
+  }
+
+  uploadFiles(e: any): void {
+    
+
+    let importedFiles: ImportedFile[] = [];
+
+    ( Array.from(e.target.files) as File[] ).forEach((file) => {
+      importedFiles.push(new ImportedFile(file.name, false));
+    });
+
+    this.importedFiles.set(importedFiles);
+  }
+
+  onFileClick(file: ImportedFile): void {
+    file.toggleSelection();
   }
 }

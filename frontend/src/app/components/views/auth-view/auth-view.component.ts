@@ -75,12 +75,10 @@ export class AuthView {
   }
 
   async onMicrosoftLogin(): Promise<void> {
-    console.log(this.configService.getMicrosoftPath());
     window.location.href = this.configService.getMicrosoftPath();
   }
 
   async onGoogleLogin(): Promise<void> {
-    console.log(this.configService.getGooglePath());
     window.location.href = this.configService.getGooglePath();
   }
 }

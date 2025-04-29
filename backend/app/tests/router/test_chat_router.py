@@ -1,7 +1,6 @@
 import pytest
-from unittest.mock import patch, Mock
+from unittest.mock import Mock
 
-from sqlmodel import Session
 from starlette.testclient import TestClient
 
 from db_models.chat_item_model import ChatItem
@@ -12,9 +11,7 @@ from models.tenant import Tenant
 from models.chat_dto import ChatDto
 from services.auth.jwt_service import JWTService
 from main import app
-from routers.chat_router import get_user_service, get_chat_service, get_chat_history_service
-from containers import get_bot_service
-from dependencies import decode_token
+from containers import get_chat_service, get_user_service, get_bot_service, decode_token, get_chat_history_service
 
 mock_user = User(id=123, tenant_id=None, email='email@a.pl',password='password', tenant=Tenant.LOCAL, full_name='XYZ')
 mock_chat=Chat(user_id=123, id=1)

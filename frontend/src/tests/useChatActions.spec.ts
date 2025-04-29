@@ -15,7 +15,7 @@ describe('useChatActions', () => {
   let botMessageService: BotMessageService;
   let userService: UserService;
   let chatHistoryService: ChatHistoryService;
-  let handleFetchingBotMessageFn: (userQuery: string, shouldFail: boolean) => Promise<void>;
+  let handleFetchingBotMessageFn: (userQuery: string) => Promise<void>;
 
   beforeEach(() => {
     apiServiceMock = new ApiService() as jest.Mocked<ApiService>;
@@ -68,13 +68,12 @@ describe('useChatActions', () => {
 
     test('should update bot message to success and update chat history', async () => {
       const botResponse = 'Hello World!';
-      const shouldFail = false;
       jest.spyOn(chatService, 'fetchBotResponse').mockResolvedValue(botResponse);
       jest.spyOn(chatService, 'updateLatestBotMessageDataProperty');
       userService.setCurrentUser(MOCK_USER);
       chatService.setCurrentChat(MOCK_CHAT_WITH_ITEMS);
 
-      await handleFetchingBotMessageFn(MOCK_QUERY, shouldFail);
+      await handleFetchingBotMessageFn(MOCK_QUERY);
 
       const chatHistories = chatHistoryService.getAllChatHistories();
 

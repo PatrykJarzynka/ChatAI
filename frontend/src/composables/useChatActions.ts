@@ -4,14 +4,14 @@ import { ChatService } from '@services/ChatService';
 
 function useChatActions(chatService: ChatService) {
 
-  async function handleFetchingBotMessage(userQuery: string, shouldFail: boolean): Promise<void> {
+  async function handleFetchingBotMessage(userQuery: string): Promise<void> {
     const currentChat = chatService.getCurrentChat();
 
     if (!currentChat) {
       throw new Error('Chat is not defined!');
     } else {
       try {
-        const response = await chatService.fetchBotResponse(userQuery, currentChat.id, shouldFail);
+        const response = await chatService.fetchBotResponse(userQuery, currentChat.id);
         chatService.updateLatestBotMessageDataProperty('text', response);
         chatService.updateLatestBotMessageDataProperty('status', StatusType.Success);
         chatService.updateChatHistory();

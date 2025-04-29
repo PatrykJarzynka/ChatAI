@@ -6,26 +6,9 @@ from sqlmodel import Session
 from models.user_response_dto import UserResponseDTO
 from models.user_create_dto import UserCreateDTO
 from models.tenant import Tenant
-from dependencies import token_decoder
-from database import get_session
-from dependencies import hash_service_dependency
-from services.auth.jwt_service import JWTService
-from services.user_service import UserService
+from containers import user_service_dependency, token_decoder
 
 router = APIRouter()
-session_dependency = Annotated[Session, Depends(get_session)]
-
-
-def get_user_service(session: session_dependency, hash_service: hash_service_dependency):
-    return UserService(session, hash_service)
-
-
-def get_jwt_service():
-    return JWTService()
-
-
-user_service_dependency = Annotated[UserService, Depends(get_user_service)]
-jwt_service_dependency = Annotated[JWTService, Depends(get_jwt_service)]
 
 @router.get("/user/me", response_model=UserResponseDTO)
 def get_user_by_tenant_id(user_service: user_service_dependency, decoded_token: token_decoder):

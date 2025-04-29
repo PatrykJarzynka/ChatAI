@@ -1,14 +1,11 @@
 from main import app
 import pytest
 from starlette.testclient import TestClient
-from services.auth.jwt_service import JWTService
-from services.user_service import UserService
 from models.user_create_dto import UserCreateDTO
 from models.user_response_dto import UserResponseDTO
 from models.tenant import Tenant
 from unittest.mock import Mock
-from routers.user_router import get_user_service
-from dependencies import decode_token
+from containers import decode_token, get_user_service
 from db_models.user_model import User
 
 mock_user = User(id=123, tenant_id=None, email='email@a.pl',password='password', tenant=Tenant.LOCAL, full_name='XYZ')

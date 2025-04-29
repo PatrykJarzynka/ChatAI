@@ -91,13 +91,7 @@ export class ChatService {
     this.addChatItem(chatItemTemplate);
   }
 
-  async fetchBotResponse(userQuery: string, chatId: number, shouldFail: boolean): Promise<string> {
-    if (shouldFail) {
-      return new Promise((resolve, reject) => {
-        reject(new Error('Unknown error'));
-      });
-    }
-
+  async fetchBotResponse(userQuery: string, chatId: number): Promise<string> {
     return await this.botMessageService.fetchBotResponse(chatId, userQuery);
   }
 

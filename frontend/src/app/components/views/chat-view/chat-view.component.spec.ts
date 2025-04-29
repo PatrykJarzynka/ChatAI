@@ -75,17 +75,6 @@ describe('appComponent', () => {
     });
   });
 
-  describe('toggleBotFail', () => {
-    test('should update bot fail state', () => {
-      const panel = fixture.nativeElement.querySelector('.sidebar-wrapper');
-      const panelCheckbox = panel.querySelector('.mdc-checkbox__native-control');
-
-      panelCheckbox.click();
-
-      expect(component.shouldFail()).toEqual(true);
-    });
-  });
-
   describe('startNewChat', () => {
     let panel: HTMLDivElement;
     let panelNewChatButton: HTMLButtonElement | null;
@@ -138,7 +127,7 @@ describe('appComponent', () => {
       expect(chatService.startNewChat).toHaveBeenCalled();
       await fixture.whenStable();
       expect(chatService.createAndAddChatItemTemplate).toHaveBeenCalledWith(MOCK_QUERY);
-      expect(mockHandleFetchingBotMessage).toHaveBeenCalledWith(MOCK_QUERY, component.shouldFail());
+      expect(mockHandleFetchingBotMessage).toHaveBeenCalledWith(MOCK_QUERY);
     });
 
     test('should not react on enter key press', () => {
@@ -189,7 +178,7 @@ describe('appComponent', () => {
 
       expect(component.refetchBotMessage).toHaveBeenCalledWith(MOCK_QUERY);
       expect(chatService.updateLatestBotMessageDataProperty).toHaveBeenCalledWith('status', StatusType.Pending);
-      expect(mockHandleFetchingBotMessage).toHaveBeenCalledWith(MOCK_QUERY, component.shouldFail());
+      expect(mockHandleFetchingBotMessage).toHaveBeenCalledWith(MOCK_QUERY);
 
     });
   });

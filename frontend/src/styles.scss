@@ -43,3 +43,20 @@ main {
 .profile-button .mdc-button__label {
   width: 100%;
 }
+
+.panel-tabs-wrapper {
+
+  .mat-mdc-tab-body-content {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .mdc-tab {
+    flex: 1
+  }
+
+  .mat-mdc-tab-body-wrapper {
+    flex: 1;
+  }
+
+}

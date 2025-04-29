@@ -90,6 +90,50 @@
   }
 }
 
+.panel-tabs-wrapper {
+  height: 100%;
+
+  .mat-mdc-tab-body {
+    color: red !important;
+  }
+}
+
+.files-container {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-auto-rows: max-content;
+  border: 2px dashed var(--primary-dark);
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  margin-block: 10px;
+  padding: 10px
+}
+
+.file-template {
+  text-align: center;
+}
+
+.file-template:hover {
+  cursor: pointer;
+  color: var(--mat-sys-primary);
+}
+
+.file-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.file-icon {
+  font-size: 40px;
+  height: fit-content;
+  width: fit-content;
+}
+
+.selected {
+  color: red;
+}
 
 
 

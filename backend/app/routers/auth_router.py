@@ -11,7 +11,7 @@ from models.user_create_dto import UserCreateDTO
 from models.tenant import Tenant
 from models.google_tokens import GoogleTokens
 from database import get_session
-from dependencies import hash_service_dependency, jwt_service_dependency, token_decoder, google_service_dependency, microsoft_service_dependency
+from containers import hash_service_dependency, jwt_service_dependency, token_decoder, google_service_dependency, microsoft_service_dependency, user_service_dependency
 from services.user_service import UserService
 
 
@@ -20,11 +20,6 @@ router = APIRouter()
 session_dependency = Annotated[Session, Depends(get_session)]
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
-
-def get_user_service(session: session_dependency, hash_service: hash_service_dependency):
-    return UserService(session, hash_service)
-
-user_service_dependency = Annotated[UserService, Depends(get_user_service)]
 
 @router.post('/auth/login')
 async def login_for_access_token(
@@ -84,7 +79,7 @@ def refresh(jwt_service: jwt_service_dependency, user_service: user_service_depe
     return new_access_token
 
 @router.get('/auth/verify')
-def verify_token(decoded_token: token_decoder):
+def verify_token(_: token_decoder):
     return {"isValid": True}
 
 @router.post('/auth/microsoft')

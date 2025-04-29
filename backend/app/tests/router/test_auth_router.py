@@ -6,38 +6,24 @@ from starlette.testclient import TestClient
 from fastapi import status
 
 from db_models.user_model import User
-from services.auth.hash_service import HashService
 from services.auth.jwt_service import JWTService
-from services.user_service import UserService
+from services.auth.google_service import GoogleService
+from services.auth.microsoft_service import MicrosoftService
 from main import app
-from dependencies import get_jwt_service, decode_token, get_google_service, get_microsoft_service
+from containers import decode_token, get_user_service
 from models.token import Token
 from models.tenant import Tenant
 from models.user_create_dto import UserCreateDTO
-from routers.auth_router import get_user_service
 
 MOCKED_TOKEN = Token(access_token="fake_token", token_type="bearer")
 MOCKED_TENANT_TOKEN = {"id_token": 'fake_token'}
 MOCKED_TENANT_TOKENS = {"id_token": 'fake_token', "refresh_token": "fake_refresh_token"}
 
 @pytest.fixture
-def jwt_service():
-    return JWTService()
-
-@pytest.fixture
-def hash_service():
-    return HashService()
-
-
-@pytest.fixture
-def user_service(session: Session, hash_service):
-    return UserService(session, hash_service)
-
-@pytest.fixture
 def overrite_jwt():
     mock = Mock()
     mock.create_access_token.return_value = MOCKED_TOKEN
-    app.dependency_overrides[get_jwt_service] = lambda: mock
+    app.dependency_overrides[JWTService] = lambda: mock
     yield mock
     app.dependency_overrides.clear()
 
@@ -46,7 +32,7 @@ def overrite_google():
     mock = Mock()
     mock.refresh_tokens.return_value = MOCKED_TENANT_TOKEN
     mock.fetch_tokens.return_value = MOCKED_TENANT_TOKENS
-    app.dependency_overrides[get_google_service] = lambda: mock
+    app.dependency_overrides[GoogleService] = lambda: mock
     yield mock
     app.dependency_overrides.clear()
 
@@ -55,7 +41,7 @@ def overrite_microsoft():
     mock = Mock()
     mock.refresh_tokens.return_value = MOCKED_TENANT_TOKEN
     mock.fetch_tokens.return_value = MOCKED_TENANT_TOKENS
-    app.dependency_overrides[get_microsoft_service] = lambda: mock
+    app.dependency_overrides[MicrosoftService] = lambda: mock
     yield mock
     app.dependency_overrides.clear()
 

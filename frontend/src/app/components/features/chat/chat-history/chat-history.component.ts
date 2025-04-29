@@ -9,6 +9,7 @@ import { MatIcon } from '@angular/material/icon';
 import { ChatHistory as ChatHistoryType } from 'appTypes/ChatHistory';
 import { MatList, MatListItem, MatListItemIcon } from '@angular/material/list';
 import { AppTitlebar } from '@components/core/app-titlebar/app-titlebar.component';
+import { MatTab, MatTabGroup, MatTabLabel } from '@angular/material/tabs';
 
 
 const { parseChatResponseToChat } = useParser;
@@ -22,7 +23,10 @@ const { parseChatResponseToChat } = useParser;
     MatIcon,
     MatList,
     MatListItem,
-    MatListItemIcon
+    MatListItemIcon,
+    MatTabGroup,
+    MatTab,
+    MatTabLabel
   ],
   templateUrl: './chat-history.component.html',
   styleUrl: './chat-history.component.scss',

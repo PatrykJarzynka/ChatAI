@@ -22,18 +22,55 @@
           <mat-icon>add</mat-icon>
           New chat
         </button>
-
-        <mat-checkbox
-          [(ngModel)]="shouldFail"
-          [matTooltip]="!shouldFail() ? 'Enable bot fail' : 'Disable bot fail'"
-        />
       </div>
 
       <div
         style="height: 100%;"
         panel-content
       >
-        <chat-history/>
+        <mat-tab-group class="panel-tabs-wrapper">
+          <mat-tab>
+            <ng-template mat-tab-label>
+              Your<br>Conversations
+            </ng-template>
+
+            <chat-history/>
+          </mat-tab>
+          <mat-tab>
+            <ng-template mat-tab-label>
+              Imported<br>Files
+            </ng-template>
+
+            <input
+              id="fileInput"
+              type="file"
+              multiple
+              (change)="uploadFiles($event)"
+            />
+
+            <div class="files-container">
+              @for (file of importedFiles(); track $index) {
+                <div
+                  [ngClass]="file.selected ? 'selected' : ''"
+                  class="file-template"
+                  (click)="onFileClick(file)"
+                >
+                  <mat-icon
+                    fontSet="material-icons-outlined"
+                    class="file-icon"
+                  >
+                    description
+                  </mat-icon>
+                  <p class="file-name">{{ file.fileName }}</p>
+                </div>
+              }
+
+            </div>
+          </mat-tab>
+        </mat-tab-group>
+
+        <mat-divider/>
+
       </div>
 
       <div
