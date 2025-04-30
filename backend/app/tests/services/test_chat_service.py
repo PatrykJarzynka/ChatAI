@@ -28,7 +28,7 @@ def test_create_chat_item(chat_service: ChatService):
     assert chat_item == expected_chat_item
 
 
-def test_add_chat_item_to_chat(chat_service: ChatService, session: Session):
+def test_add_chat_item_to_chat(chat_service: ChatService):
     initial_chat = Chat(chat_items=[], user_id=1)
     chat_service.save_chat(initial_chat)
 
