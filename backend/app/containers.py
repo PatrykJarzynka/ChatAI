@@ -38,9 +38,6 @@ google_service_dependency = Annotated[GoogleService, Depends(GoogleService)]
 def get_chat_service(session: session_dependency):
     return ChatService(session)
 
-def get_chat_history_service(session: session_dependency):
-    return ChatHistoryService(session)
-
 def get_user_service(session: session_dependency, hash_service: hash_service_dependency):
      return UserService(session, hash_service)
 

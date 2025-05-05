@@ -16,7 +16,7 @@ def get_user_by_tenant_id(user_service: user_service_dependency, decoded_token: 
     return user_service.get_user_by_tenant_id(user_id)
 
 @router.post('/user/microsoft')
-def create_or_update_user(user_service: user_service_dependency, decoded_token: token_decoder) -> None:
+def create_or_update_microsoft_user(user_service: user_service_dependency, decoded_token: token_decoder) -> None:
     user_email = decoded_token['email']
     microsoft_id = decoded_token['sub']
 
@@ -34,7 +34,7 @@ def create_or_update_user(user_service: user_service_dependency, decoded_token: 
 
 
 @router.post('/user/google')
-def create_or_update_user(user_service: user_service_dependency, decoded_token: token_decoder) -> None:
+def create_or_update_google_user(user_service: user_service_dependency, decoded_token: token_decoder) -> None:
     user_email = decoded_token['email']
     google_id = decoded_token['sub']
 

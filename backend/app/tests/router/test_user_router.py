@@ -1,20 +1,22 @@
-from main import app
 import pytest
+from models.insert_user_dto import InsertLocalUserDTO
+from main import app
 from starlette.testclient import TestClient
 from models.user_create_dto import UserCreateDTO
 from models.user_response_dto import UserResponseDTO
 from models.tenant import Tenant
 from unittest.mock import Mock
 from containers import decode_token, get_user_service
-from db_models.user_model import User
+from tables.user import User
 
-mock_user = User(id=123, tenant_id=None, email='email@a.pl',password='password', tenant=Tenant.LOCAL, full_name='XYZ')
+mock_local_user_get = User(id=123, tenant_id='123', email='email@a.pl',password='password', tenant=Tenant.LOCAL, full_name='XYZ')
+mock_local_user_create = InsertLocalUserDTO(email='email@a.pl',password='password', tenant=Tenant.LOCAL, full_name='XYZ', chats=[])
 
 @pytest.fixture
 def user_service():
     mock = Mock()
-    mock.get_user_by_tenant_id.return_value = mock_user
-    mock.create_user.return_value = mock_user
+    mock.get_user_by_tenant_id.return_value = mock_local_user_get
+    mock.create_user.return_value = mock_local_user_create
     mock.is_tenant_user_in_db.return_value = False
     mock.is_user_with_provided_email_in_db.return_value = False
     app.dependency_overrides[get_user_service] = lambda: mock
@@ -39,7 +41,7 @@ def overrite_decode_google():
 
 def test_get_user_by_tenant_id(client: TestClient, user_service, overrite_decode_microsoft):
     headers = {"Authorization": "Bearer access_token"}
-    expected_response = UserResponseDTO(id=mock_user.id, email=mock_user.email, full_name=mock_user.full_name)
+    expected_response = UserResponseDTO(id=mock_local_user_get.id, email=mock_local_user_get.email, full_name=mock_local_user_get.full_name)
 
     response = client.get('/user/me', headers=headers)
 
@@ -55,7 +57,7 @@ def test_create_new_user_microsoft(client: TestClient, user_service, overrite_de
 
     overrite_decode_microsoft.assert_called_once()
     user_service.create_user.assert_called_once_with(expected_user)
-    user_service.save_user.assert_called_once_with(mock_user)
+    user_service.save_user.assert_called_once_with(mock_local_user_create)
 
 def test_create_new_user_google(client: TestClient, user_service, overrite_decode_google):
     headers = {"Authorization": "Bearer access_token"}
@@ -65,4 +67,4 @@ def test_create_new_user_google(client: TestClient, user_service, overrite_decod
 
     overrite_decode_google.assert_called_once()
     user_service.create_user.assert_called_once_with(expected_user)
-    user_service.save_user.assert_called_once_with(mock_user)
+    user_service.save_user.assert_called_once_with(mock_local_user_create)

@@ -3,7 +3,7 @@ from typing import Optional, TYPE_CHECKING
 from sqlmodel import SQLModel, Field, Relationship, Column, Text
 
 if TYPE_CHECKING:
-    from db_models.chat_model import Chat
+    from app.tables.chat import Chat
 
 
 class ChatItem(SQLModel, table=True):

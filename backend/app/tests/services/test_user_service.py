@@ -5,8 +5,9 @@ from fastapi import HTTPException
 from pydantic import EmailStr
 from sqlmodel import Session
 
+from app.models.insert_user_dto import InsertLocalUserDTO, InsertTenantUserDTO
 from models.user_create_dto import UserCreateDTO
-from db_models.user_model import User
+from app.tables.user import User
 from services.auth.hash_service import HashService
 from models.tenant import Tenant
 from services.user_service import UserService
@@ -24,9 +25,10 @@ def user_service(session: Session, hash_service: HashService):
 @pytest.mark.parametrize('tenant',[Tenant.GOOGLE, Tenant.MICROSOFT])
 def test_create_new_tenant_user_successfully(user_service: UserService, tenant: Tenant):
     user = UserCreateDTO(email=cast(EmailStr, 'test@test.pl'), password=None, full_name='TestName', tenant=tenant, tenant_id='123')
-    expected_user = User(tenant_id=user.tenant_id, full_name=user.full_name, email=user.email, password=None, tenant=tenant, chats=[])
+    expected_user = InsertLocalUserDTO(full_name=user.full_name, email=user.email, password=None, tenant=tenant, chats=[])
 
-    new_user = user_service.create_user(expected_user)
+    new_user = user_service.create_user(user)
+
     assert new_user == expected_user
 
 @pytest.mark.parametrize('tenant',[Tenant.GOOGLE, Tenant.MICROSOFT])
@@ -51,9 +53,15 @@ def test_create_local_user_successfully(user_service: UserService):
     assert new_user.tenant == Tenant.LOCAL
     assert new_user.chats == []
 
-@pytest.mark.parametrize('tenant, tenant_id',[(Tenant.GOOGLE,'123'), (Tenant.MICROSOFT,'123'), (Tenant.LOCAL, None)])
-def test_create_user_existing_email(user_service: UserService, tenant: Tenant, tenant_id: str | None):
-    user_service.save_user(User(email='test@test.pl', full_name='TestName', password='SomeHashedPassword',tenant=tenant, tenant_id=tenant_id))
+@pytest.mark.parametrize('tenant',[(Tenant.GOOGLE), (Tenant.MICROSOFT), (Tenant.LOCAL)])
+def test_create_user_existing_email(user_service: UserService, tenant: Tenant):
+    tenant_id = '123'
+    if tenant == Tenant.GOOGLE or tenant == Tenant.MICROSOFT:
+        insert_user = InsertTenantUserDTO(email='test@test.pl', full_name='TestName', password='SomeHashedPassword',tenant=tenant,tenant_id=tenant_id, chats=[])
+    else:
+        insert_user = InsertLocalUserDTO(email='test@test.pl', full_name='TestName', password='SomeHashedPassword',tenant=tenant, chats=[])
+    
+    user_service.save_user(insert_user)
     create_user_data = UserCreateDTO(email=cast(EmailStr, 'test@test.pl'), password='Test123.', full_name='TestName2', tenant=tenant, tenant_id=tenant_id)
     
     with pytest.raises(HTTPException) as exc_info:
@@ -80,13 +88,13 @@ def test_authenticate_local_user_wrong_password(user_service: UserService):
 
     authenticated_user = user_service.authenticate_local_user(email='test@test.pl', password='Test1234.')
 
-    assert authenticated_user is False
+    assert authenticated_user is None
 
 
 def test_authenticate_local_user_not_existing_user(user_service: UserService):
     authenticated_user = user_service.authenticate_local_user(email='test@test.pl', password='Test123.')
 
-    assert authenticated_user is False
+    assert authenticated_user is None
 
 @pytest.mark.parametrize('tenant',[Tenant.GOOGLE, Tenant.MICROSOFT])
 def test_authenticate_local_user_no_local_tenant(user_service: UserService, tenant: Tenant):
@@ -96,14 +104,16 @@ def test_authenticate_local_user_no_local_tenant(user_service: UserService, tena
 
     authenticated_user = user_service.authenticate_local_user(email='test@test.pl', password='Test123.')
 
-    assert authenticated_user is False
+    assert authenticated_user is None
 
 def test_get_user_by_id_successfully(user_service: UserService):
     create_user_data = UserCreateDTO(email=cast(EmailStr, 'test@test.pl'), password='Test123.', full_name='TestName2', tenant=Tenant.LOCAL)
     user = user_service.create_user(create_user_data)  # create new user with hashed password
     user_service.save_user(user)
 
-    found_user = user_service.get_user_by_id(user.id)
+    casted_user = cast(User, user)
+
+    found_user = user_service.get_user_by_id(casted_user.id)
     
     assert found_user == user
 
@@ -136,7 +146,9 @@ def test_get_user_by_tenant_id_successfully(user_service: UserService, tenant: T
     user = user_service.create_user(create_user_data)  # create new user with hashed password
     user_service.save_user(user)
 
-    found_user = user_service.get_user_by_tenant_id(user.tenant_id)
+    casted_user = cast(User, user)
+
+    found_user = user_service.get_user_by_tenant_id(casted_user.tenant_id)
     
     assert found_user == user
 

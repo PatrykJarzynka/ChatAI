@@ -3,18 +3,20 @@ from unittest.mock import Mock
 
 from starlette.testclient import TestClient
 
-from db_models.chat_item_model import ChatItem
-from db_models.chat_model import Chat
-from db_models.user_model import User
+from app.models.chat_item_dto import ChatItemDTO
+from app.tables.chat_item import ChatItem
+from app.tables.chat import Chat
+from app.tables.user import User
 from models.user_chat_data import UserChatData
 from models.tenant import Tenant
 from models.chat_dto import ChatDto
 from services.auth.jwt_service import JWTService
 from main import app
 from containers import get_chat_service, get_user_service, get_bot_service, decode_token, get_chat_history_service
+from typing import List, cast
 
-mock_user = User(id=123, tenant_id=None, email='email@a.pl',password='password', tenant=Tenant.LOCAL, full_name='XYZ')
-mock_chat=Chat(user_id=123, id=1)
+mock_user = User(id=123, tenant_id='123', email='email@a.pl',password='password', tenant=Tenant.LOCAL, full_name='XYZ')
+mock_chat=Chat(user_id=123, id=1, chat_items=[])
 mock_bot_response = 'TEST'
 mock_chat_item = ChatItem(user_message='Hello', chat_id=1)
 
@@ -97,7 +99,7 @@ def test_get_chat_histories(client: TestClient, chat_history_service, overrite_d
 
 def test_get_chat_by_id(client: TestClient, chat_service, overrite_decode):
     headers = {"Authorization": "Bearer access_token"}
-    expected_response = ChatDto(id=mock_chat.id, chat_items=mock_chat.chat_items)
+    expected_response = ChatDto(id=mock_chat.id, chat_items=cast(List[ChatItemDTO],mock_chat.chat_items)) #casting type because response model does the real casting in routing
 
     response = client.get('/chat/1', headers=headers)
 

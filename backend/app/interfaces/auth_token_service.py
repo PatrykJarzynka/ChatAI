@@ -11,13 +11,13 @@ class AuthTokenService(ABC):
         self.AUTH_URL = config.auth_url
 
     @abstractmethod
-    def fetch_tokens(auth_code:str):
+    def fetch_tokens(self, auth_code:str):
         pass
     
     @abstractmethod
-    def refresh_tokens(refresh_token:str):
+    def refresh_tokens(self, refresh_token:str):
         pass
     
     @abstractmethod
-    def decode_token(access_token: str):
+    def decode_token(self, access_token: str):
         pass

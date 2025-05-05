@@ -5,7 +5,7 @@ from fastapi import APIRouter, HTTPException
 from models.chat_dto import ChatDto
 from models.chat_history import ChatHistory
 from models.user_chat_data import UserChatData
-from db_models.chat_model import Chat
+from app.tables.chat import Chat
 from containers import token_decoder, user_service_dependency, bot_service_dependency, chat_service_dependency, chat_history_dependency
 
 router = APIRouter()
@@ -14,7 +14,7 @@ router = APIRouter()
 def get_new_chat(chat_service: chat_service_dependency, user_service: user_service_dependency, decoded_token: token_decoder) -> Chat:
     tenant_id = decoded_token['sub']
     user_id = user_service.get_user_by_tenant_id(tenant_id).id
-
+    
     new_chat = chat_service.create_new_chat(user_id)
     chat_service.save_chat(new_chat)
 
@@ -27,7 +27,7 @@ async def get_chat_histories(userId: int, chat_history_service: chat_history_dep
 
 
 @router.get('/chat/{chat_id}', response_model=ChatDto)
-def get_chat_by_id(chat_id: int, chat_service: chat_service_dependency, _: token_decoder) -> Chat:
+def get_chat_by_id(chat_id: int, chat_service: chat_service_dependency, _: token_decoder) -> Chat | None:
     return chat_service.get_chat_by_id(chat_id)
 
 

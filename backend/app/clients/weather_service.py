@@ -17,10 +17,10 @@ class WeatherService():
         
 
     def get_city_weather_data(self, city: Annotated[str,"Name of a city"], country: Annotated[str,"Name of a country"]):
-        supported_states = list(map(lambda data: data['state'], self.get_supported_states(country)['data']))
+        supported_states = list(map(lambda data: data.state, self.get_supported_states(country).data))
         
         state = OpenAIHelper().get_state_assigned_to_city(city, supported_states)
-        supported_cities = list(map(lambda data: data['city'], self.get_supported_cities_in_state(country, state)['data'])) 
+        supported_cities = list(map(lambda data: data.city, self.get_supported_cities_in_state(country, state).data)) 
 
         if city in supported_cities:
             return self.get_city_data(city, state, country)

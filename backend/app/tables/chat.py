@@ -1,11 +1,11 @@
 from sqlmodel import SQLModel, Field, Relationship
-from db_models.user_model import User
+from app.tables.user import User
 
-from db_models.chat_item_model import ChatItem
+from app.tables.chat_item import ChatItem
 
 
 class Chat(SQLModel, table=True):
-    id: int | None = Field(default=None, primary_key=True)
+    id: int = Field(primary_key=True)
     chat_items: list[ChatItem] = Relationship(back_populates="chat")
 
     user_id: int = Field(foreign_key="user.id")

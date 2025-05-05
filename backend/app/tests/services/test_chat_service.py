@@ -2,8 +2,8 @@ import pytest
 from sqlmodel import Session
 
 from models.user_chat_data import UserChatData
-from db_models.chat_item_model import ChatItem
-from db_models.chat_model import Chat
+from app.tables.chat_item import ChatItem
+from app.tables.chat import Chat
 from services.chat_service import ChatService
 
 
@@ -33,7 +33,7 @@ def test_add_chat_item_to_chat(chat_service: ChatService):
     chat_service.save_chat(initial_chat)
 
     chat_item = ChatItem(user_message='Hello there', chat_id=initial_chat.id)
-
+    
     chat_service.add_chat_item_to_chat(chat_item, initial_chat.id)
 
     current_chat = chat_service.get_chat_by_id(initial_chat.id)
@@ -44,9 +44,12 @@ def test_add_chat_item_to_chat(chat_service: ChatService):
 def test_save_chat(chat_service: ChatService):
     chat = Chat(user_id=1)
     chat_service.save_chat(chat)
+    
+    assert chat.id is not None
 
     saved_chat = chat_service.get_chat_by_id(chat.id)
-
+    
+    assert saved_chat is not None
     assert saved_chat == chat
     assert saved_chat.chat_items == []
 
@@ -58,6 +61,8 @@ def test_get_chat_items(chat_service: ChatService):
 
     chat_service.save_chat(chat)
 
+    assert chat.id is not None
+
     chat_items = chat_service.get_chat_items(chat.id)
 
     assert initial_chat_items == chat_items
@@ -68,6 +73,8 @@ def test_get_chat_by_id(chat_service: ChatService):
 
     chat_service.save_chat(chat)
 
+    assert chat.id is not None
+
     result = chat_service.get_chat_by_id(chat.id)
 
     assert result == chat
@@ -77,6 +84,8 @@ def test_delete_chat(chat_service: ChatService):
     chat = Chat(user_id=1)
 
     chat_service.save_chat(chat)
+
+    assert chat.id is not None
 
     chat_service.delete_chat(chat.id)
 

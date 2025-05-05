@@ -1,4 +1,4 @@
-from typing import Annotated
+from typing import Annotated, cast
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
@@ -9,10 +9,10 @@ from models.auth_code_request import AuthCodeRequest
 from models.google_refresh_token_request import GoogleRefreshTokenRequest
 from models.user_create_dto import UserCreateDTO
 from models.tenant import Tenant
-from models.google_tokens import GoogleTokens
+from app.models.api_tokens import ApiTokens
 from database import get_session
-from containers import hash_service_dependency, jwt_service_dependency, token_decoder, google_service_dependency, microsoft_service_dependency, user_service_dependency
-from services.user_service import UserService
+from containers import jwt_service_dependency, token_decoder, google_service_dependency, microsoft_service_dependency, user_service_dependency
+from tables.user import User
 
 
 router = APIRouter()
@@ -44,8 +44,8 @@ def register(user: UserCreateDTO, user_service: user_service_dependency, jwt_ser
     new_user = user_service.create_user(user)
     user_service.save_user(new_user)
     
-    user_copy = new_user.model_copy()
-    user_copy.tenant_id = user_copy.id
+    user_copy = cast(User, new_user.model_copy()) #instance of new_user become User, after saving to db
+    user_copy.tenant_id = str(user_copy.id)
     user_service.save_user(user_copy)
 
     access_token = jwt_service.create_access_token({"sub": str(user_copy.id)})
@@ -64,11 +64,7 @@ def refresh(jwt_service: jwt_service_dependency, user_service: user_service_depe
             new_access_token = google_service.refresh_tokens(body.refresh_token)["id_token"]
         elif user.tenant == Tenant.MICROSOFT:
             new_access_token = microsoft_service.refresh_tokens(body.refresh_token)["id_token"]
-        else:
-            raise HTTPException(
-                detail='Tenant not supported',
-                status_code=400
-            )
+            
     else:
         raise HTTPException(
             detail='No refresh token provided!',
@@ -79,21 +75,15 @@ def refresh(jwt_service: jwt_service_dependency, user_service: user_service_depe
     return new_access_token
 
 @router.get('/auth/verify')
-def verify_token(_: token_decoder):
+def verify_token(_: token_decoder) -> dict[str, bool]:
     return {"isValid": True}
 
 @router.post('/auth/microsoft')
-async def get_tokens(body: AuthCodeRequest, microsoft_service: microsoft_service_dependency):
+async def get_microsoft_tokens(body: AuthCodeRequest, microsoft_service: microsoft_service_dependency) -> ApiTokens:
     data = microsoft_service.fetch_tokens(body.code)
-    return {
-        'refresh_token': data['refresh_token'],
-        'access_token': data['id_token']
-    }
+    return ApiTokens(refresh_token=data['refresh_token'], access_token=data['id_token']) # data contains access_token and id_token, but access_token is required to be passed when using google api, while id_token is simple google jwt that we can validate.
 
 @router.post('/auth/google')
-async def get_tokens(body: AuthCodeRequest, google_service: google_service_dependency) -> GoogleTokens:
+async def get_google_tokens(body: AuthCodeRequest, google_service: google_service_dependency) -> ApiTokens:
     data = google_service.fetch_tokens(body.code)
-    return {
-        'refresh_token': data['refresh_token'],
-        'access_token': data['id_token'] # data contains access_token and id_token, but access_token is required to be passed when using google api, while id_token is simple google jwt that we can validate.
-    } 
+    return ApiTokens(refresh_token=data['refresh_token'], access_token=data['id_token']) # data contains access_token and id_token, but access_token is required to be passed when using google api, while id_token is simple google jwt that we can validate.

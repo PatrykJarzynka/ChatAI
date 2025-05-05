@@ -4,7 +4,7 @@ import requests
 
 class SerperApiSearchEngine(WebManager):
 
-    def __init__(self, api_key: str) -> Dict[str,str]:
+    def __init__(self, api_key: str):
         self.endpoint = "https://google.serper.dev/search"
         self.api_key = api_key
 

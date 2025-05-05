@@ -1,6 +1,6 @@
 import pytest
 from utilities.chat_items_parser import ChatItemsParser
-from db_models.chat_item_model import ChatItem
+from app.tables.chat_item import ChatItem
 from llama_index.core.base.llms.types import ChatMessage
 
 @pytest.fixture

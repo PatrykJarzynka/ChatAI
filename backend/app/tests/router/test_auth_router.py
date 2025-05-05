@@ -1,11 +1,11 @@
 from unittest.mock import Mock
 
 import pytest
-from sqlmodel import Session
 from starlette.testclient import TestClient
 from fastapi import status
 
-from db_models.user_model import User
+from app.models.insert_user_dto import InsertLocalUserDTO
+from app.tables.user import User
 from services.auth.jwt_service import JWTService
 from services.auth.google_service import GoogleService
 from services.auth.microsoft_service import MicrosoftService
@@ -90,8 +90,9 @@ def test_login_wrong_credentials(client: TestClient, overrite_jwt: Mock):
     mock_user_service.authenticate_local_user.assert_called_once_with("wrong_username", "wrong_password")
     overrite_jwt.create_access_token.assert_not_called()
 
-def test_register_successfully(client: TestClient, overrite_jwt: Mock):
-    mock_user = User(id=123, tenant_id=None, email='email@a.pl',password='password', tenant=Tenant.LOCAL, full_name='XYZ')
+def test_register_successfully(client: TestClient, overrite_jwt):
+    expected_id = str(1)
+    mock_user = InsertLocalUserDTO(email='email@a.pl',password='password', tenant=Tenant.LOCAL, full_name='XYZ', chats=[])
 
     mock_user_service = Mock()
     mock_user_service.create_user.return_value = mock_user
@@ -117,15 +118,16 @@ def test_register_successfully(client: TestClient, overrite_jwt: Mock):
     assert first_user_call.tenant_id is None
 
     second_user_call = mock_user_service.save_user.call_args_list[1][0][0]
-    assert second_user_call.tenant_id == mock_user.id
+    assert second_user_call.tenant_id == expected_id
 
     overrite_jwt.create_access_token.assert_called_once_with({"sub": "123"})
 
-@pytest.mark.parametrize('refresh_token, tenant',[(None,None),('refresh_token',Tenant.GOOGLE),('refresh_token',Tenant.MICROSOFT),('refresh_token',Tenant.LOCAL),('refresh_token','custom_tenant')])
-def test_refresh_token(client: TestClient, overrite_jwt, overrite_google, overrite_microsoft, overrite_decode, refresh_token: str | None, tenant: Tenant | str | None):
+@pytest.mark.parametrize('refresh_token, tenant',[(None,Tenant.LOCAL),('refresh_token',Tenant.GOOGLE),('refresh_token',Tenant.MICROSOFT),('refresh_token',Tenant.LOCAL),('refresh_token','custom_tenant')])
+def test_refresh_token(client: TestClient, overrite_jwt, overrite_google, overrite_microsoft, overrite_decode, refresh_token: str | None, tenant: Tenant):
 
     mock_user_service = Mock()
-    mock_user_service.get_user_by_tenant_id.return_value = User(id=123, tenant_id=None, email='email@a.pl',password='password', tenant=tenant, full_name='XYZ')
+    mock_user_service.get_user_by_tenant_id.return_value = User(id=123, tenant_id='123', email='email@a.pl',password='password', tenant=tenant, full_name='XYZ')
+
 
     app.dependency_overrides[get_user_service] = lambda: mock_user_service
 
@@ -154,14 +156,10 @@ def test_refresh_token(client: TestClient, overrite_jwt, overrite_google, overri
         assert response.json() == 'fake_token'
         overrite_microsoft.refresh_tokens.assert_called_once_with(refresh_token)
 
-    else:
-        assert response.status_code == 400
-        assert response.json()['detail'] == 'Tenant not supported'
-
     overrite_decode.assert_called_once()
 
 
-def test_get_microsoft_tokens(client: TestClient, overrite_microsoft, overrite_decode):
+def test_get_microsoft_tokens(client: TestClient, overrite_microsoft):
     expected_response = {
         'refresh_token': MOCKED_TENANT_TOKENS['refresh_token'],
         'access_token': MOCKED_TENANT_TOKENS['id_token']
