@@ -2,14 +2,41 @@ import pytest
 from sqlmodel import Session
 
 from models.user_chat_data import UserChatData
-from app.tables.chat_item import ChatItem
-from app.tables.chat import Chat
+from tables.chat_item import ChatItem
+from tables.chat import Chat
 from services.chat_service import ChatService
+from models.tenant import Tenant
+from tables.user import User
+from typing import cast
 
 
 @pytest.fixture
 def chat_service(session: Session):
     return ChatService(session)
+
+@pytest.fixture
+def init_user_fixture(session: Session) -> User:
+    new_user = User(email='test@test.pl', password='someHashedPassword',full_name='XYZ', tenant=Tenant.LOCAL)
+
+    session.add(new_user)
+    session.commit()
+    session.refresh(new_user)
+
+    new_user.tenant_id = str(new_user.id)
+
+    session.add(new_user)
+    session.commit()
+    session.refresh(new_user)
+    
+    return new_user
+
+@pytest.fixture
+def init_chat_fixture(init_user_fixture: User, session: Session) -> Chat:
+    chat = Chat(user_id=init_user_fixture.id)
+    session.add(chat)
+    session.commit()
+    session.refresh(chat)
+    return chat
 
 
 def test_create_new_chat(chat_service: ChatService):
@@ -28,21 +55,19 @@ def test_create_chat_item(chat_service: ChatService):
     assert chat_item == expected_chat_item
 
 
-def test_add_chat_item_to_chat(chat_service: ChatService):
-    initial_chat = Chat(chat_items=[], user_id=1)
-    chat_service.save_chat(initial_chat)
-
-    chat_item = ChatItem(user_message='Hello there', chat_id=initial_chat.id)
+def test_add_chat_item_to_chat(chat_service: ChatService, init_chat_fixture: Chat):
+    chat_item = ChatItem(user_message='Hello there', chat_id=init_chat_fixture.id)
     
-    chat_service.add_chat_item_to_chat(chat_item, initial_chat.id)
+    chat_service.add_chat_item_to_chat(chat_item, init_chat_fixture.id)
 
-    current_chat = chat_service.get_chat_by_id(initial_chat.id)
+    current_chat = chat_service.get_chat_by_id(init_chat_fixture.id)
 
+    assert current_chat is not None, "Chat not found when it should exist"
     assert chat_item in current_chat.chat_items
 
-
-def test_save_chat(chat_service: ChatService):
-    chat = Chat(user_id=1)
+    
+def test_save_chat(chat_service: ChatService, init_user_fixture: User):
+    chat = Chat(user_id=init_user_fixture.id)
     chat_service.save_chat(chat)
     
     assert chat.id is not None
@@ -54,10 +79,11 @@ def test_save_chat(chat_service: ChatService):
     assert saved_chat.chat_items == []
 
 
-def test_get_chat_items(chat_service: ChatService):
+def test_get_chat_items(chat_service: ChatService, init_user_fixture: User):
     initial_chat_items = [ChatItem(user_message='Hello there', chat_id=1, bot_message='Hello'),
                           ChatItem(user_message='How are you?', chat_id=1, bot_message='Good.')]
-    chat = Chat(chat_items=initial_chat_items, user_id=1)
+    
+    chat = Chat(chat_items=initial_chat_items, user_id=init_user_fixture.id)
 
     chat_service.save_chat(chat)
 
@@ -68,25 +94,17 @@ def test_get_chat_items(chat_service: ChatService):
     assert initial_chat_items == chat_items
 
 
-def test_get_chat_by_id(chat_service: ChatService):
-    chat = Chat(user_id=1)
+def test_get_chat_by_id(chat_service: ChatService, init_chat_fixture: Chat):
+    assert init_chat_fixture.id is not None
 
-    chat_service.save_chat(chat)
+    result = chat_service.get_chat_by_id(init_chat_fixture.id)
 
-    assert chat.id is not None
-
-    result = chat_service.get_chat_by_id(chat.id)
-
-    assert result == chat
+    assert result == init_chat_fixture
 
 
-def test_delete_chat(chat_service: ChatService):
-    chat = Chat(user_id=1)
+def test_delete_chat(chat_service: ChatService, init_chat_fixture: Chat):
+    assert init_chat_fixture.id is not None
 
-    chat_service.save_chat(chat)
+    chat_service.delete_chat(init_chat_fixture.id)
 
-    assert chat.id is not None
-
-    chat_service.delete_chat(chat.id)
-
-    assert chat_service.get_chat_by_id(chat.id) is None
+    assert chat_service.get_chat_by_id(init_chat_fixture.id) is None

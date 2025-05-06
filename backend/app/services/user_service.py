@@ -1,9 +1,8 @@
 from fastapi import HTTPException
 from sqlmodel import Session, select
 
-from app.models.insert_user_dto import InsertLocalUserDTO, InsertTenantUserDTO
-from models.user_create_dto import UserCreateDTO
-from app.tables.user import User
+from models.local_user_data import LocalUserData
+from tables.user import User
 from services.auth.hash_service import HashService
 from models.tenant import Tenant
 
@@ -14,28 +13,15 @@ class UserService:
         self.session = session
         self.hash_service = hash_service
 
-    def save_user(self, user: InsertTenantUserDTO | InsertLocalUserDTO | User) -> None:
+    def save_user(self, user: User) -> None:
         self.session.add(user)
         self.session.commit()
         self.session.refresh(user)
 
-    def create_user(self, user: UserCreateDTO) -> InsertTenantUserDTO | InsertLocalUserDTO:
-        existing_user = self.is_user_with_provided_email_in_db(user.email)
-        if existing_user:
-            raise HTTPException(status_code=409, detail="Email already registered")
+    def hash_user_password(self, user_data: LocalUserData) -> LocalUserData:
+        user_password = self.hash_service.hash_password(user_data.password)
+        return LocalUserData(full_name=user_data.full_name, email=user_data.email, password=user_password)
         
-        if user.tenant == Tenant.GOOGLE or user.tenant == Tenant.MICROSOFT:
-            if not user.tenant_id:
-                raise HTTPException(status_code=500, detail="No user tenant_id")
-            new_user = InsertTenantUserDTO(tenant_id=user.tenant_id, full_name=user.full_name, email=user.email, password=None, tenant=user.tenant, chats=[])
-        elif user.tenant == Tenant.LOCAL:
-            user_password = self.hash_service.hash_password(user.password)
-            new_user = InsertLocalUserDTO(full_name=user.full_name, email=user.email, password=user_password, tenant=user.tenant, chats=[])
-        else:
-            raise HTTPException(status_code=500, detail="Unknown provider")
-        
-        return new_user
-
     def authenticate_local_user(self, email: str, password: str) -> User | None:
         statement = select(User).where(User.email == email)
         existing_user = self.session.exec(statement).first()

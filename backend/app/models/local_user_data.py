@@ -2,9 +2,7 @@ from pydantic import BaseModel, EmailStr
 from models.tenant import Tenant
 
 
-class UserCreateDTO(BaseModel):
+class LocalUserData(BaseModel):
     email: EmailStr
-    password: str | None
+    password: str
     full_name: str
-    tenant: Tenant
-    tenant_id: str | None = None

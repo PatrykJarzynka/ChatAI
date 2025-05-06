@@ -1,7 +1,7 @@
 import pytest
 import jwt
 from fastapi import status, HTTPException
-from app.utilities.token_exception_handler import TokenExceptionHandler
+from utilities.token_exception_handler import TokenExceptionHandler
 
 
 @pytest.fixture

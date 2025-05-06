@@ -3,10 +3,10 @@ from unittest.mock import Mock
 
 from starlette.testclient import TestClient
 
-from app.models.chat_item_dto import ChatItemDTO
-from app.tables.chat_item import ChatItem
-from app.tables.chat import Chat
-from app.tables.user import User
+from models.chat_item_dto import ChatItemDTO
+from tables.chat_item import ChatItem
+from tables.chat import Chat
+from tables.user import User
 from models.user_chat_data import UserChatData
 from models.tenant import Tenant
 from models.chat_dto import ChatDto

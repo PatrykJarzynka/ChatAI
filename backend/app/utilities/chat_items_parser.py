@@ -1,4 +1,4 @@
-from app.tables.chat_item import ChatItem
+from tables.chat_item import ChatItem
 from llama_index.core.base.llms.types import ChatMessage
 from typing import List
 from itertools import chain

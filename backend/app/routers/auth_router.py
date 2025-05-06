@@ -7,9 +7,9 @@ from sqlmodel import Session
 from models.token import Token
 from models.auth_code_request import AuthCodeRequest
 from models.google_refresh_token_request import GoogleRefreshTokenRequest
-from models.user_create_dto import UserCreateDTO
+from models.local_user_data import LocalUserData
 from models.tenant import Tenant
-from app.models.api_tokens import ApiTokens
+from models.api_tokens import ApiTokens
 from database import get_session
 from containers import jwt_service_dependency, token_decoder, google_service_dependency, microsoft_service_dependency, user_service_dependency
 from tables.user import User
@@ -40,37 +40,38 @@ async def login_for_access_token(
 
 
 @router.post('/auth/register')
-def register(user: UserCreateDTO, user_service: user_service_dependency, jwt_service: jwt_service_dependency) -> Token:
-    new_user = user_service.create_user(user)
+def register(user_data: LocalUserData, user_service: user_service_dependency, jwt_service: jwt_service_dependency) -> Token:
+    already_exist = user_service.is_user_with_provided_email_in_db(user_data.email)
+
+    if already_exist:
+        raise HTTPException(status_code=409, detail="Email already registered")
+
+    hashed_user = user_service.hash_user_password(user_data)
+    new_user = User(email=hashed_user.email, password=hashed_user.password,full_name=hashed_user.full_name, tenant=Tenant.LOCAL)
     user_service.save_user(new_user)
     
-    user_copy = cast(User, new_user.model_copy()) #instance of new_user become User, after saving to db
-    user_copy.tenant_id = str(user_copy.id)
-    user_service.save_user(user_copy)
+    new_user.tenant_id = str(new_user.id)
+    user_service.save_user(new_user)
 
-    access_token = jwt_service.create_access_token({"sub": str(user_copy.id)})
+    access_token = jwt_service.create_access_token({"sub": str(new_user.id)})
     return access_token
 
 @router.post('/auth/refresh')
 def refresh(jwt_service: jwt_service_dependency, user_service: user_service_dependency, google_service: google_service_dependency, microsoft_service: microsoft_service_dependency, decoded_token: token_decoder, body: GoogleRefreshTokenRequest) -> str:
-    tenant_id = decoded_token['sub']
-
-    user = user_service.get_user_by_tenant_id(tenant_id)
-
-    if body.refresh_token:
-        if user.tenant == Tenant.LOCAL:
-            new_access_token = jwt_service.create_access_token({"sub": str(user.id)}).access_token
-        elif user.tenant == Tenant.GOOGLE:
-            new_access_token = google_service.refresh_tokens(body.refresh_token)["id_token"]
-        elif user.tenant == Tenant.MICROSOFT:
-            new_access_token = microsoft_service.refresh_tokens(body.refresh_token)["id_token"]
-            
-    else:
+    if not body.refresh_token:
         raise HTTPException(
             detail='No refresh token provided!',
             status_code=400
         )
+    
 
+    tenant_id = decoded_token['sub']
+    user = user_service.get_user_by_tenant_id(tenant_id)
+
+    match user.tenant:
+        case Tenant.LOCAL: new_access_token = jwt_service.create_access_token({"sub": str(user.id)}).access_token
+        case Tenant.GOOGLE: new_access_token = google_service.refresh_tokens(body.refresh_token)["id_token"]
+        case Tenant.MICROSOFT: new_access_token = microsoft_service.refresh_tokens(body.refresh_token)["id_token"]
     
     return new_access_token
 

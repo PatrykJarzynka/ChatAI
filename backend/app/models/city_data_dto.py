@@ -1,13 +1,12 @@
 from pydantic import BaseModel
 from typing import List
-from datetime import datetime
 
 class Location(BaseModel):
     type: str
     coordinates: List[float]
 
 class Pollution(BaseModel):
-    ts: datetime
+    ts: str
     aquis: int
     mainus: str
     aqicn: int
@@ -15,7 +14,7 @@ class Pollution(BaseModel):
 
 
 class Weather(BaseModel):
-    ts: datetime
+    ts: str
     tp: int
     pr: int
     hu: int

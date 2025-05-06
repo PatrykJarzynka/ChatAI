@@ -53,7 +53,7 @@ def test_fetch_tokens(microsoft_service: MicrosoftService):
     with patch('requests.post') as mock_post:
         microsoft_service.fetch_tokens(mockedCode)
 
-        mock_post.assert_called_with('https://login.microsoftonline.com/common/oauth2/v2.0/token', data=mocked_data), "Api call's parameters are not as expected"
+        mock_post.assert_called_with('https://login.microsoftonline.com/common/oauth2/v2.0/token', data=mocked_data)
 
 def test_refresh_token(microsoft_service: MicrosoftService):
     mockedRefreshToken = 'xyz'
@@ -68,7 +68,7 @@ def test_refresh_token(microsoft_service: MicrosoftService):
     with patch('requests.post') as mock_post:
         microsoft_service.refresh_tokens(mockedRefreshToken)
 
-        mock_post.assert_called_with('https://login.microsoftonline.com/common/oauth2/v2.0/token', data=mocked_data), "Api call's parameters are not as expected"
+        mock_post.assert_called_with('https://login.microsoftonline.com/common/oauth2/v2.0/token', data=mocked_data)
 
 
 

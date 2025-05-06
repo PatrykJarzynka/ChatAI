@@ -62,7 +62,6 @@ export class RegisterForm {
       email: this.form.controls['email'].value,
       password: this.form.controls['password'].value,
       fullName: this.form.controls['fullName'].value,
-      tenant: AuthProvider.LOCAL
     };
 
     this.registerSubmit.emit(registerData);

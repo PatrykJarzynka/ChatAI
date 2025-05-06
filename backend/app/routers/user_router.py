@@ -1,12 +1,10 @@
-from typing import Annotated
-
-from fastapi import APIRouter, Depends
-from sqlmodel import Session
+from fastapi import APIRouter
 
 from models.user_response_dto import UserResponseDTO
-from models.user_create_dto import UserCreateDTO
 from models.tenant import Tenant
 from containers import user_service_dependency, token_decoder
+from tables.user import User
+from typing import cast
 
 router = APIRouter()
 
@@ -27,8 +25,7 @@ def create_or_update_microsoft_user(user_service: user_service_dependency, decod
     else:
         user_full_name = decoded_token['name']
 
-        new_user_data = UserCreateDTO(tenant_id=microsoft_id, email=user_email, password=None, full_name=user_full_name, tenant=Tenant.MICROSOFT)
-        new_user = user_service.create_user(new_user_data)
+        new_user = User(email=user_email, password=None, full_name=user_full_name, tenant=Tenant.MICROSOFT, tenant_id=microsoft_id)
         user_service.save_user(new_user)
         return
 
@@ -47,8 +44,6 @@ def create_or_update_google_user(user_service: user_service_dependency, decoded_
         user_surname = decoded_token['family_name']
         user_full_name = f"{user_name} {user_surname}"
         
-
-        new_user_data = UserCreateDTO(tenant_id=google_id, email=user_email, password=None, full_name=user_full_name, tenant=Tenant.GOOGLE)
-        new_user = user_service.create_user(new_user_data)
+        new_user = User(email=user_email, password=None, full_name=user_full_name, tenant=Tenant.GOOGLE, tenant_id=google_id)
         user_service.save_user(new_user)
         return

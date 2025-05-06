@@ -14,7 +14,7 @@ def run_get_rsa_key_test(
     mock_jwks: List[Dict[str, str]],
     mock_rsa_key: JWKDict | None,
     expected_exception = None,
-):
+) -> JWKDict | None | pytest.ExceptionInfo:
     mock_openid_config = {"jwks_uri": 'https://login.microsoftonline.com'}
     mock_token = 'mockToken'
 
@@ -110,5 +110,6 @@ def test_invalid_public_key(microsoft_public_keys_provider: MicrosoftPublicKeysP
         expected_exception=ValueError,
     )
 
+    assert isinstance(exc_info, pytest.ExceptionInfo)
     assert str(exc_info.value) == "Invalid public key!"
 

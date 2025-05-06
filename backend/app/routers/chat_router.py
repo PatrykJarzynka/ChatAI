@@ -5,7 +5,7 @@ from fastapi import APIRouter, HTTPException
 from models.chat_dto import ChatDto
 from models.chat_history import ChatHistory
 from models.user_chat_data import UserChatData
-from app.tables.chat import Chat
+from tables.chat import Chat
 from containers import token_decoder, user_service_dependency, bot_service_dependency, chat_service_dependency, chat_history_dependency
 
 router = APIRouter()

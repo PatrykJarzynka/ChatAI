@@ -1,14 +1,15 @@
+from typing import Sequence
 from sqlmodel import select, Session
 
 from models.chat_history import ChatHistory
-from app.tables.chat import Chat
+from tables.chat import Chat
 
 
 class ChatHistoryService:
     def __init__(self, session: Session):
         self.session = session
 
-    def get_chats_by_user_id(self, user_id: int) -> list[Chat]: 
+    def get_chats_by_user_id(self, user_id: int) -> Sequence[Chat]: 
         statement = select(Chat).where(Chat.user_id == user_id)
         return self.session.exec(statement).all()
 
