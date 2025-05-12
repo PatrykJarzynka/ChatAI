@@ -1,18 +1,12 @@
-from math import e
-from typing import cast, Optional
-
 import pytest
 from fastapi import HTTPException
-from pydantic import EmailStr
 from sqlmodel import Session
 
-from app.models.local_user_data import LocalUserData
+from models.local_user_data import LocalUserData
 from tables.user import User
 from services.auth.hash_service import HashService
-from models.tenant import Tenant
+from enums.tenant import Tenant
 from services.user_service import UserService
-from typing import cast
-from unittest.mock import patch
 
 
 @pytest.fixture

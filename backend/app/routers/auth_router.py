@@ -1,4 +1,4 @@
-from typing import Annotated, cast
+from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
@@ -8,10 +8,10 @@ from models.token import Token
 from models.auth_code_request import AuthCodeRequest
 from models.google_refresh_token_request import GoogleRefreshTokenRequest
 from models.local_user_data import LocalUserData
-from models.tenant import Tenant
+from enums.tenant import Tenant
 from models.api_tokens import ApiTokens
 from database import get_session
-from containers import jwt_service_dependency, token_decoder, google_service_dependency, microsoft_service_dependency, user_service_dependency
+from containers import authorize, jwt_service_dependency, google_service_dependency, microsoft_service_dependency, user_service_dependency, role_service_dependency
 from tables.user import User
 
 
@@ -19,7 +19,6 @@ router = APIRouter()
 
 session_dependency = Annotated[Session, Depends(get_session)]
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
-
 
 @router.post('/auth/login')
 async def login_for_access_token(
@@ -40,7 +39,7 @@ async def login_for_access_token(
 
 
 @router.post('/auth/register')
-def register(user_data: LocalUserData, user_service: user_service_dependency, jwt_service: jwt_service_dependency) -> Token:
+def register(user_data: LocalUserData, user_service: user_service_dependency, jwt_service: jwt_service_dependency, role_service: role_service_dependency) -> Token:
     already_exist = user_service.is_user_with_provided_email_in_db(user_data.email)
 
     if already_exist:
@@ -53,11 +52,13 @@ def register(user_data: LocalUserData, user_service: user_service_dependency, jw
     new_user.tenant_id = str(new_user.id)
     user_service.save_user(new_user)
 
+    role_service.save_user_default_role(new_user.id)
+   
     access_token = jwt_service.create_access_token({"sub": str(new_user.id)})
     return access_token
 
 @router.post('/auth/refresh')
-def refresh(jwt_service: jwt_service_dependency, user_service: user_service_dependency, google_service: google_service_dependency, microsoft_service: microsoft_service_dependency, decoded_token: token_decoder, body: GoogleRefreshTokenRequest) -> str:
+def refresh(jwt_service: jwt_service_dependency, user_service: user_service_dependency, google_service: google_service_dependency, microsoft_service: microsoft_service_dependency, body: GoogleRefreshTokenRequest, decoded_token = Depends(authorize(role=None))) -> str:
     if not body.refresh_token:
         raise HTTPException(
             detail='No refresh token provided!',
@@ -75,8 +76,8 @@ def refresh(jwt_service: jwt_service_dependency, user_service: user_service_depe
     
     return new_access_token
 
-@router.get('/auth/verify')
-def verify_token(_: token_decoder) -> dict[str, bool]:
+@router.get('/auth/verify', dependencies=[Depends(authorize(role=None))])
+def verify_token() -> dict[str, bool]:
     return {"isValid": True}
 
 @router.post('/auth/microsoft')

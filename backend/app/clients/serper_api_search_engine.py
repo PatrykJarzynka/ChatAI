@@ -11,7 +11,6 @@ class SerperApiSearchEngine(WebManager):
     def search_web(self, query: str):
         payload = {
             "q": query,
-            "gl": "pl",
         }
 
         search_results = requests.post(

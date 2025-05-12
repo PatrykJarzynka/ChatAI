@@ -4,7 +4,7 @@ from sqlmodel import Session, select
 from models.local_user_data import LocalUserData
 from tables.user import User
 from services.auth.hash_service import HashService
-from models.tenant import Tenant
+from enums.tenant import Tenant
 
 
 class UserService:

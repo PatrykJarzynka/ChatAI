@@ -1,13 +1,14 @@
-from typing import Annotated
-from fastapi import Depends
+from typing import Annotated, Callable, Optional
+from fastapi import Depends, HTTPException, Header, status
 from sqlmodel import Session
+from enums.role import Role
+from services.role_service import RoleService
 from database import get_session
 from config import get_settings
 from utilities.chat_items_parser import ChatItemsParser
 from starlette.requests import Request
 
-from utilities.token_extractor import TokenExtractor
-from utilities.token_exception_handler import TokenExceptionHandler
+from utilities.token_validator import TokenValidator
 
 from services.chat_service import ChatService
 from services.open_ai_chat_service import OpenAIChatService
@@ -26,14 +27,12 @@ from clients.weather_service import WeatherService
 from llama_index.core.tools import FunctionTool
 from llama_index.core.memory import ChatMemoryBuffer
 
-
-
-
 session_dependency = Annotated[Session, Depends(get_session)]
 jwt_service_dependency = Annotated[JWTService, Depends(JWTService)]
 hash_service_dependency = Annotated[HashService, Depends(HashService)]
 microsoft_service_dependency = Annotated[MicrosoftService, Depends(MicrosoftService)]
 google_service_dependency = Annotated[GoogleService, Depends(GoogleService)]
+role_service_dependency = Annotated[RoleService, Depends(RoleService)]
 
 def get_chat_service(session: session_dependency):
     return ChatService(session)
@@ -44,36 +43,15 @@ def get_user_service(session: session_dependency, hash_service: hash_service_dep
 def get_chat_history_service(session: session_dependency):
     return ChatHistoryService(session)
 
+def get_token_validator(jwt: jwt_service_dependency, google: google_service_dependency, microsoft: microsoft_service_dependency):
+     return TokenValidator(jwt_service=jwt, google_service=google, microsoft_service=microsoft)
+
 user_service_dependency = Annotated[UserService, Depends(get_user_service)]
-token_extractor_dependency = Annotated[TokenExtractor, Depends(TokenExtractor)]
 chat_service_dependency = Annotated[ChatService, Depends(get_chat_service)]
 chat_history_dependency = Annotated[ChatHistoryService, Depends(get_chat_history_service)]
+token_validator_dependency = Annotated[TokenValidator, Depends(get_token_validator)]
 
-
-@TokenExceptionHandler().handle_token_exceptions
-def decode_token(
-                    request: Request,
-                    token_extractor: token_extractor_dependency,
-                    microsoft_service:microsoft_service_dependency,
-                    google_service: google_service_dependency, 
-                    jwt_service: jwt_service_dependency
-                ):
-    token = token_extractor.get_token_from_header(request)
-    issuer = jwt_service.get_token_issuer(token)
-
-    if 'accounts.google.com' in issuer:
-        return google_service.decode_token(token)
-    elif 'login.microsoftonline.com' in issuer:
-        return microsoft_service.decode_token(token)
-    elif issuer == 'local':
-        return jwt_service.decode_local_token(token)
-    else:
-        raise ValueError('Unknown provider')
-
-
-token_decoder = Annotated[dict, Depends(decode_token)]
-
-async def get_bot_service(request: Request, chat_service: chat_service_dependency, _: token_decoder) -> OpenAIChatService:
+async def get_bot_service(request: Request, chat_service: chat_service_dependency) -> OpenAIChatService:
 
         SERPER_API_KEY = get_settings().SERPER_API_KEY
         web_service = WebService(SerperApiSearchEngine(api_key=SERPER_API_KEY), SerperResponseParser())
@@ -91,8 +69,42 @@ async def get_bot_service(request: Request, chat_service: chat_service_dependenc
             weather_service.get_city_weather_data, description='Useful for getting the data about current weather and air pollution in given location. Use all of the parameters in English translation.'
         )
 
-        return OpenAIChatService(tools=[web_search_tool, weather_search_tool],memory=memory, bot_description="You are intelligent assistant who is responsible for answering user's questions.")
+        return OpenAIChatService(tools=[web_search_tool, weather_search_tool],memory=memory, bot_description=" \
+        You are an AI assistant that answers user queries. \
+        Your job is to understand the query and, based on the context, determine, \
+        whether the query is about current events that need to include the current date. \
+        If so, search for the current date and answer the user's query taking that date into account.\
+        If the query is not about current events, answer the question without considering the date.")
 
 bot_service_dependency = Annotated[OpenAIChatService, Depends(get_bot_service)]
+
+def authorize(role: Optional[Role]) -> Callable:
+        async def dependency(
+                authorization: Annotated[str, Header()],
+                role_service: role_service_dependency,
+                token_validator: token_validator_dependency,
+                user_service: user_service_dependency
+                ) -> dict:
+            
+            if not authorization:
+                raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authorization header missing")
+            
+            decoded_token = token_validator.validate_token(authorization)
+            
+            if role:
+                tenant_id = decoded_token['sub']
+                user = user_service.get_user_by_tenant_id(tenant_id) 
+
+                try:
+                    isAuthorized = role_service.autorize_role(user_id=user.id, role=role)
+                    
+                    if not isAuthorized:
+                        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='Permission role restricted.')
+                except HTTPException as http_exec:
+                        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=http_exec.detail)
+                
+            return decoded_token
+            
+        return dependency
 
         

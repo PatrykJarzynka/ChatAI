@@ -65,20 +65,5 @@ export class RegisterForm {
     };
 
     this.registerSubmit.emit(registerData);
-
-    // try {
-    //   const response = await this.authService.register(registerData);
-    //   if (response) {
-    //     localStorage.setItem('token', response.accessToken);
-    //     await this.router.navigate(['/chat']);
-    //   }
-    //
-    // } catch (error) {
-    //   if (error instanceof AxiosError) {
-    //     if (error.response?.data.detail === ErrorMessage.EmailRegistered) {
-    //       this.form.controls['email'].setErrors({ emailExists: true });
-    //     }
-    //   }
-    // }
   }
 }

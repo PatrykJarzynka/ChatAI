@@ -34,7 +34,7 @@ class WeatherService():
         }
 
         response = requests.get(self.supported_states_endpoint, params=params)
-        return response.json()
+        return WeatherApiResponse[StateDTO](**response.json())
     
     def get_supported_cities_in_state(self, country: Annotated[str,"Name of a country"], state: Annotated[str,"Name of a state"]) -> WeatherApiResponse[CityDTO]:
         params = {
@@ -44,7 +44,7 @@ class WeatherService():
         }
 
         response = requests.get(self.supported_cities_endpoint, params=params)
-        return response.json()
+        return WeatherApiResponse[CityDTO](**response.json())
 
     def get_city_data(self, city: Annotated[str,"Name of a city"] , state: Annotated[str,"Name of a state"], country: Annotated[str,"Name of a country"]) -> WeatherApiResponse[CityDataDTO]:
         """
@@ -72,4 +72,4 @@ class WeatherService():
         }
 
         response = requests.get(self.city_data_endpoint, params=params)
-        return response.json()
+        return WeatherApiResponse[CityDataDTO](**response.json())

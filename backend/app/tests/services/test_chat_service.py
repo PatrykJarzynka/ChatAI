@@ -5,7 +5,7 @@ from models.user_chat_data import UserChatData
 from tables.chat_item import ChatItem
 from tables.chat import Chat
 from services.chat_service import ChatService
-from models.tenant import Tenant
+from enums.tenant import Tenant
 from tables.user import User
 from typing import cast
 

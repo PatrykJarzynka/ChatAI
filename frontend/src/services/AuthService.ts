@@ -70,7 +70,7 @@ export class AuthService {
       clearInterval(this.refreshTokenCallInterval);
     }
 
-    const delay = this.calculateIntervalDelay(token, 20000);
+    const delay = this.calculateIntervalDelay(token, 600_000); // ten minutest before token expires
     this.setRefreshTokenInterval(delay);
   }
 

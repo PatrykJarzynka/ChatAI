@@ -8,11 +8,11 @@ from tables.chat_item import ChatItem
 from tables.chat import Chat
 from tables.user import User
 from models.user_chat_data import UserChatData
-from models.tenant import Tenant
+from enums.tenant import Tenant
 from models.chat_dto import ChatDto
 from services.auth.jwt_service import JWTService
 from main import app
-from containers import get_chat_service, get_user_service, get_bot_service, decode_token, get_chat_history_service
+from containers import get_chat_service, get_user_service, get_bot_service, get_chat_history_service, authorize
 from typing import List, cast
 
 mock_user = User(id=123, tenant_id='123', email='email@a.pl',password='password', tenant=Tenant.LOCAL, full_name='XYZ')
@@ -72,7 +72,7 @@ def bot_service_chat_error():
 def overrite_decode():
     mock = Mock()
     mock.return_value = {"sub": 'test_sub'}
-    app.dependency_overrides[decode_token] = lambda: mock()
+    app.dependency_overrides[authorize] = lambda: mock()
     yield mock
     app.dependency_overrides.clear()
 

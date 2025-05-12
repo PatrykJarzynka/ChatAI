@@ -1,5 +1,5 @@
 from pydantic import BaseModel, EmailStr
-from models.tenant import Tenant
+from enums.tenant import Tenant
 
 
 class LocalUserData(BaseModel):

@@ -9,9 +9,9 @@ from services.auth.jwt_service import JWTService
 from services.auth.google_service import GoogleService
 from services.auth.microsoft_service import MicrosoftService
 from main import app
-from containers import decode_token, get_user_service
+from containers import get_user_service
 from models.token import Token
-from models.tenant import Tenant
+from enums.tenant import Tenant
 
 MOCKED_TOKEN = Token(access_token="fake_token", token_type="bearer")
 MOCKED_TENANT_TOKEN = {"id_token": 'fake_token'}

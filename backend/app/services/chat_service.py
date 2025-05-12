@@ -23,7 +23,7 @@ class ChatService:
         self.session.commit()
         self.session.refresh(chat)
 
-    def get_chat_items(self, chat_id: int) -> list[ChatItem]: #TODO: Add tests for new
+    def get_chat_items(self, chat_id: int) -> list[ChatItem]:
         chat = self.get_chat_by_id(chat_id)
         if chat:
             return chat.chat_items

@@ -1,7 +1,7 @@
 import pytest
 from sqlmodel import Session
 
-from models.tenant import Tenant
+from enums.tenant import Tenant
 from models.chat_history import ChatHistory
 from tables.chat_item import ChatItem
 from tables.chat import Chat

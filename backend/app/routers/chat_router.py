@@ -1,17 +1,16 @@
-
-
-from fastapi import APIRouter, HTTPException
-
+from fastapi import APIRouter, HTTPException, Depends
+from enums.role import Role
 from models.chat_dto import ChatDto
 from models.chat_history import ChatHistory
 from models.user_chat_data import UserChatData
 from tables.chat import Chat
-from containers import token_decoder, user_service_dependency, bot_service_dependency, chat_service_dependency, chat_history_dependency
+from containers import user_service_dependency, bot_service_dependency, chat_service_dependency, chat_history_dependency, authorize
 
 router = APIRouter()
 
+
 @router.get('/chat', response_model=ChatDto)
-def get_new_chat(chat_service: chat_service_dependency, user_service: user_service_dependency, decoded_token: token_decoder) -> Chat:
+def get_new_chat(chat_service: chat_service_dependency, user_service: user_service_dependency, decoded_token = Depends(authorize(role=None))) -> Chat:
     tenant_id = decoded_token['sub']
     user_id = user_service.get_user_by_tenant_id(tenant_id).id
     
@@ -20,19 +19,17 @@ def get_new_chat(chat_service: chat_service_dependency, user_service: user_servi
 
     return new_chat
 
-
-@router.get('/chat/history')
-async def get_chat_histories(userId: int, chat_history_service: chat_history_dependency, _: token_decoder) -> list[ChatHistory]:
+@router.get('/chat/history', dependencies=[Depends(authorize(role=None))])
+async def get_chat_histories(userId: int, chat_history_service: chat_history_dependency) -> list[ChatHistory]:
     return chat_history_service.get_chats_history_data_by_user_id(userId)
 
 
-@router.get('/chat/{chat_id}', response_model=ChatDto)
-def get_chat_by_id(chat_id: int, chat_service: chat_service_dependency, _: token_decoder) -> Chat | None:
+@router.get('/chat/{chat_id}', dependencies=[Depends(authorize(role=None))], response_model=ChatDto)
+def get_chat_by_id(chat_id: int, chat_service: chat_service_dependency) -> Chat | None:
     return chat_service.get_chat_by_id(chat_id)
 
-
-@router.post('/chat')
-def on_user_query_send(user_chat_data: UserChatData, chat_service: chat_service_dependency, _: token_decoder, bot_service: bot_service_dependency) -> str:
+@router.post('/chat', dependencies=[Depends(authorize(role=Role.ADMIN))])
+def on_user_query_send(user_chat_data: UserChatData, chat_service: chat_service_dependency, bot_service: bot_service_dependency) -> str:
     try:
         new_chat_item = chat_service.create_chat_item(user_chat_data)
         new_chat_item.bot_message = bot_service.chat(user_chat_data.message)

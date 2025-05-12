@@ -10,5 +10,5 @@ class BotService(ABC):
         pass
 
     @abstractmethod
-    def chat(self, user_query:str):
+    def chat(self, user_query:str) -> str:
         pass

@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING, List
 from pydantic import EmailStr
 from sqlmodel import SQLModel, Field, Relationship
-from models.tenant import Tenant
+from enums.tenant import Tenant
 
 if TYPE_CHECKING:
     from tables.chat import Chat
@@ -13,4 +13,4 @@ class User(SQLModel, table=True):
     tenant_id: str | None = Field(default=None, unique=True)
     full_name: str = Field(nullable=False)
     tenant: Tenant = Field(unique=False)
-    chats: list["Chat"] = Relationship(back_populates="user")
+    chats: List["Chat"] = Relationship(back_populates="user")

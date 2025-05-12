@@ -2,9 +2,9 @@ import pytest
 from main import app
 from starlette.testclient import TestClient
 from models.user_response_dto import UserResponseDTO
-from models.tenant import Tenant
+from enums.tenant import Tenant
 from unittest.mock import Mock
-from containers import decode_token, get_user_service
+from containers import authorize, get_user_service
 from tables.user import User
 
 mock_local_user_get = User(id=123, tenant_id='123', email='email@a.pl',password='password', tenant=Tenant.LOCAL, full_name='XYZ')
@@ -23,7 +23,7 @@ def user_service():
 def overrite_decode_microsoft():
     mock = Mock()
     mock.return_value = {"sub": 'test_sub', "email":"test@test.pl", "name": 'test_name'}
-    app.dependency_overrides[decode_token] = lambda: mock()
+    app.dependency_overrides[authorize] = lambda: mock()
     yield mock
     app.dependency_overrides.clear()
 
@@ -31,7 +31,7 @@ def overrite_decode_microsoft():
 def overrite_decode_google():
     mock = Mock()
     mock.return_value = {"sub": 'test_sub', "email":"test@test.pl", "given_name": 'test', "family_name":"name"}
-    app.dependency_overrides[decode_token] = lambda: mock()
+    app.dependency_overrides[authorize] = lambda: mock()
     yield mock
     app.dependency_overrides.clear()
 

@@ -2,19 +2,19 @@ from fastapi import HTTPException
 from llama_index.core.memory import ChatMemoryBuffer
 from llama_index.llms.openai import OpenAI
 from llama_index.agent.openai import OpenAIAgent
-from llama_index.core.tools import FunctionTool
+from llama_index.core.tools import BaseTool
 from typing import List
 from interfaces.bot_service import BotService
 
 
 class OpenAIChatService(BotService):
 
-    def __init__(self, tools: List["FunctionTool"], bot_description: str, memory: ChatMemoryBuffer):
+    def __init__(self, tools: List[BaseTool], bot_description: str, memory: ChatMemoryBuffer):
         self.chat_agent = OpenAIAgent.from_tools(
             tools,
             memory=memory,
             llm=OpenAI(temperature=0.2, model="gpt-4o-mini"),
-            system_prompt=(bot_description),
+            system_prompt=bot_description,
             verbose=True
         )
 
