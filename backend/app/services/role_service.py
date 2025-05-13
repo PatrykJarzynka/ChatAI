@@ -1,7 +1,7 @@
 from fastapi import HTTPException
 import requests
 
-from app.config import get_settings
+from config import get_settings
 from enums.role import Role
 
 
