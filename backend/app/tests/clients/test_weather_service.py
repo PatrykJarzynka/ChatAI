@@ -9,9 +9,17 @@ from utilities.open_ai_helper import OpenAIHelper
 from typing import List
 from config import get_settings
 
+mock_get_return = {'status':'success', 'data': []}
+
 @pytest.fixture
 def weather_service():
     return WeatherService()
+
+@pytest.fixture
+def mock_get_fixture():
+    mock = Mock()
+    mock.json.return_value = mock_get_return
+    return mock
 
 def run_get_city_weather_data_test(provider: WeatherService, city: str, country: str, supported_cities: List[str]):
     mocked_supported_cities: list[CityDTO] = [CityDTO(city=city) for city in supported_cities]
@@ -99,10 +107,7 @@ def test_get_not_supported_city_weather_data(weather_service: WeatherService):
     result = run_get_city_weather_data_test(weather_service, mocked_city, mocked_country, supported_cities)
     assert result == 'City not supported. Try to use web_search_tool to find answer.'
 
-def test_get_supported_states(weather_service: WeatherService):
-     mocked_response = Mock()
-     mocked_response.json.return_value='Test value'
-
+def test_get_supported_states(weather_service: WeatherService, mock_get_fixture):
      mocked_country='Poland'
      expected_url = get_settings().AIR_API_URL + '/states'
      expected_params = {
@@ -110,16 +115,13 @@ def test_get_supported_states(weather_service: WeatherService):
             "key": get_settings().AIR_API_KEY
         }
 
-     with patch('requests.get', return_value=mocked_response) as mock_get:
+     with patch('requests.get', return_value=mock_get_fixture) as mock_get:
         result = weather_service.get_supported_states(mocked_country)
 
         mock_get.assert_called_once_with(expected_url, params=expected_params)
-        assert result == 'Test value'
+        assert result == WeatherApiResponse[StateDTO](**mock_get_return)
 
-def test_get_supported_cities_in_state(weather_service: WeatherService):
-    mocked_response = Mock()
-    mocked_response.json.return_value='Test value'
-
+def test_get_supported_cities_in_state(weather_service: WeatherService, mock_get_fixture):
     mocked_country='Poland'
     mocked_state = 'Silesia'
     expected_url = get_settings().AIR_API_URL + '/cities'
@@ -130,16 +132,13 @@ def test_get_supported_cities_in_state(weather_service: WeatherService):
             "key": get_settings().AIR_API_KEY
         }
 
-    with patch('requests.get', return_value=mocked_response) as mock_get:
+    with patch('requests.get', return_value=mock_get_fixture) as mock_get:
         result = weather_service.get_supported_cities_in_state(mocked_country, mocked_state)
 
         mock_get.assert_called_once_with(expected_url, params=expected_params)
-        assert result == 'Test value'
+        assert result == WeatherApiResponse[CityDTO](**mock_get_return)
 
-def test_get_city_data(weather_service: WeatherService):
-    mocked_response = Mock()
-    mocked_response.json.return_value='Test value'
-
+def test_get_city_data(weather_service: WeatherService, mock_get_fixture):
     mocked_country='Poland'
     mocked_state = 'Silesia'
     mocked_city = 'Gliwice'
@@ -152,8 +151,8 @@ def test_get_city_data(weather_service: WeatherService):
             "key": get_settings().AIR_API_KEY
         }
 
-    with patch('requests.get', return_value=mocked_response) as mock_get:
+    with patch('requests.get', return_value=mock_get_fixture) as mock_get:
         result = weather_service.get_city_data(mocked_city, mocked_state, mocked_country)
 
         mock_get.assert_called_once_with(expected_url, params=expected_params)
-        assert result == 'Test value'
+        assert result == WeatherApiResponse[CityDataDTO](**mock_get_return)

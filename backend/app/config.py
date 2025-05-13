@@ -32,6 +32,7 @@ class Settings(BaseSettings):
     MICROSOFT_OPENID_CONFIG_URL: str
     GOOGLE_AUTH_URL: str
     AIR_API_URL: str
+    ROLE_SERVICE_URL: str
 
     model_config = SettingsConfigDict(env_file=env_file, env_file_encoding="utf-8")
 

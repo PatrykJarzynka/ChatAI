@@ -16,8 +16,7 @@ def test_search_web(serper_api: SerperApiSearchEngine):
     expected_url = "https://google.serper.dev/search"
 
     expected_payload = {
-            "q": mocked_query,
-            "gl": "pl",
+            "q": mocked_query
     }
 
     expected_headers = {"X-API-KEY": get_settings().SERPER_API_KEY}

@@ -16,6 +16,8 @@ class TokenExceptionHandler:
                 raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='Token expired')
             except ValueError as e:
                 raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+            except HTTPException as e:
+                raise e
             except Exception as e:
                 raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
         return wrapper

@@ -107,4 +107,8 @@ def authorize(role: Optional[Role]) -> Callable:
             
         return dependency
 
+auth_none = authorize(role=None)
+auth_admin = authorize(role=Role.ADMIN)
+auth_user = authorize(role=Role.USER)
+
         
