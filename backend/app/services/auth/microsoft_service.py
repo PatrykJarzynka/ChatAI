@@ -15,7 +15,7 @@ class MicrosoftService(AuthTokenService):
 
         self.public_keys_provider = MicrosoftPublicKeysProvider()
         
-    def decode_token(self, access_token: str):
+    def decode_token(self, access_token: str) -> dict:
         rsa_key = self.public_keys_provider.get_rsa_key(access_token)
         public_key = RSAAlgorithm.from_jwk(rsa_key)
 
@@ -29,9 +29,9 @@ class MicrosoftService(AuthTokenService):
         
         return decoded_token
 
-    def fetch_tokens(self, code: str) -> dict:
+    def fetch_tokens(self, auth_code: str) -> dict:
         data = {
-        "code": code,
+        "code": auth_code,
         "client_id": self.CLIENT_ID,
         "client_secret": self.CLIENT_SECRET,
         "scope": 'openid profile email',

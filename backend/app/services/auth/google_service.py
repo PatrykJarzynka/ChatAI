@@ -12,12 +12,12 @@ class GoogleService(AuthTokenService):
         config = TokenServiceConfig(client_id=settings.GOOGLE_CLIENT_ID, secret=settings.GOOGLE_SECRET, redirect_url=settings.REDIRECT_URL, auth_url=settings.GOOGLE_AUTH_URL)
         super().__init__(config)
 
-    def decode_token(self, token: str) -> dict:
-        return id_token.verify_oauth2_token(token, google.auth.transport.requests.Request(), audience=self.CLIENT_ID)
+    def decode_token(self, access_token: str) -> dict:
+        return id_token.verify_oauth2_token(access_token, google.auth.transport.requests.Request(), audience=self.CLIENT_ID)
         
-    def fetch_tokens(self, code: str) -> dict:
+    def fetch_tokens(self, auth_code: str) -> dict:
         data = {
-        "code": code,
+        "code": auth_code,
         "client_id": self.CLIENT_ID,
         "client_secret": self.CLIENT_SECRET,
         "redirect_uri": self.REDIRECT_URL,

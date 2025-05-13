@@ -27,7 +27,7 @@ class MicrosoftPublicKeysProvider:
                 return key
         return None
     
-    def get_rsa_key(self, access_token: str) -> JWKDict | None:
+    def get_rsa_key(self, access_token: str) -> JWKDict:
         openid_config = self.get_openid_config()
         jwks = self.get_jwks_by_config(openid_config)
 
