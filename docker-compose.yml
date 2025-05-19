@@ -12,6 +12,22 @@ services:
       - "80:80"
     depends_on:
       - backend
+      
+  role-service:
+    build: ./role-service
+    image: affciak/role-service:latest
+    environment:
+      - DOCKER_ENV=production
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+    ports:
+      - "8001:8001"
+    depends_on:
+      db:
+        condition: service_healthy
 
   backend:
     build: ./backend
@@ -31,6 +47,7 @@ services:
       - DB_HOST=${DB_HOST}
       - DB_PORT=${DB_PORT}
       - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - ROLE_SERVICE_URL=${ROLE_SERVICE_URL}
     depends_on:
       db:
         condition: service_healthy
