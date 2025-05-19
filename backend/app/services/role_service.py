@@ -11,7 +11,7 @@ class RoleService:
 
     def save_user_default_role(self, user_id: int) -> None:
         url = self.service_url + '/role/default'
-        requests.post(url ,json={user_id})
+        requests.post(url ,json={"user_id": user_id})
 
     def autorize_role(self, role: Role, user_id: int) -> bool:
         try:

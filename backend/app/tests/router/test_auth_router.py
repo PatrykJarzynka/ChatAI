@@ -107,15 +107,15 @@ def test_login_wrong_credentials(client: TestClient, overrite_jwt: Mock):
 #     assert response.status_code == 200
 #     assert response.json() == MOCKED_TOKEN.model_dump()
 
-#     mock_user_service.create_user.assert_called_once_with(UserCreateDTO(email="test@test.pl", full_name="XYZ", password="Test123.", tenant=Tenant.LOCAL, tenant_id=None))
+#     mock_user_service.create_user.assert_called_once_with(UserCreateDTO(email="test@test.pl", full_name="XYZ", password="Test123.", tenant=Tenant.LOCAL, external_user_id=None))
 
 #     assert mock_user_service.save_user.call_count == 2
 
 #     first_user_call = mock_user_service.save_user.call_args_list[0][0][0]
-#     assert first_user_call.tenant_id is None
+#     assert first_user_call.external_user_id is None
 
 #     second_user_call = mock_user_service.save_user.call_args_list[1][0][0]
-#     assert second_user_call.tenant_id == expected_id
+#     assert second_user_call.external_user_id == expected_id
 
 #     overrite_jwt.create_access_token.assert_called_once_with({"sub": "123"})
 
@@ -123,7 +123,7 @@ def test_login_wrong_credentials(client: TestClient, overrite_jwt: Mock):
 def test_refresh_token(client: TestClient, overrite_jwt, overrite_google, overrite_microsoft, overrite_decode, refresh_token: str | None, tenant: Tenant):
 
     mock_user_service = Mock()
-    mock_user_service.get_user_by_tenant_id.return_value = User(id=123, tenant_id='123', email='email@a.pl',password='password', tenant=tenant, full_name='XYZ')
+    mock_user_service.get_user_by_external_user_id.return_value = User(id=123, external_user_id='123', email='email@a.pl',password='password', tenant=tenant, full_name='XYZ')
 
 
     app.dependency_overrides[get_user_service] = lambda: mock_user_service

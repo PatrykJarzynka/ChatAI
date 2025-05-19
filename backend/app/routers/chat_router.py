@@ -11,8 +11,8 @@ router = APIRouter()
 
 @router.get('/chat', response_model=ChatDto)
 def get_new_chat(chat_service: chat_service_dependency, user_service: user_service_dependency, decoded_token = Depends(auth_none)) -> Chat:
-    tenant_id = decoded_token['sub']
-    user_id = user_service.get_user_by_tenant_id(tenant_id).id
+    external_user_id = decoded_token['sub']
+    user_id = user_service.get_user_by_external_user_id(external_user_id).id
     
     new_chat = chat_service.create_new_chat(user_id)
     chat_service.save_chat(new_chat)

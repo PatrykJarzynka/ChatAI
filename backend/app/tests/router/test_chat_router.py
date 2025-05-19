@@ -15,7 +15,7 @@ from main import app
 from containers import get_chat_service, get_user_service, get_bot_service, get_chat_history_service, auth_none
 from typing import List, cast
 
-mock_user = User(id=123, tenant_id='123', email='email@a.pl',password='password', tenant=Tenant.LOCAL, full_name='XYZ')
+mock_user = User(id=123, external_user_id='123', email='email@a.pl',password='password', tenant=Tenant.LOCAL, full_name='XYZ')
 mock_chat=Chat(user_id=123, id=1, chat_items=[])
 mock_bot_response = 'TEST'
 mock_chat_item = ChatItem(user_message='Hello', chat_id=1)
@@ -27,7 +27,7 @@ def jwt_service():
 @pytest.fixture
 def user_service():
     mock = Mock()
-    mock.get_user_by_tenant_id.return_value = mock_user
+    mock.get_user_by_external_user_id.return_value = mock_user
     app.dependency_overrides[get_user_service] = lambda: mock
     yield mock
     app.dependency_overrides.clear()
@@ -84,7 +84,7 @@ def test_get_new_chat(client: TestClient, user_service, chat_service, overrite_d
 
     assert response.json() == expected_response.model_dump()
     overrite_decode.assert_called_once()
-    user_service.get_user_by_tenant_id.assert_called_once_with('test_sub')
+    user_service.get_user_by_external_user_id.assert_called_once_with('test_sub')
     chat_service.create_new_chat.assert_called_once_with(mock_user.id)
     chat_service.save_chat.assert_called_once_with(mock_chat)
 

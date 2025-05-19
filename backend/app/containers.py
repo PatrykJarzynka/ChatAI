@@ -92,8 +92,8 @@ def authorize(role: Optional[Role]) -> Callable:
             decoded_token = token_validator.validate_token(authorization)
             
             if role:
-                tenant_id = decoded_token['sub']
-                user = user_service.get_user_by_tenant_id(tenant_id) 
+                external_user_id = decoded_token['sub']
+                user = user_service.get_user_by_external_user_id(external_user_id) 
 
                 try:
                     isAuthorized = role_service.autorize_role(user_id=user.id, role=role)

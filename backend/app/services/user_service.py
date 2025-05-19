@@ -50,8 +50,8 @@ class UserService:
             raise HTTPException(status_code=404, detail="User not found")
         return existing_user
     
-    def get_user_by_tenant_id(self, tenant_id) -> User:
-        statement = select(User).where(User.tenant_id == tenant_id)
+    def get_user_by_external_user_id(self, external_user_id: str) -> User:
+        statement = select(User).where(User.external_user_id == external_user_id)
         existing_user = self.session.exec(statement).first()
 
         if not existing_user:
@@ -64,8 +64,8 @@ class UserService:
         
         return bool(existing_user)
     
-    def is_tenant_user_in_db(self, tenant_id: str) -> bool:
-         statement = select(User).where(User.tenant_id == tenant_id)
+    def is_tenant_user_in_db(self, external_user_id: str) -> bool:
+         statement = select(User).where(User.external_user_id == external_user_id)
          existing_user = self.session.exec(statement).first()
 
          return bool(existing_user)

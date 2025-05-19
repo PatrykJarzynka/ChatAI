@@ -22,7 +22,7 @@ def init_user_fixture(session: Session) -> User:
     session.commit()
     session.refresh(new_user)
 
-    new_user.tenant_id = str(new_user.id)
+    new_user.external_user_id = str(new_user.id)
 
     session.add(new_user)
     session.commit()

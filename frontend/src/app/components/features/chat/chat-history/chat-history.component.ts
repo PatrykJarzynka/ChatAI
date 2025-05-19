@@ -17,16 +17,10 @@ const { parseChatResponseToChat } = useParser;
 @Component({
   selector: 'chat-history',
   imports: [
-    MatButton,
-    MatDivider,
-    AppTitlebar,
     MatIcon,
     MatList,
     MatListItem,
     MatListItemIcon,
-    MatTabGroup,
-    MatTab,
-    MatTabLabel
   ],
   templateUrl: './chat-history.component.html',
   styleUrl: './chat-history.component.scss',

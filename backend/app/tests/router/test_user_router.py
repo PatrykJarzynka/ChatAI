@@ -7,12 +7,12 @@ from unittest.mock import Mock
 from containers import get_user_service, auth_none
 from tables.user import User
 
-mock_local_user_get = User(id=123, tenant_id='123', email='email@a.pl',password='password', tenant=Tenant.LOCAL, full_name='XYZ')
+mock_local_user_get = User(id=123, external_user_id='123', email='email@a.pl',password='password', tenant=Tenant.LOCAL, full_name='XYZ')
 
 @pytest.fixture
 def user_service():
     mock = Mock()
-    mock.get_user_by_tenant_id.return_value = mock_local_user_get
+    mock.get_user_by_external_user_id.return_value = mock_local_user_get
     mock.is_tenant_user_in_db.return_value = False
     mock.is_user_with_provided_email_in_db.return_value = False
     app.dependency_overrides[get_user_service] = lambda: mock
@@ -35,7 +35,7 @@ def overrite_decode_google():
     yield mock
     app.dependency_overrides.clear()
 
-def test_get_user_by_tenant_id(client: TestClient, user_service, overrite_decode_microsoft):
+def test_get_user_by_external_user_id(client: TestClient, user_service, overrite_decode_microsoft):
     headers = {"Authorization": "Bearer access_token"}
     expected_response = UserResponseDTO(id=mock_local_user_get.id, email=mock_local_user_get.email, full_name=mock_local_user_get.full_name)
 
@@ -43,13 +43,13 @@ def test_get_user_by_tenant_id(client: TestClient, user_service, overrite_decode
 
     assert expected_response.model_dump() == response.json()
     overrite_decode_microsoft.assert_called_once()
-    user_service.get_user_by_tenant_id.assert_called_once_with('test_sub')
+    user_service.get_user_by_external_user_id.assert_called_once_with('test_sub')
 
 def test_create_new_user_microsoft(client: TestClient, user_service, overrite_decode_microsoft):
     headers = {"Authorization": "Bearer access_token"}
     decoded = overrite_decode_microsoft.return_value
     
-    expected_user = User(email=decoded['email'],password=None,tenant_id=decoded['sub'],full_name=decoded['name'],tenant=Tenant.MICROSOFT)
+    expected_user = User(email=decoded['email'],password=None, external_user_id=decoded['sub'], full_name=decoded['name'], tenant=Tenant.MICROSOFT)
 
     client.post('/user/microsoft', headers=headers, json={})
 
@@ -62,7 +62,7 @@ def test_create_new_user_google(client: TestClient, user_service, overrite_decod
     expected_full_name = f"{decoded['given_name']} {decoded['family_name']}"
     
 
-    expected_user = User(email=decoded['email'], password=None,tenant_id=decoded['sub'],full_name=expected_full_name,tenant=Tenant.GOOGLE)
+    expected_user = User(email=decoded['email'], password=None, external_user_id=decoded['sub'], full_name=expected_full_name, tenant=Tenant.GOOGLE)
 
     client.post('/user/google', headers=headers, json={})
 

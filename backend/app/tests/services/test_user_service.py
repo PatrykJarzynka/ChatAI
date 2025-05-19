@@ -24,7 +24,7 @@ def local_user_fixture(user_service: UserService) -> User:
     new_user = User(email=hashed_user.email, password=hashed_user.password,full_name=hashed_user.full_name, tenant=Tenant.LOCAL)
 
     user_service.save_user(new_user)
-    new_user.tenant_id = str(new_user.id)
+    new_user.external_user_id = str(new_user.id)
     user_service.save_user(new_user)
     return new_user
 
@@ -57,7 +57,7 @@ def test_authenticate_local_user_not_existing_user(user_service: UserService):
 
 @pytest.mark.parametrize('tenant',[Tenant.GOOGLE, Tenant.MICROSOFT])
 def test_authenticate_local_user_no_local_tenant(user_service: UserService, tenant: Tenant):
-    new_user = User(email='tenant@email.com', password=None,full_name='XYZ', tenant=tenant, tenant_id='123')
+    new_user = User(email='tenant@email.com', password=None,full_name='XYZ', tenant=tenant, external_user_id='123')
     user_service.save_user(new_user)
 
     authenticated_user = user_service.authenticate_local_user(email='test@test.pl', password='Test123.')
@@ -89,18 +89,20 @@ def test_get_user_by_email_failed(user_service: UserService):
     assert getting_error.value.detail == 'User not found'
 
 @pytest.mark.parametrize('tenant',[Tenant.GOOGLE, Tenant.MICROSOFT])
-def test_get_user_by_tenant_id_successfully(user_service: UserService, tenant: Tenant):
-    new_user = User(email='tenant@email.com', password=None,full_name='XYZ', tenant=tenant, tenant_id='123')
+def test_get_user_by_external_user_id_successfully(user_service: UserService, tenant: Tenant):
+    new_user = User(email='tenant@email.com', password=None,full_name='XYZ', tenant=tenant, external_user_id='123')
     user_service.save_user(new_user)
+
+    assert new_user.external_user_id is not None
     
-    found_user = user_service.get_user_by_tenant_id(new_user.tenant_id)
+    found_user = user_service.get_user_by_external_user_id(new_user.external_user_id)
     
     assert found_user == new_user
 
-def test_get_user_by_tenant_id_failed(user_service: UserService):
+def test_get_user_by_external_user_id_failed(user_service: UserService):
 
     with pytest.raises(HTTPException) as getting_error:
-        user_service.get_user_by_tenant_id('123')
+        user_service.get_user_by_external_user_id('123')
     
     assert getting_error.value.detail == 'User not found'
 

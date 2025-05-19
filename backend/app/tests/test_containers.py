@@ -53,7 +53,7 @@ def override_role_service():
 @pytest.fixture
 def overrride_user_service():
     mock = Mock()
-    mock.get_user_by_tenant_id.return_value = User(id=123, tenant_id='123', email='email@a.pl',password='password', tenant=Tenant.LOCAL, full_name='XYZ')
+    mock.get_user_by_external_user_id.return_value = User(id=123, external_user_id='123', email='email@a.pl',password='password', tenant=Tenant.LOCAL, full_name='XYZ')
     app.dependency_overrides[TokenValidator] = mock
     yield mock
     app.dependency_overrides.clear()
@@ -85,8 +85,6 @@ async def test_authorize_missing_authorization_header(override_role_service, ove
 
 @pytest.mark.asyncio
 async def test_authorize_no_role_check(override_role_service, overrride_token_validator, overrride_user_service):
-    # override_jwt_service.get_token_issuer.return_value=issuer
-    # overrride_token_validator.autorize_role.return_value = True
     mock_auth_header = f"Bearer mock_token"
     dependency_function = authorize(role=None)
     
@@ -119,7 +117,7 @@ async def test_authorize_invalid_role(override_role_service, overrride_token_val
     assert invalide_role_exec.value.status_code == status.HTTP_401_UNAUTHORIZED
     assert invalide_role_exec.value.detail == "Permission role restricted."
     overrride_token_validator.validate_token.assert_called_once_with(mock_auth_header)
-    overrride_user_service.get_user_by_tenant_id.assert_called_once_with('mockTenant')
+    overrride_user_service.get_user_by_external_user_id.assert_called_once_with('mockTenant')
 
 @pytest.mark.asyncio
 async def test_authorize_valid(override_role_service, overrride_token_validator, overrride_user_service):
@@ -137,7 +135,7 @@ async def test_authorize_valid(override_role_service, overrride_token_validator,
     )
 
     overrride_token_validator.validate_token.assert_called_once_with(mock_auth_header)
-    overrride_user_service.get_user_by_tenant_id.assert_called_once_with('mockTenant')
+    overrride_user_service.get_user_by_external_user_id.assert_called_once_with('mockTenant')
     assert result == mock_token
     
     

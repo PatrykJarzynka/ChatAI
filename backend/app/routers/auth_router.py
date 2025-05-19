@@ -49,7 +49,7 @@ def register(user_data: LocalUserData, user_service: user_service_dependency, jw
     new_user = User(email=hashed_user.email, password=hashed_user.password,full_name=hashed_user.full_name, tenant=Tenant.LOCAL)
     user_service.save_user(new_user)
     
-    new_user.tenant_id = str(new_user.id)
+    new_user.external_user_id = str(new_user.id)
     user_service.save_user(new_user)
 
     role_service.save_user_default_role(new_user.id)
@@ -66,8 +66,8 @@ def refresh(jwt_service: jwt_service_dependency, user_service: user_service_depe
         )
     
 
-    tenant_id = decoded_token['sub']
-    user = user_service.get_user_by_tenant_id(tenant_id)
+    external_user_id = decoded_token['sub']
+    user = user_service.get_user_by_external_user_id(external_user_id)
 
     match user.tenant:
         case Tenant.LOCAL: new_access_token = jwt_service.create_access_token({"sub": str(user.id)}).access_token
