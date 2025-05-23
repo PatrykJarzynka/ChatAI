@@ -72,7 +72,7 @@ def test_get_city_weather_data(weather_service: WeatherService):
             current=CurrentData(
                 pollution=Pollution(
                     ts="2025-04-24T09:00:00.000Z",
-                    aquis=62,
+                    aqius=62,
                     mainus="p2",
                     aqicn=25,
                     maincn="o3"

@@ -29,15 +29,17 @@ export class BotMessageService {
     };
   }
 
-  createUserChatData(chatId: number, userQuery: string): UserChatData {
+  createUserChatData(chatId: number, userQuery: string, userId: number, selectedFilesIds: number[]): UserChatData {
     return {
+      selectedFilesIds,
+      userId,
       chatId,
       message: userQuery,
     };
   }
 
-  async fetchBotResponse(chatId: number, userQuery: string): Promise<string> {
-    const userChatData = this.createUserChatData(chatId, userQuery);
+  async fetchBotResponse(chatId: number, userQuery: string, userId: number, selectedFilesIds: number[]): Promise<string> {
+    const userChatData = this.createUserChatData(chatId, userQuery, userId, selectedFilesIds);
     return await this.apiService.post<string, UserChatData>(CHAT_ENDPOINT, userChatData);
   }
 }

@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { AppSidebar } from '../../core/app-sidebar/app-sidebar.component';
 import { NgClass, NgStyle } from '@angular/common';
-import { MatButton, MatMiniFabButton } from '@angular/material/button';
+import { MatButton, MatFabButton, MatMiniFabButton } from '@angular/material/button';
 import { ChatService } from '@services/ChatService';
 import { Router } from '@angular/router';
 import { MatMenu, MatMenuItem, MatMenuTrigger } from '@angular/material/menu';
@@ -19,12 +19,16 @@ import { AuthService } from '@services/AuthService';
 import { ChatHistoryService } from '@services/ChatHistoryService';
 import { MatTab, MatTabGroup, MatTabLabel } from '@angular/material/tabs';
 import { MatDivider } from '@angular/material/divider';
-import { ImportedFile } from 'appTypes/ImportedFile';
+import { FileManager } from '@services/FileMananger';
+import { MatListOption, MatSelectionList } from '@angular/material/list';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { MatCheckbox } from '@angular/material/checkbox';
+import { UploadedFile } from '@appTypes/UploadedFile';
 
 
 @Component({
   selector: 'chat-view',
-  imports: [ChatWindow, ChatActions, MatIcon, MatTooltip, FormsModule, MatSidenavModule, AppSidebar, NgStyle, MatButton, ChatHistory, MatMiniFabButton, MatMenuTrigger, MatMenu, MatMenuItem, MatTabGroup, MatTab, MatTabLabel, MatDivider, MatIcon, NgClass],
+  imports: [ChatWindow, ChatActions, MatIcon, MatTooltip, FormsModule, MatSidenavModule, AppSidebar, NgStyle, MatButton, ChatHistory, MatMiniFabButton, MatMenuTrigger, MatMenu, MatMenuItem, MatTabGroup, MatTab, MatTabLabel, MatDivider, MatIcon, NgClass, MatSelectionList, MatListOption, MatProgressSpinner, MatCheckbox],
   templateUrl: './chat-view.component.html',
   styleUrl: './chat-view.component.scss'
 })
@@ -34,7 +38,8 @@ export class ChatView {
 
   private readonly handleFetchingBotMessage: (userQuery: string) => Promise<void>;
   currentUser = computed(() => this.userService.getCurrentUser()());
-  importedFiles = signal<ImportedFile[]>([]);
+  isDragging = signal<boolean>(false);
+  files = signal<UploadedFile[]>([]);
 
   constructor(
     private chatService: ChatService,
@@ -42,9 +47,14 @@ export class ChatView {
     private chatHistoryService: ChatHistoryService,
     private router: Router,
     private authService: AuthService,
+    private fileManager: FileManager
   ) {
-    const { handleFetchingBotMessage } = useChatActions(this.chatService);
+    const { handleFetchingBotMessage } = useChatActions(this.chatService, this.userService, this.fileManager);
     this.handleFetchingBotMessage = handleFetchingBotMessage;
+  }
+
+  onSelectionChange(fileId: number) {
+    this.fileManager.updateSelectedFiles(fileId);
   }
 
   async ngOnInit() {
@@ -65,6 +75,7 @@ export class ChatView {
         this.authService.handleSettingRefreshTokenInterval(token);
 
         await this.initUserChatHistory(user.id);
+        this.files = this.fileManager.getFiles();
       }
     } else {
       await this.router.navigate(['/']);
@@ -111,25 +122,45 @@ export class ChatView {
   }
 
   async refetchBotMessage(userQuery: string): Promise<void> {
-    const { handleFetchingBotMessage } = useChatActions(this.chatService);
     this.chatService.updateLatestBotMessageDataProperty('status', StatusType.Pending);
 
-    await handleFetchingBotMessage(userQuery);
+    await this.handleFetchingBotMessage(userQuery);
   }
 
-  uploadFiles(e: any): void {
-    
+  async onFileButtonClick(event: Event) {
+    event.stopPropagation();
+    event.preventDefault();
 
-    let importedFiles: ImportedFile[] = [];
+    const element = event.currentTarget as HTMLInputElement;
+    const fileList = element.files;
 
-    ( Array.from(e.target.files) as File[] ).forEach((file) => {
-      importedFiles.push(new ImportedFile(file.name, false));
-    });
-
-    this.importedFiles.set(importedFiles);
+    if (fileList) {
+      await this.fileManager.onFilesUpload(Array.from(fileList));
+    }
   }
 
-  onFileClick(file: ImportedFile): void {
-    file.toggleSelection();
+  onDragOver(event: DragEvent): void {
+    event.stopPropagation();
+    event.preventDefault();
+
+    this.isDragging.set(true);
   }
+
+  onDragLeave(event: DragEvent): void {
+    event.stopPropagation();
+    event.preventDefault();
+
+    this.isDragging.set(false);
+  }
+
+  async onDrop(event: DragEvent): Promise<void> {
+    event.stopPropagation();
+    event.preventDefault();
+
+    if (event.dataTransfer) {
+      await this.fileManager.onFilesUpload(Array.from(event.dataTransfer.files));
+    }
+  }
+
+  protected readonly StatusType = StatusType;
 }

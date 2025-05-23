@@ -11,7 +11,7 @@ from models.local_user_data import LocalUserData
 from enums.tenant import Tenant
 from models.api_tokens import ApiTokens
 from database import get_session
-from containers import jwt_service_dependency, google_service_dependency, microsoft_service_dependency, user_service_dependency, role_service_dependency, auth_none
+from containers import jwt_service_dependency, google_service_dependency, microsoft_service_dependency, user_service_dependency, role_service_dependency, authorize_no_role
 from tables.user import User
 
 
@@ -58,7 +58,7 @@ def register(user_data: LocalUserData, user_service: user_service_dependency, jw
     return access_token
 
 @router.post('/auth/refresh')
-def refresh(jwt_service: jwt_service_dependency, user_service: user_service_dependency, google_service: google_service_dependency, microsoft_service: microsoft_service_dependency, body: GoogleRefreshTokenRequest, decoded_token = Depends(auth_none)) -> str:
+def refresh(jwt_service: jwt_service_dependency, user_service: user_service_dependency, google_service: google_service_dependency, microsoft_service: microsoft_service_dependency, body: GoogleRefreshTokenRequest, decoded_token = Depends(authorize_no_role)) -> str:
     if not body.refresh_token:
         raise HTTPException(
             detail='No refresh token provided!',
@@ -76,7 +76,7 @@ def refresh(jwt_service: jwt_service_dependency, user_service: user_service_depe
     
     return new_access_token
 
-@router.get('/auth/verify', dependencies=[Depends(auth_none)])
+@router.get('/auth/verify', dependencies=[Depends(authorize_no_role)])
 def verify_token() -> dict[str, bool]:
     return {"isValid": True}
 

@@ -2,18 +2,18 @@ from fastapi import APIRouter, Depends
 
 from models.user_response_dto import UserResponseDTO
 from enums.tenant import Tenant
-from containers import user_service_dependency, auth_none, role_service_dependency
+from containers import user_service_dependency, authorize_no_role, role_service_dependency
 from tables.user import User
 
 router = APIRouter()
 
 @router.get("/user/me", response_model=UserResponseDTO)
-def get_user_by_external_user_id(user_service: user_service_dependency, decoded_token = Depends(auth_none)):
+def get_user_by_external_user_id(user_service: user_service_dependency, decoded_token = Depends(authorize_no_role)):
     external_user_id = decoded_token['sub']
     return user_service.get_user_by_external_user_id(external_user_id)
 
 @router.post('/user/microsoft')
-def create_or_update_microsoft_user(user_service: user_service_dependency, role_service: role_service_dependency, decoded_token = Depends(auth_none)) -> None:
+def create_or_update_microsoft_user(user_service: user_service_dependency, role_service: role_service_dependency, decoded_token = Depends(authorize_no_role)) -> None:
     user_email = decoded_token['email']
     microsoft_id = decoded_token['sub']
 
@@ -31,7 +31,7 @@ def create_or_update_microsoft_user(user_service: user_service_dependency, role_
 
 
 @router.post('/user/google')
-def create_or_update_google_user(user_service: user_service_dependency, role_service: role_service_dependency, decoded_token = Depends(auth_none)) -> None:
+def create_or_update_google_user(user_service: user_service_dependency, role_service: role_service_dependency, decoded_token = Depends(authorize_no_role)) -> None:
     user_email = decoded_token['email']
     google_id = decoded_token['sub']
 

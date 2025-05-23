@@ -5,6 +5,7 @@ from enums.tenant import Tenant
 
 if TYPE_CHECKING:
     from tables.chat import Chat
+    from tables.file import File
 
 class User(SQLModel, table=True):
     id: int = Field(default=None, primary_key=True)
@@ -13,4 +14,6 @@ class User(SQLModel, table=True):
     external_user_id: str | None = Field(default=None, unique=True)
     full_name: str = Field(nullable=False)
     tenant: Tenant = Field(unique=False)
+
     chats: List["Chat"] = Relationship(back_populates="user")
+    files: List["File"] = Relationship(back_populates="user")

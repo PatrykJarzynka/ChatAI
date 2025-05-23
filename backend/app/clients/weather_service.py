@@ -2,7 +2,7 @@ from config import get_settings
 import requests
 from typing import Annotated
 from utilities.open_ai_helper import OpenAIHelper
-from models.weather_api_response import WeatherApiResponse
+from models.weather_api_response import WeatherApiResponse, WeatherApiResponseListData
 from models.state_dto import StateDTO
 from models.city_dto import CityDTO
 from models.city_data_dto import CityDataDTO
@@ -27,16 +27,16 @@ class WeatherService():
         else:
             return "City not supported. Try to use web_search_tool to find answer."
         
-    def get_supported_states(self, country: Annotated[str,"Name of a country"]) -> WeatherApiResponse[StateDTO]:
+    def get_supported_states(self, country: Annotated[str,"Name of a country"]) -> WeatherApiResponseListData[StateDTO]:
         params = {
             "country": country,
             "key": self.api_key
         }
 
         response = requests.get(self.supported_states_endpoint, params=params)
-        return WeatherApiResponse[StateDTO](**response.json())
+        return WeatherApiResponseListData[StateDTO](**response.json())
     
-    def get_supported_cities_in_state(self, country: Annotated[str,"Name of a country"], state: Annotated[str,"Name of a state"]) -> WeatherApiResponse[CityDTO]:
+    def get_supported_cities_in_state(self, country: Annotated[str,"Name of a country"], state: Annotated[str,"Name of a state"]) -> WeatherApiResponseListData[CityDTO]:
         params = {
             "country": country,
             "state": state,
@@ -44,14 +44,14 @@ class WeatherService():
         }
 
         response = requests.get(self.supported_cities_endpoint, params=params)
-        return WeatherApiResponse[CityDTO](**response.json())
+        return WeatherApiResponseListData[CityDTO](**response.json())
 
     def get_city_data(self, city: Annotated[str,"Name of a city"] , state: Annotated[str,"Name of a state"], country: Annotated[str,"Name of a country"]) -> WeatherApiResponse[CityDataDTO]:
         """
 
         Response parameters should be interpeted as:
         - 'ts': time when data was gathered
-        - 'aquis': AQI value based on US EPA standard
+        - 'aqius': AQI value based on US EPA standard
         - 'mainus': ain pollutant for US AQI
         - 'aqicn': AQI value based on China MEP standard
         - 'maincn': ain pollutant for Chinese AQI

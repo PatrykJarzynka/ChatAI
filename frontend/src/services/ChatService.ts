@@ -91,8 +91,8 @@ export class ChatService {
     this.addChatItem(chatItemTemplate);
   }
 
-  async fetchBotResponse(userQuery: string, chatId: number): Promise<string> {
-    return await this.botMessageService.fetchBotResponse(chatId, userQuery);
+  async fetchBotResponse(userQuery: string, chatId: number, userId: number, selectedFilesIds: number[]): Promise<string> {
+    return await this.botMessageService.fetchBotResponse(chatId, userQuery, userId, selectedFilesIds);
   }
 
   getCurrentChat(): Chat | null {

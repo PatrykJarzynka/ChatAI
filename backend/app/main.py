@@ -4,6 +4,7 @@ import logging
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from routers import files_router
 from database import create_db_and_tables
 from routers import chat_router, auth_router, user_router
 
@@ -34,6 +35,7 @@ app.add_middleware(
 app.include_router(chat_router.router)
 app.include_router(auth_router.router)
 app.include_router(user_router.router)
+app.include_router(files_router.router)
 
 logger = logging.getLogger(__name__)
 
@@ -42,4 +44,4 @@ if __name__ == "__main__":
 
     import uvicorn
 
-    uvicorn.run("main:app", host="127.0.0.1", port=8000)
+    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)

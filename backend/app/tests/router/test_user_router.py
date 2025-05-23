@@ -4,7 +4,7 @@ from starlette.testclient import TestClient
 from models.user_response_dto import UserResponseDTO
 from enums.tenant import Tenant
 from unittest.mock import Mock
-from containers import get_user_service, auth_none
+from containers import get_user_service, authorize_no_role
 from tables.user import User
 
 mock_local_user_get = User(id=123, external_user_id='123', email='email@a.pl',password='password', tenant=Tenant.LOCAL, full_name='XYZ')
@@ -23,7 +23,7 @@ def user_service():
 def overrite_decode_microsoft():
     mock = Mock()
     mock.return_value = {"sub": 'test_sub', "email":"test@test.pl", "name": 'test_name'}
-    app.dependency_overrides[auth_none] = lambda: mock()
+    app.dependency_overrides[authorize_no_role] = lambda: mock()
     yield mock
     app.dependency_overrides.clear()
 
@@ -31,7 +31,7 @@ def overrite_decode_microsoft():
 def overrite_decode_google():
     mock = Mock()
     mock.return_value = {"sub": 'test_sub', "email":"test@test.pl", "given_name": 'test', "family_name":"name"}
-    app.dependency_overrides[auth_none] = lambda: mock()
+    app.dependency_overrides[authorize_no_role] = lambda: mock()
     yield mock
     app.dependency_overrides.clear()
 

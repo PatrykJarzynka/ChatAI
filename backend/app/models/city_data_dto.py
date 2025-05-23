@@ -7,7 +7,7 @@ class Location(BaseModel):
 
 class Pollution(BaseModel):
     ts: str
-    aquis: int
+    aqius: int
     mainus: str
     aqicn: int
     maincn: str

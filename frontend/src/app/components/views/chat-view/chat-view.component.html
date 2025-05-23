@@ -28,7 +28,10 @@
         style="height: 100%;"
         panel-content
       >
-        <mat-tab-group class="panel-tabs-wrapper">
+        <mat-tab-group
+          class="panel-tabs-wrapper"
+          [selectedIndex]="1"
+        >
           <mat-tab>
             <ng-template mat-tab-label>
               Your<br>Conversations
@@ -36,36 +39,85 @@
 
             <chat-history/>
           </mat-tab>
+
           <mat-tab>
-            <ng-template mat-tab-label>
-              Imported<br>Files
-            </ng-template>
+            <div class="files-tab">
+              <ng-template mat-tab-label>
+                Imported<br>Files
+              </ng-template>
 
-            <input
-              id="fileInput"
-              type="file"
-              multiple
-              (change)="uploadFiles($event)"
-            />
+              <input
+                #fileInput
+                type="file"
+                style="display: none"
+                multiple
+                (change)="onFileButtonClick($event)"
+              />
 
-            <div class="files-container">
-              @for (file of importedFiles(); track $index) {
-                <div
-                  [ngClass]="file.selected ? 'selected' : ''"
-                  class="file-template"
-                  (click)="onFileClick(file)"
+              <div class="file-actions">
+                <button
+                  mat-flat-button
+                  class="upload-button"
+                  (click)="fileInput.click()"
                 >
                   <mat-icon
                     fontSet="material-icons-outlined"
                     class="file-icon"
                   >
-                    description
+                    upload_file
                   </mat-icon>
-                  <p class="file-name">{{ file.fileName }}</p>
-                </div>
-              }
 
+                  Upload file
+                </button>
+
+                <div>
+                  <mat-checkbox>Select all files</mat-checkbox>
+                </div>
+              </div>
+
+              <div
+                class="files-container"
+                (dragover)="onDragOver($event)"
+                (dragleave)="onDragLeave($event)"
+                (drop)="onDrop($event)"
+              >
+                <div
+                  class="upload-section-actions"
+                  [ngClass]="isDragging()? 'dragging' : ''"
+                >
+                  @if (!files().length) {
+                    @if (!isDragging()) {
+                      <p>Drag and drop you files or click on a upload button.</p>
+                    } @else {
+                      <p>Drop your files here!</p>
+                    }
+                  }
+
+                </div>
+
+                <mat-selection-list style="width: 100%; padding: 0" class="scroll-shadow">
+                  @for (file of files(); track file.id) {
+                    <mat-list-option (selectedChange)="onSelectionChange(file.id)">
+                      <div class="file-list-item">
+                        @switch (file.status) {
+                          @case (StatusType.Pending) {
+                            <mat-spinner [diameter]="30"/>
+                          }
+                          @case (StatusType.Success) {
+                            <mat-icon class="success-icon">check_circle</mat-icon>
+                          }
+                        }
+
+                        <span class="upload-file-name">{{ file.name }}</span>
+                      </div>
+                    </mat-list-option>
+                  }
+                </mat-selection-list>
+
+
+              </div>
             </div>
+
           </mat-tab>
         </mat-tab-group>
 

@@ -9,7 +9,7 @@ from services.auth.jwt_service import JWTService
 from services.auth.google_service import GoogleService
 from services.auth.microsoft_service import MicrosoftService
 from main import app
-from containers import get_user_service, auth_none
+from containers import get_user_service, authorize_no_role
 from models.token import Token
 from enums.tenant import Tenant
 
@@ -47,7 +47,7 @@ def overrite_microsoft():
 def overrite_decode():
     mock = Mock()
     mock.return_value = {"sub": 'test_sub'}
-    app.dependency_overrides[auth_none] = lambda: mock()
+    app.dependency_overrides[authorize_no_role] = lambda: mock()
     yield mock
     app.dependency_overrides.clear()
 

@@ -5,8 +5,8 @@
       "name": "FastAPI: Uvicorn",
       "type": "debugpy",
       "request": "launch",
-      "program": "${workspaceFolder}/app/main.py",
-      "args": ["run", "--host", "127.0.0.1", "--port", "8000"],
+      "program": "${workspaceFolder}/main.py",
+      "args": ["run", "--host", "127.0.0.1", "--port", "8001"],
       "jinja": true,
       "env": {
         "PYTHONPATH": "${workspaceFolder}"
