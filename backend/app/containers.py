@@ -66,14 +66,14 @@ async def get_bot_service(request: Request, chat_service: chat_service_dependenc
         web_service = WebService(SerperApiSearchEngine(api_key=SERPER_API_KEY), SerperResponseParser())
         weather_service = WeatherService()
         request_data = await request.json()
+        db_files_ids = list(map(lambda id: id + 1, request_data.get('selected_files_ids')))
 
         chat_items = chat_service.get_chat_items(request_data.get('chat_id'))
         chat_messages = ChatItemsParser().parse_to_chat_messages(chat_items)
 
         memory = ChatMemoryBuffer.from_defaults(chat_history=chat_messages)
         
-        files = file_service.get_user_files_by_ids(request_data.get('user_id'), request_data.get('selected_files_ids'))
-        print(files)
+        files = file_service.get_user_files_by_ids(request_data.get('user_id'), db_files_ids)
         documents = []
 
         for file in files:
@@ -94,9 +94,9 @@ async def get_bot_service(request: Request, chat_service: chat_service_dependenc
             weather_service.get_city_weather_data, description='Useful for getting the data about current weather and air pollution in given location. Use all of the parameters in English translation.'
         )
 
-        return OpenAIChatService(tools=[web_search_tool, weather_search_tool, document_reader_tool],memory=memory, bot_description=" \
+        return OpenAIChatService(tools=[document_reader_tool, web_search_tool, weather_search_tool],memory=memory, bot_description=" \
         You are an AI assistant that answers user queries. \
-        Always try answer the question with user's documents first. \
+        Always try answer the question with user's documents first, using document_reader_tool. \
         If you cannot find relevant information in those documents, determine, \
         whether the query is about current events that need to include the current date. \
         If so,search for the current date and answer the user's query taking that date into account.\

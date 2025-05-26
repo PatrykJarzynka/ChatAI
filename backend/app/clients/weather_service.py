@@ -17,21 +17,25 @@ class WeatherService():
         
 
     def get_city_weather_data(self, city: Annotated[str,"Name of a city"], country: Annotated[str,"Name of a country"]):
-        supported_states = list(map(lambda data: data.state, self.get_supported_states(country).data))
+        try:
+            supported_states = list(map(lambda data: data.state, self.get_supported_states(country).data))
         
-        state = OpenAIHelper().get_state_assigned_to_city(city, supported_states)
-        supported_cities = list(map(lambda data: data.city, self.get_supported_cities_in_state(country, state).data)) 
+            state = OpenAIHelper().get_state_assigned_to_city(city, supported_states)
+            supported_cities = list(map(lambda data: data.city, self.get_supported_cities_in_state(country, state).data)) 
 
-        if city in supported_cities:
-            return self.get_city_data(city, state, country)
-        else:
-            return "City not supported. Try to use web_search_tool to find answer."
+            if city in supported_cities:
+                return self.get_city_data(city, state, country)
+            else:
+                return "City not supported. Try to use web_search_tool to find answer."    
+        except:
+                return "Error occured. Try to use web_search_tool to find answer."
+        
         
     def get_supported_states(self, country: Annotated[str,"Name of a country"]) -> WeatherApiResponseListData[StateDTO]:
         params = {
-            "country": country,
-            "key": self.api_key
-        }
+        "country": country,
+        "key": self.api_key
+    }
 
         response = requests.get(self.supported_states_endpoint, params=params)
         return WeatherApiResponseListData[StateDTO](**response.json())

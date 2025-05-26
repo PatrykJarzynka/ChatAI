@@ -28,7 +28,7 @@ class UserRoleHandler:
     def insert_or_update_user_role(self, user_id: int, role_enum: RoleEnum) -> None:
         role = self.role_handler.get_role_by_role_enum(role_enum)
         user_role_record = UserRole(role_id=role.id, user_id=user_id)
-        self.session.add(user_role_record)
+        self.session.merge(user_role_record)
         self.session.commit()
 
         

@@ -12,7 +12,7 @@ class FileService:
         self.session.commit()
         self.session.refresh(file)
 
-    def get_user_files_by_ids(self, files_ids: List[int], user_id: int) -> Sequence[File]:
+    def get_user_files_by_ids(self, user_id: int, files_ids: List[int]) -> Sequence[File]:
         statement = select(File).where(
             (File.user_id == user_id) &
             (File.id.in_(files_ids)) # type: ignore
